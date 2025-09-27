@@ -5,5 +5,5 @@
   default: true;
   --color-primary: #89CFF0;
   --color-secondary: #B19CD9;
-  --color-base: white;
+  --color-accent: white;
 }
