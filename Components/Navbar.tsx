@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React from "react";
 
 export const Navbar = () => {
@@ -14,7 +15,7 @@ export const Navbar = () => {
     </>
   );
   return (
-    <div className="navbar bg-transparent pt-0 fixed z-50 px-16 ">
+    <div className="navbar bg-transparent pt-0 fixed z-50 px-8 lg:px-24 ">
       <div className="navbar-start">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -43,7 +44,11 @@ export const Navbar = () => {
           }
           </ul>
         </div>
-        <a className="btn btn-ghost text-xl text-accent">SleepSync</a>
+       <div className="flex items-center justify-center">
+        <Image src='/images/SleepSync.png' alt="sleepSync-logo" width={52} height={52}></Image>
+       <h1 className="text-2xl font-bold  text-accent">SleepSync</h1>
+
+       </div>
       </div>
       <div className="navbar-center hidden lg:flex">
            {
