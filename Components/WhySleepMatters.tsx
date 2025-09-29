@@ -1,8 +1,6 @@
 import React from "react";
 import Container from "./Container";
-import { IoIosHeartEmpty } from "react-icons/io";
-import { LuBrain } from "react-icons/lu";
-import { CiFaceSmile } from "react-icons/ci";
+
 import Image from "next/image";
 export const WhySleepMatters = () => {
   return (
