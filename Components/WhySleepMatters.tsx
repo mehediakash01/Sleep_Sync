@@ -4,7 +4,7 @@ import Container from "./Container";
 import Image from "next/image";
 export const WhySleepMatters = () => {
   return (
-    <Container className="my-20">
+    <Container>
       <div className="flex flex-col lg:flex-row justify-between items-center">
         <div className="space-y-8">
           <h1 className="text-5xl font-bold text-accent">Why Sleep Matters?</h1>

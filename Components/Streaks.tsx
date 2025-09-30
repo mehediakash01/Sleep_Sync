@@ -3,7 +3,7 @@ import Container from "./Container";
 
 const Streaks = () => {
   return (
-    <Container className=" py-20 text-center   ">
+    <Container className="  text-center   ">
       {/* Title */}
       <h2 className="text-4xl font-bold mb-4">
         Stay Consistent, <span className="text-orange-500">Build Streaks</span>

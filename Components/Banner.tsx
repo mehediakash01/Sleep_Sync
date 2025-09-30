@@ -5,7 +5,7 @@ import Container from "./Container";
 export const Banner = () => {
   return (
     <Container>
-      <section className="flex flex-col lg:flex-row lg:gap-32 items-center  pt-20">
+      <section className="flex flex-col lg:flex-row lg:gap-32 items-center  ">
         <div className="space-y-8">
           <h1 className="text-accent font-bold text-2xl lg:text-6xl">
           Build Smarter <br /> Solutions with AI <br /> & Modern Web

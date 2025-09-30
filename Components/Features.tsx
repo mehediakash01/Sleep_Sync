@@ -26,7 +26,7 @@ const Features = () => {
   ];
 
   return (
-    <Container className="pb-20">
+    <Container >
       <h2 className="text-4xl text-white font-bold text-center mb-12">
         Features <span className="">& How It Works</span>
       </h2>

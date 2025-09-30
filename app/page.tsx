@@ -1,4 +1,5 @@
 
+import AiSleepCoach from "@/Components/AiSleepCoach";
 import { Banner } from "@/Components/Banner";
 import Features from "@/Components/Features";
 import Streaks from "@/Components/Streaks";
@@ -13,6 +14,7 @@ export default function Home() {
   <WhySleepMatters></WhySleepMatters>
   <Features></Features>
   <Streaks></Streaks>
+  <AiSleepCoach></AiSleepCoach>
 </div>
 
    </div>
