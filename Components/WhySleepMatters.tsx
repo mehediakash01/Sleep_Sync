@@ -7,12 +7,12 @@ export const WhySleepMatters = () => {
     <Container>
       <div className="flex flex-col lg:flex-row justify-between items-center">
         <div className="space-y-8">
-          <h1 className="text-5xl font-bold text-accent">Why Sleep Matters?</h1>
-          <p className="text-accent  mb-8">
+          <h1 className="text-5xl font-bold ">Why Sleep Matters?</h1>
+          {/* <p className="text-accent  mb-8">
             Quality sleep is the foundation of better health and daily <br />
             performance. Here’s why building a healthy sleep routine matters:
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left max-w-3xl mx-auto text-accent">
+          </p> */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left max-w-3xl mx-auto ">
             <div className="flex items-start gap-3">
               <span className="text-2xl">🌟</span>
               <p>

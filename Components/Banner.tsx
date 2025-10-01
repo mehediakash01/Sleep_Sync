@@ -4,19 +4,19 @@ import Container from "./Container";
 
 export const Banner = () => {
   return (
-    <Container>
-      <section className="flex flex-col lg:flex-row lg:gap-32 items-center  ">
+    <Container className="pt-16">
+      <section className="flex flex-col lg:flex-row justify-between items-center  ">
         <div className="space-y-8">
-          <h1 className="text-accent font-bold text-2xl lg:text-6xl">
+          <h1 className=" font-bold text-2xl lg:text-6xl">
           Build Smarter <br /> Solutions with AI <br /> & Modern Web
           </h1>
-          <p className="text-accent">
+          <p >
             Monitor your sleep, stay on track, 
             and unlock <br />AI-powered insights 
             for deeper, healthier rest.
           </p>
 
-          <button className="btn  text-accent bg-gradient-to-l from-secondary to-primary rounded-full">
+          <button className="btn   bg-gradient-to-l from-secondary to-primary rounded-full">
            Start Tracking Sleep
           </button>
         </div>

@@ -4,12 +4,12 @@ import Container from "./Container";
 const Features = () => {
   const features = [
     {
-      icon: <FaRegClock className="text-4xl text-purple-500" />,
+      icon: <FaRegClock className="text-4xl text-secondary" />,
       title: "Daily Sleep Log",
       desc: "Keep track of your bedtime and wake-up time effortlessly.",
     },
     {
-      icon: <FaChartLine className="text-4xl text-blue-500" />,
+      icon: <FaChartLine className="text-4xl text-primary" />,
       title: "Smart Insights",
       desc: "Visualize your sleep data with clear and simple charts.",
     },
@@ -27,7 +27,7 @@ const Features = () => {
 
   return (
     <Container >
-      <h2 className="text-4xl text-white font-bold text-center mb-12">
+      <h2 className="text-4xl  font-bold text-center mb-12">
         Features <span className="">& How It Works</span>
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">

@@ -4,7 +4,7 @@ import React from "react";
 export const Navbar = () => {
   const navLinks = (
     <>
-      <ul className="flex gap-4 text-accent">
+      <ul className="flex gap-4">
         <li>Home</li>
         <li>Streak</li>
         <li>Notification</li>
@@ -15,7 +15,7 @@ export const Navbar = () => {
     </>
   );
   return (
-    <div className="navbar bg-transparent backdrop-blur-md py-6 fixed z-50 px-8 lg:px-24   ">
+    <div className="navbar  bg-transparent backdrop-blur-md py-6 fixed z-50 px-8 lg:px-24   ">
       <div className="navbar-start">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -46,7 +46,7 @@ export const Navbar = () => {
         </div>
        <div className="flex items-center justify-center">
         <Image src='/images/SleepSync.png' alt="sleepSync-logo" width={52} height={52}></Image>
-       <h1 className="text-2xl font-bold  text-accent">SleepSync</h1>
+       <h1 className="text-2xl font-bold  ">SleepSync</h1>
 
        </div>
       </div>
@@ -56,7 +56,7 @@ export const Navbar = () => {
           }
       </div>
       <div className="navbar-end">
-       <button className='btn  text-accent bg-gradient-to-l from-secondary to-primary rounded-full'>
+       <button className='btn   bg-gradient-to-l from-secondary to-primary rounded-full'>
         Login
        </button>
       </div>
