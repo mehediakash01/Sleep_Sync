@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 export const Navbar = () => {
@@ -56,9 +57,10 @@ export const Navbar = () => {
           }
       </div>
       <div className="navbar-end">
-       <button className='btn   bg-gradient-to-l from-secondary to-primary rounded-full'>
+        <Link href="/login">   <button className='btn   bg-gradient-to-l from-secondary to-primary rounded-full'>
         Login
-       </button>
+       </button></Link>
+    
       </div>
     </div>
   );
