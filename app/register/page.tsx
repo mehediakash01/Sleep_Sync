@@ -6,12 +6,12 @@ import { FaFacebookF, FaTwitter, FaGoogle } from "react-icons/fa";
 
 export default function RegisterPage() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 py-20">
+    <div className="flex lg:flex-row flex-col items-center justify-center min-h-screen bg-gray-100 py-20">
       <div className="bg-white w-[900px] rounded-2xl shadow-lg overflow-hidden flex">
         {/* Left Image Section */}
         <div className="w-1/2 bg-gradient-to-b from-blue-500 to-blue-700 flex flex-col items-center justify-center p-8 text-white relative">
           <h2 className="text-xl font-semibold mb-2">WELCOME TO</h2>
-          <h1 className="text-3xl font-bold mb-6">SLEEPSYNC</h1>
+          <h1 className="text-3xl font-bold mb-6">SleepSync</h1>
 
           <Image
             src="/images/register-illustration.png"
@@ -23,7 +23,7 @@ export default function RegisterPage() {
           />
 
           <p className="mt-4 text-sm">
-            Already have an account?{" "}
+            Already have an account?
             <Link href="/login" className="underline font-semibold">
               Login
             </Link>
