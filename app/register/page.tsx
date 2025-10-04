@@ -9,7 +9,7 @@ export default function RegisterPage() {
     <div className="flex lg:flex-row flex-col items-center justify-center min-h-screen bg-gray-100 py-20">
       <div className="bg-white w-[900px] rounded-2xl shadow-lg overflow-hidden flex">
         {/* Left Image Section */}
-        <div className="w-1/2 bg-gradient-to-b from-blue-500 to-blue-700 flex flex-col items-center justify-center p-8 text-white relative">
+        <div className="w-1/2 bg-gradient-to-tl from-secondary to-primary flex flex-col items-center justify-center p-8 text-white relative">
           <h2 className="text-xl font-semibold mb-2">WELCOME TO</h2>
           <h1 className="text-3xl font-bold mb-6">SleepSync</h1>
 
