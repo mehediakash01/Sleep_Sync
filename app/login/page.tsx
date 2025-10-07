@@ -3,28 +3,61 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FaFacebookF, FaTwitter, FaGoogle } from "react-icons/fa";
+import { signIn } from "next-auth/react";
+import { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const [username, setUsername] = useState(""); // ✅ keep same naming
+  const [password, setPassword] = useState("");
+  const router = useRouter();
+
+  // ✅ FIX 1 — add correct type annotation for FormEvent
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // ✅ FIX 2 — call signIn correctly
+    const res = await signIn("credentials", {
+      redirect: false,
+      username,
+      password,
+    });
+
+    // ✅ FIX 3 — check for `res?.ok` safely
+    if (res?.ok) {
+      router.push("/dashboard");
+    } else {
+      alert("Invalid credentials");
+    }
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4 py-36">
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col lg:flex-row w-full max-w-5xl">
-        
+
         {/* Left Form Section */}
         <div className="w-full lg:w-1/2 p-8 sm:p-10 flex flex-col justify-center">
           <h2 className="text-2xl font-bold mb-6 text-center lg:text-left">SIGN IN</h2>
 
-          <form className="w-full">
+          {/* ✅ FIX 4 — pass handleSubmit *directly*, not as an arrow */}
+          <form onSubmit={handleSubmit} className="w-full">
             <div className="mb-4">
+              {/* ✅ FIX 5 — bind state and change handler */}
               <input
-                type="email"
-                placeholder="Email Address"
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div>
             <div className="mb-4">
+              {/* ✅ FIX 6 — bind password field */}
               <input
                 type="password"
                 placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div>
@@ -81,7 +114,7 @@ export default function LoginPage() {
           />
 
           <p className="mt-4 text-sm">
-            Don’t have an account yet?
+            Don’t have an account yet?{" "}
             <Link href="/register" className="underline font-semibold">
               Sign Up
             </Link>
