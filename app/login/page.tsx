@@ -12,18 +12,18 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  // ✅ FIX 1 — add correct type annotation for FormEvent
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // ✅ FIX 2 — call signIn correctly
+    
     const res = await signIn("credentials", {
       redirect: false,
       username,
       password,
     });
 
-    // ✅ FIX 3 — check for `res?.ok` safely
+ 
     if (res?.ok) {
       router.push("/dashboard");
     } else {
