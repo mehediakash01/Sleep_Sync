@@ -1,10 +1,53 @@
 "use client";
 
+import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { FaFacebookF, FaTwitter, FaGoogle } from "react-icons/fa";
+import toast from "react-hot-toast";
 
 export default function RegisterPage() {
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (form.password !== form.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    const toastId = toast.loading("Creating account...");
+
+    try {
+      const res = await axios.post("/api/register", {
+        name: form.name,
+        email: form.email,
+        password: form.password,
+      });
+
+      toast.success(res.data.message || "Account created successfully!", {
+        id: toastId,
+      });
+
+      setForm({ name: "", email: "", password: "", confirmPassword: "" });
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Request failed", {
+        id: toastId,
+      });
+    }
+  };
+
   return (
     <div className="flex lg:flex-row flex-col items-center justify-center min-h-screen bg-gray-100 py-20">
       <div className="bg-white w-[900px] rounded-2xl shadow-lg overflow-hidden flex">
@@ -34,39 +77,51 @@ export default function RegisterPage() {
         <div className="w-1/2 p-10 flex flex-col justify-center">
           <h2 className="text-2xl font-bold mb-6">CREATE ACCOUNT</h2>
 
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <input
+                name="name"
                 type="text"
                 placeholder="Full Name"
+                value={form.name}
+                onChange={handleChange}
                 className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div>
             <div className="mb-4">
               <input
+                name="email"
                 type="email"
                 placeholder="Email Address"
+                value={form.email}
+                onChange={handleChange}
                 className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div>
             <div className="mb-4">
               <input
+                name="password"
                 type="password"
                 placeholder="Password"
+                value={form.password}
+                onChange={handleChange}
                 className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div>
             <div className="mb-4">
               <input
+                name="confirmPassword"
                 type="password"
                 placeholder="Confirm Password"
+                value={form.confirmPassword}
+                onChange={handleChange}
                 className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition"
+              className="w-full py-3 rounded-lg text-white bg-black hover:bg-gray-800 transition"
             >
               REGISTER
             </button>
