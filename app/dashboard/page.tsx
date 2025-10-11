@@ -1,5 +1,7 @@
 "use client";
-import ChartCard from "@/components/ChartCard";
+
+import ChartCard from "@/Components/ChartCard";
+
 
 export default function DashboardPage() {
   const stats = [
