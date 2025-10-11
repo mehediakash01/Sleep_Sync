@@ -1,11 +1,20 @@
+"use client";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
 import React from "react";
 
 export const Navbar = () => {
+  const { data: session } = useSession();
+  const router = useRouter();
+  const handleAvatarClick = () => {
+    router.push("/dashboard");
+  };
   const navLinks = (
     <>
-      <ul className="flex gap-4">
+      <ul className="flex gap-8">
         <li>Home</li>
         <li>Streak</li>
         <li>Notification</li>
@@ -40,27 +49,37 @@ export const Navbar = () => {
             tabIndex={0}
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
           >
-          {
-            navLinks
-          }
+            {navLinks}
           </ul>
         </div>
-       <div className="flex items-center justify-center">
-        <Image src='/images/SleepSync.png' alt="sleepSync-logo" width={52} height={52}></Image>
-       <h1 className="text-2xl font-bold  ">SleepSync</h1>
+        <div className="flex items-center justify-center">
+          <Image
+            src="/images/SleepSync.png"
+            alt="sleepSync-logo"
+            width={52}
+            height={52}
+          ></Image>
+          <h1 className="text-2xl font-bold  ">SleepSync</h1>
+        </div>
+      </div>
+      <div className="navbar-center hidden lg:flex">{navLinks}</div>
 
-       </div>
-      </div>
-      <div className="navbar-center hidden lg:flex">
-           {
-            navLinks
-          }
-      </div>
       <div className="navbar-end">
-        <Link href="/login">   <button className='btn   bg-gradient-to-l from-secondary to-primary rounded-full'>
-        Login
-       </button></Link>
-    
+        {session?.user ? (
+          <button
+            onClick={handleAvatarClick}
+            className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-800 text-white font-semibold text-lg hover:bg-gray-700"
+          >
+            {session.user.email?.[0].toUpperCase()}
+          </button>
+        ) : (
+          <Link href="/login">
+            {" "}
+            <button className="btn   bg-gradient-to-l from-secondary to-primary rounded-full">
+              Login
+            </button>
+          </Link>
+        )}
       </div>
     </div>
   );
