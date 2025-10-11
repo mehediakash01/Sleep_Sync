@@ -1,6 +1,8 @@
 "use client";
-import Sidebar from "@/components/Sidebar";
-import Navbar from "@/components/Navbar";
+
+
+import DashNavbar from "@/Components/DashNavbar";
+import Sidebar from "@/Components/Sidebar";
 import { useState } from "react";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -13,7 +15,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Main Content */}
       <div className="flex flex-col flex-1">
-        <Navbar setIsOpen={setIsOpen} />
+        <DashNavbar setIsOpen={setIsOpen} />
         <main className="flex-1 p-6">{children}</main>
       </div>
     </div>
