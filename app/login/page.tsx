@@ -6,28 +6,37 @@ import { FaFacebookF, FaTwitter, FaGoogle } from "react-icons/fa";
 import { signIn } from "next-auth/react";
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
-  const [username, setUsername] = useState(""); // ✅ keep same naming
+  const [email, setEmail] = useState(""); 
   const [password, setPassword] = useState("");
   const router = useRouter();
-
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    
+    if (!email || !password) {
+      toast.error("Please enter both email and password");
+      return;
+    }
+
+    // Show loading toast
+    const toastId = toast.loading("Signing in...");
+
     const res = await signIn("credentials", {
       redirect: false,
-      username,
+      email,
       password,
     });
 
- 
+    toast.dismiss(toastId); 
+
     if (res?.ok) {
-      router.push("/dashboard");
+      toast.success("Login successful!");
+      router.push("/");
     } else {
-      alert("Invalid credentials");
+      toast.error(res?.error || "Invalid credentials");
     }
   };
 
@@ -39,20 +48,17 @@ export default function LoginPage() {
         <div className="w-full lg:w-1/2 p-8 sm:p-10 flex flex-col justify-center">
           <h2 className="text-2xl font-bold mb-6 text-center lg:text-left">SIGN IN</h2>
 
-          {/* ✅ FIX 4 — pass handleSubmit *directly*, not as an arrow */}
           <form onSubmit={handleSubmit} className="w-full">
             <div className="mb-4">
-              {/* ✅ FIX 5 — bind state and change handler */}
               <input
-                type="text"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div>
             <div className="mb-4">
-              {/* ✅ FIX 6 — bind password field */}
               <input
                 type="password"
                 placeholder="Password"
