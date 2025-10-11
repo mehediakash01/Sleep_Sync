@@ -1,43 +1,62 @@
 import NextAuth, { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
+import prisma from "@/prisma/prismaClient";
+
 
 export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "jsmith" },
+        email: { label: "Email", type: "email", placeholder: "akash@example.com" },
         password: { label: "Password", type: "password" },
       },
+
       async authorize(credentials) {
-        // ✅ Check if credentials exist
-        if (!credentials?.username || !credentials?.password) {
-          throw new Error("Missing credentials");
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Missing email or password");
         }
 
-        const { username, password } = credentials;
+     
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+        });
 
-        // ✅ Dummy user check (replace later with DB logic)
-        if (username === "akash" && password === "1234") {
-          return {
-            id: "1", // must be string
-            name: "Akash",
-            email: "akash@example.com",
-          };
+ 
+        if (!user) {
+          throw new Error("No user found with this email");
         }
 
-        // ❌ If no valid user found
-        return null;
+     
+        const isPasswordValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
+
+        if (!isPasswordValid) {
+          throw new Error("Invalid password");
+        }
+
+       
+        return {
+          id: user.id.toString(),
+          name: user.name,
+          email: user.email,
+        };
       },
     }),
   ],
+
   pages: {
-    signIn: "/login", // ✅ your custom login page
+    signIn: "/login", 
   },
+
   session: {
-    strategy: "jwt", // recommended for credentials provider
+    strategy: "jwt",
   },
-  secret: process.env.NEXTAUTH_SECRET, // add this to .env.local
+
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 const handler = NextAuth(authOptions);
