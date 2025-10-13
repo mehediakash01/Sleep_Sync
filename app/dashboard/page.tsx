@@ -15,7 +15,7 @@ export default function DashHome() {
   ];
 
   return (
-    <div className="space-y-6 grid grid-cols-2 ">
+    <div className="space-y-6 grid grid-cols-2 py-32">
     <Sidebar isOpen={isOpen} setIsOpen={setIsOpen}></Sidebar>
       <div>
         <h1 className="text-2xl font-bold">Good Evening, Akash 🌙</h1>
