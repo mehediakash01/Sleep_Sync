@@ -1,5 +1,6 @@
 "use client";
 import { Menu } from "lucide-react";
+import Image from "next/image";
 
 export default function DashNavbar({ setIsOpen }: { setIsOpen: (v: boolean) => void }) {
   return (
@@ -14,7 +15,7 @@ export default function DashNavbar({ setIsOpen }: { setIsOpen: (v: boolean) => v
       <h1 className="text-lg font-semibold text-gray-700">Dashboard</h1>
 
       <div className="flex items-center gap-3">
-        <img
+        <Image
           src="https://i.pravatar.cc/40"
           alt="User"
           className="w-9 h-9 rounded-full border"
