@@ -1,39 +1,28 @@
 "use client";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 
 const data = [
-  { day: "Mon", sleep: 7 },
-  { day: "Tue", sleep: 6.5 },
-  { day: "Wed", sleep: 8 },
-  { day: "Thu", sleep: 7.3 },
-  { day: "Fri", sleep: 6.8 },
-  { day: "Sat", sleep: 8.2 },
-  { day: "Sun", sleep: 7.5 },
+  { name: "Jan", sales: 400 },
+  { name: "Feb", sales: 300 },
+  { name: "Mar", sales: 600 },
+  { name: "Apr", sales: 500 },
+  { name: "May", sales: 700 },
+  { name: "Jun", sales: 800 },
 ];
 
 export default function ChartCard() {
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-      <h3 className="text-lg font-semibold mb-4">Weekly Sleep Duration</h3>
-      <div className="h-72">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="day" />
-            <YAxis />
-            <Tooltip />
-            <Line type="monotone" dataKey="sleep" stroke="#6366f1" strokeWidth={3} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+    <div className="bg-white p-6 rounded-2xl shadow">
+      <h2 className="text-lg font-semibold mb-4">Monthly Sales Overview</h2>
+      <ResponsiveContainer width="100%" height={300}>
+        <LineChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Line type="monotone" dataKey="sales" stroke="#2563eb" strokeWidth={3} />
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   );
 }
