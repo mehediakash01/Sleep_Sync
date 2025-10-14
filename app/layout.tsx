@@ -5,6 +5,7 @@ import { Navbar } from "@/Components/Navbar";
 import { Footer } from "@/Components/Footer";
 import { Toaster } from "react-hot-toast";
 import { ClientSessionProvider } from "@/ClientSessionProvider";
+import { LayoutWrapper } from "@/Components/LayoutWrapper";
 
 
 const geistSans = Geist({
@@ -34,12 +35,10 @@ export default function RootLayout({
       >
      
        
-        <ClientSessionProvider> 
-             <Navbar></Navbar>
-          {children}
-             <Toaster position="top-center" reverseOrder={false} />
-             <Footer></Footer>
-          </ClientSessionProvider>
+        <ClientSessionProvider>
+          <LayoutWrapper>{children}</LayoutWrapper>
+          <Toaster position="top-center" reverseOrder={false} />
+        </ClientSessionProvider>
       
      
       </body>
