@@ -1,6 +1,7 @@
 import Image from "next/image";
 import React from "react";
 import Container from "./Container";
+import { SleepTrackBtn } from "@/Action/SleepTrackBtn";
 
 export const Banner = () => {
   return (
@@ -16,9 +17,7 @@ export const Banner = () => {
             for deeper, healthier rest.
           </p>
 
-          <button className="btn   bg-gradient-to-l from-secondary to-primary rounded-full">
-           Start Tracking Sleep
-          </button>
+         <SleepTrackBtn></SleepTrackBtn>
         </div>
         <div className="lg:mt-6">
           <Image
