@@ -16,7 +16,7 @@ export const SuggestedPosts: React.FC<SuggestedPostsProps> = ({ currentId, blogs
   const suggested = blogs.filter((b) => b.id !== currentId).slice(0, 2);
 
   return (
-    <div>
+    <div className="py-20">
       <h2 className="text-2xl font-semibold mb-4">Suggested Posts</h2>
       {suggested.map((s) => (
         <div key={s.id} className="mb-6 p-4 border rounded-lg hover:shadow-lg transition">

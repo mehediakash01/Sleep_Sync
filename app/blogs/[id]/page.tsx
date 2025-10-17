@@ -29,7 +29,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ params }) => {
   };
 
   return (
-    <Container className="  grid lg:grid-cols-3 gap-8 py-12">
+    <Container className="  grid lg:grid-cols-3 gap-8 py-32">
       <div className="lg:col-span-2">
         <h1 className="text-4xl font-bold mb-4">{blog.title}</h1>
         <div className="flex items-center justify-between text-gray-500 mb-6">

@@ -19,7 +19,7 @@ export const blogs = [
     author: "Dr. Sarah Jones",
     postedDate: "2025-10-01",
     likeCount: 24,
-    image: "/images/blog/sleep-tips.jpg",
+    image: "/images/sleepTips.webp",
   },
   {
     id: 2,
@@ -29,7 +29,7 @@ export const blogs = [
     author: "John Doe",
     postedDate: "2025-10-05",
     likeCount: 15,
-    image: "/images/blog/dreams.jpg",
+    image: "/images/dreaming.jpeg",
   },
   {
     id: 3,
@@ -39,6 +39,6 @@ export const blogs = [
     author: "Dr. Emily Clark",
     postedDate: "2025-10-08",
     likeCount: 18,
-    image: "/images/blog/memory.jpg",
+    image: "/images/memory.jpg",
   },
 ];
