@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
-import { Blog } from "../types/blog";
+import { Blog } from "@/app/types/blog";
+
 
 interface BlogCardProps {
   blog: Blog;
