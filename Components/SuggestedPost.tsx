@@ -1,7 +1,10 @@
+
+"use client"
 import React from "react";
 
-import { useRouter } from "next/router";
+
 import { Blog } from "@/app/types/blog";
+import { useRouter } from "next/navigation";
 
 interface SuggestedPostsProps {
   currentId: number;

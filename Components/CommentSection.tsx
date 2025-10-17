@@ -1,5 +1,7 @@
+"use client"
+
 import { Comment } from "@/app/types/blog";
-import React, { useState } from "react";
+import  { useState } from "react";
 
 
 interface CommentSectionProps {

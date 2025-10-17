@@ -15,12 +15,13 @@ export const Navbar = () => {
   const navLinks = (
     <>
       <ul className="flex gap-8">
-        <li>Home</li>
+       <Link href={'/'}>Home</Link>
         <li>Streak</li>
         <li>Notification</li>
         <li>AI Coach</li>
         <Link href={'/about'}>About Us</Link>
-        <li>Blog</li>
+        <Link href={'/blogs'}>Blog</Link>
+      
       </ul>
     </>
   );
