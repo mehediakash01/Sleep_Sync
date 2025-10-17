@@ -19,7 +19,7 @@ export const Navbar = () => {
         <li>Streak</li>
         <li>Notification</li>
         <li>AI Coach</li>
-        <li>About Us</li>
+        <Link href={'/about'}>About Us</Link>
         <li>Blog</li>
       </ul>
     </>
