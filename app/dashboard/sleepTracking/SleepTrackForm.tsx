@@ -5,6 +5,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { BsClock } from "react-icons/bs";
 import { useState } from "react";
+import AiTipsSection from "../sleepImprove/AiTipsSection";
 type SleepFormData = {
   dateOfSession: string;
   timeInBed: string;
@@ -21,6 +22,7 @@ type SleepFormData = {
 };
 
 export const SleepTrackForm = () => {
+   
   const [sleepQuality, setSleepQuality] = useState(3);
   const { register, handleSubmit, reset } = useForm<SleepFormData>();
 
@@ -182,6 +184,7 @@ export const SleepTrackForm = () => {
         <button type="submit" className="btn btn-primary w-full text-lg">
           Log Sleep Session
         </button>
+        <AiTipsSection userId=""></AiTipsSection>
       </form>
     </div>
   );
