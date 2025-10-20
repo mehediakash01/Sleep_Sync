@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { BsClock } from "react-icons/bs";
 import { useState } from "react";
 import AiTipsSection from "../sleepImprove/AiTipsSection";
+import { useSession } from "next-auth/react";
 type SleepFormData = {
   dateOfSession: string;
   timeInBed: string;
@@ -22,7 +23,8 @@ type SleepFormData = {
 };
 
 export const SleepTrackForm = () => {
-   
+   const { data: session } = useSession();
+  const email = session?.user?.email || "";
   const [sleepQuality, setSleepQuality] = useState(3);
   const { register, handleSubmit, reset } = useForm<SleepFormData>();
 
@@ -184,7 +186,7 @@ export const SleepTrackForm = () => {
         <button type="submit" className="btn btn-primary w-full text-lg">
           Log Sleep Session
         </button>
-        <AiTipsSection userId=""></AiTipsSection>
+        <AiTipsSection email={email} />
       </form>
     </div>
   );

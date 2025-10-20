@@ -3,7 +3,7 @@
 import { useState } from "react";
 import axios from "axios";
 
-export default function AiTipsSection({ userId }: { userId: string }) {
+export default function AiTipsSection({ email }: { email: string }) {
   const [tips, setTips] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -11,7 +11,7 @@ export default function AiTipsSection({ userId }: { userId: string }) {
     setLoading(true);
     setTips(null);
     try {
-      const res = await axios.post("/api/aiTips", { userId });
+      const res = await axios.post("/api/aiTips", { email });
       setTips(res.data.tips);
     } catch (err) {
       console.error(err);
@@ -22,13 +22,13 @@ export default function AiTipsSection({ userId }: { userId: string }) {
   };
 
   return (
-    <div className="p-6 rounded-2xl shadow-lg bg-white">
+    <div className="p-6 ">
       <h2 className="text-xl font-semibold text-gray-800 mb-4">AI Sleep Tips</h2>
 
       <button
         onClick={handleGenerateTips}
         disabled={loading}
-        className="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:opacity-50"
+        className="px-4 py-2 bg-indigo-600 text-white rounded-xl w-full hover:bg-indigo-700 disabled:opacity-50"
       >
         {loading ? "Generating..." : "Generate Personalized Tips"}
       </button>

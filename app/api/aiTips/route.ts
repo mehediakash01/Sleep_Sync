@@ -4,14 +4,23 @@ import prisma from "@/prisma/prismaClient";
 
 export async function POST(req: Request) {
   try {
-    const { userId } = await req.json();
+   const { email } = await req.json();
 
-    
-    const logs = await prisma.sleepLog.findMany({
-      where: { userId },
-      orderBy: { dateOfSession: "desc" },
-      take: 7,
-    });
+const user = await prisma.user.findUnique({
+  where: { email },
+  select: { id: true },
+});
+
+if (!user) {
+  return NextResponse.json({ message: "User not found." }, { status: 404 });
+}
+
+const logs = await prisma.sleepLog.findMany({
+  where: { userId: user.id },
+  orderBy: { dateOfSession: "desc" },
+  take: 7,
+});
+
 
     if (!logs.length) {
       return NextResponse.json({ message: "No sleep logs found." }, { status: 404 });
