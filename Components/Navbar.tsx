@@ -17,7 +17,7 @@ export const Navbar = () => {
       <ul className="flex gap-8">
        <Link href={'/'}>Home</Link>
         <Link href={'/Streak'}>Streak</Link>
-        <li>Notification</li>
+        <Link href={'/notification'}>Notification</Link>
         <Link href={'/AiCoach'}>AI Coach</Link>
         <Link href={'/about'}>About Us</Link>
         <Link href={'/blogs'}>Blog</Link>
