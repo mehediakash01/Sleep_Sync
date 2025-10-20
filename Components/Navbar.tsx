@@ -18,7 +18,7 @@ export const Navbar = () => {
        <Link href={'/'}>Home</Link>
         <li>Streak</li>
         <li>Notification</li>
-        <li>AI Coach</li>
+        <Link href={'/AiCoach'}>AI Coach</Link>
         <Link href={'/about'}>About Us</Link>
         <Link href={'/blogs'}>Blog</Link>
       

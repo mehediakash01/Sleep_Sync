@@ -7,6 +7,7 @@ import { BsClock } from "react-icons/bs";
 import { useState } from "react";
 import AiTipsSection from "../sleepImprove/AiTipsSection";
 import { useSession } from "next-auth/react";
+
 type SleepFormData = {
   dateOfSession: string;
   timeInBed: string;
@@ -187,6 +188,7 @@ export const SleepTrackForm = () => {
           Log Sleep Session
         </button>
         <AiTipsSection email={email} />
+    
       </form>
     </div>
   );
