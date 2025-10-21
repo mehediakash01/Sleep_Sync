@@ -10,7 +10,7 @@ const menuItems = [
   { name: "Settings", icon: <Settings size={18} />, href: "/dashboard/settings" },
 ];
 
-export default function Sidebar({ closeSidebar }: { closeSidebar: () => void }) {
+export default function Sidebar() {
   return (
     <div className="flex flex-col h-full">
            <Link href={'/'}>
@@ -29,7 +29,7 @@ export default function Sidebar({ closeSidebar }: { closeSidebar: () => void }) 
           <Link
             key={item.name}
             href={item.href}
-            onClick={closeSidebar}
+            
             className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200"
           >
             {item.icon}

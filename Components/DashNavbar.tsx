@@ -2,10 +2,10 @@
 import { Menu } from "lucide-react";
 import Image from "next/image";
 
-export default function DashNavbar({ toggleSidebar }: { toggleSidebar: () => void }) {
+export default function DashNavbar() {
   return (
     <header className="flex items-center justify-between bg-white px-4 py-3 shadow-md">
-      <button className="lg:hidden" onClick={toggleSidebar}>
+      <button className="lg:hidden" >
         <Menu size={24} />
       </button>
       <h1 className="text-lg font-semibold">Dashboard Overview</h1>
