@@ -1,5 +1,5 @@
 "use client";
-import { Home, BarChart2, Settings, Users } from "lucide-react";
+import { Home, BarChart2, Settings, Users, Clock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -8,6 +8,8 @@ const menuItems = [
   { name: "SleepLog", icon: <Users size={18} />, href: "/dashboard/sleepTracking" },
   { name: "Reports", icon: <BarChart2 size={18} />, href: "/dashboard/reports" },
   { name: "Settings", icon: <Settings size={18} />, href: "/dashboard/settings" },
+  { name: "Sleep History", icon: <Clock size={18} />, href: "/dashboard/sleepHistory" },
+
 ];
 
 export default function Sidebar() {
