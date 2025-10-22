@@ -7,7 +7,8 @@ const menuItems = [
   { name: "Overview", icon: <Home size={18} />, href: "/dashboard" },
   { name: "SleepLog", icon: <Users size={18} />, href: "/dashboard/sleepTracking" },
   { name: "Reports", icon: <BarChart2 size={18} />, href: "/dashboard/reports" },
-  { name: "Settings", icon: <Settings size={18} />, href: "/dashboard/settings" },
+{ name: "Sleep Insights", icon: <BarChart2 size={18} />, href: "/dashboard/sleepInsights" },
+
   { name: "Sleep History", icon: <Clock size={18} />, href: "/dashboard/sleepHistory" },
 
 ];
