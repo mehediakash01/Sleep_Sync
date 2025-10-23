@@ -1,4 +1,4 @@
-import motion from "framer-motion"
+import {motion} from "framer-motion"
 import { Award } from "lucide-react";
 export default function StreakTrack({ streak }: { streak: number }) {
   return (
