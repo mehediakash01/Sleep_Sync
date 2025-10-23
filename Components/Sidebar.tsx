@@ -1,6 +1,6 @@
 "use client";
 import LoggedOutBtn from "@/Action/LoggedOutBtn";
-import { Home, BarChart2, Settings, Users, Clock } from "lucide-react";
+import { Home, BarChart2, Users, Clock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 

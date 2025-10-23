@@ -177,23 +177,16 @@ export default function SleepInsights() {
     fetchLogs();
   }, [session]);
 
-  if (!session) {
-    return (
-      <div className="p-6">
-        <p className="text-center mt-10 text-gray-500">
-          Please log in to view your sleep insights.
-        </p>
+ if (loading) return    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your sleep Insights...</p>
+        </div>
       </div>
-    );
-  }
+  if (!session) return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+        <p className="text-gray-600 text-lg">Please log in to view your sleepInsights.</p>
+      </div>
 
-  if (loading) {
-    return (
-      <div className="p-6">
-        <p className="text-center mt-10 text-gray-500">Loading insights...</p>
-      </div>
-    );
-  }
 
   if (data.length === 0) {
     return (

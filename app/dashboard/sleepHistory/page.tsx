@@ -26,8 +26,15 @@ export default function SleepLogHistory() {
     }
   }, [session]);
 
-  if (loading) return <p className="text-center mt-8">Loading...</p>;
-  if (!session) return <p className="text-center mt-8">Please log in to view logs.</p>;
+  if (loading) return    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your sleep Log...</p>
+        </div>
+      </div>
+  if (!session) return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+        <p className="text-gray-600 text-lg">Please log in to view your dashboard.</p>
+      </div>
 
   return (
     <div className="p-6">
