@@ -1,4 +1,5 @@
 "use client";
+import LoggedOutBtn from "@/Action/LoggedOutBtn";
 import { Home, BarChart2, Settings, Users, Clock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -6,7 +7,7 @@ import Link from "next/link";
 const menuItems = [
   { name: "Overview", icon: <Home size={18} />, href: "/dashboard" },
   { name: "SleepLog", icon: <Users size={18} />, href: "/dashboard/sleepTracking" },
-  { name: "Reports", icon: <BarChart2 size={18} />, href: "/dashboard/reports" },
+
 { name: "Sleep Insights", icon: <BarChart2 size={18} />, href: "/dashboard/sleepInsights" },
 
   { name: "Sleep History", icon: <Clock size={18} />, href: "/dashboard/sleepHistory" },
@@ -40,6 +41,9 @@ export default function Sidebar() {
           </Link>
         ))}
       </nav>
+        <div className="border-t pt-4">
+        <LoggedOutBtn/>
+      </div>
     </div>
   );
 }
