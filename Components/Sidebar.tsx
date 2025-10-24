@@ -16,7 +16,7 @@ const menuItems = [
 
 export default function Sidebar() {
   return (
-    <div className="flex flex-col h-full">
+    <div className="lg:flex flex-col h-full hidden">
            <Link href={'/'}>
              <div className="flex items-center justify-center">
                  <Image
