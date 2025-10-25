@@ -54,8 +54,8 @@ export default function SleepLogHistory() {
               </tr>
             </thead>
             <tbody>
-              {logs.map((log) => (
-                <tr key={log._id} className="border-b hover:bg-gray-50">
+              {logs.map((log,index) => (
+                <tr key={index} className="border-b hover:bg-gray-50">
                   <td className="p-3">{new Date(log.dateOfSession).toLocaleDateString()}</td>
                   <td className="p-3">{log.timeInBed}</td>
                   <td className="p-3">{log.wakeUpTime}</td>

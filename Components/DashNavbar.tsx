@@ -30,7 +30,7 @@ export default function DashNavbar() {
 
   return (
     <>
-      <header className="flex items-center justify-between bg-white px-4 py-3 shadow-md sticky top-0 z-40">
+      <header className="flex lg:hidden items-center justify-between bg-white px-4 py-3 shadow-md sticky top-0 z-40">
         <button
           onClick={handleToggle}
           className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -93,7 +93,7 @@ export default function DashNavbar() {
               </div>
 
               {/* User Info */}
-              <div className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-gray-200">
+              {/* <div className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-gray-200">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-lg">
                     A
@@ -103,14 +103,14 @@ export default function DashNavbar() {
                     <p className="text-sm text-gray-600">akash@example.com</p>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               {/* Navigation Menu */}
               <nav className="flex-1 overflow-y-auto p-4">
                 <ul className="space-y-2">
                   {menuItems.map((item, index) => (
                     <motion.li
-                      key={item.label}
+                      key={index}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.1 }}
@@ -120,9 +120,9 @@ export default function DashNavbar() {
                         onClick={handleClose}
                         className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-indigo-50 hover:text-indigo-600 transition-colors group"
                       >
-                        <item.icon className="w-5 h-5 text-gray-600 group-hover:text-indigo-600" />
+                        <span className="w-5 h-5 text-gray-600 group-hover:text-indigo-600" >{item.icon} </span>
                         <span className="font-medium text-gray-700 group-hover:text-indigo-600">
-                          {item.label}
+                          {item.name}
                         </span>
                       </Link>
                     </motion.li>
