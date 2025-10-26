@@ -1,6 +1,7 @@
-import { FaRobot } from "react-icons/fa";
+
 import Image from "next/image";
 import Container from "./Container";
+import { AskAiBtn } from "@/Action/AskAiBtn";
 
 const AiSleepCoach = () => {
   return (
@@ -14,10 +15,7 @@ const AiSleepCoach = () => {
           Get personalized insights and actionable tips to improve your sleep schedule. 
           Our AI coach learns from your habits and guides you toward better rest, one night at a time.
         </p>
-        <button className="px-6 py-3 text-black bg-gradient-to-l from-secondary to-primary rounded-full hover:scale-105 transition">
-          <FaRobot className="inline-block mr-2" />
-          Ask AI
-        </button>
+        <AskAiBtn/>
       </div>
 
       {/* Right Image */}
