@@ -43,7 +43,7 @@ export const blogs = [
     author: "Dr. Michael Chen",
     postedDate: "2025-10-12",
     likeCount: 156,
-    image: "/images/sleep-cycles.jpg",
+    image: "/images/sleepCycle.webp",
     category: "Sleep Science",
     readTime: "8 min read"
   },
@@ -55,7 +55,7 @@ export const blogs = [
     author: "Dr. Lisa Martinez",
     postedDate: "2025-10-15",
     likeCount: 203,
-    image: "/images/blue-light.jpg",
+    image: "/images/blueLights.jpg",
     category: "Sleep Health",
     readTime: "7 min read"
   },
@@ -67,7 +67,7 @@ export const blogs = [
     author: "Dr. Robert Thompson",
     postedDate: "2025-10-18",
     likeCount: 178,
-    image: "/images/mental-health-sleep.jpg",
+    image: "/images/mentalHealth.jpeg",
     category: "Sleep Health",
     readTime: "9 min read"
   },
@@ -79,7 +79,7 @@ export const blogs = [
     author: "Dr. Amanda Foster",
     postedDate: "2025-10-22",
     likeCount: 145,
-    image: "/images/napping.jpg",
+    image: "/images/napping.webp",
     category: "Sleep Tips",
     readTime: "8 min read"
   }
