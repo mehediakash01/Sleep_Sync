@@ -2,43 +2,85 @@ export const blogs = [
   {
     id: 1,
     title: "10 Tips for Better Sleep",
-    excerpt: "Discover simple habits that can dramatically improve your sleep quality...",
-    content: `Sleep is essential for health. Here are 10 tips to improve your sleep: 
-
-1. Maintain a consistent sleep schedule.
-2. Avoid caffeine late in the day.
-3. Create a relaxing bedtime routine.
-4. Make your bedroom comfortable.
-5. Limit screen time before bed.
-6. Exercise regularly.
-7. Watch what you eat before sleep.
-8. Manage stress.
-9. Try meditation.
-10. Seek professional help if needed.
-`,
+    excerpt: "Discover simple habits that can dramatically improve your sleep quality and wake up feeling refreshed every morning.",
+    content: "Sleep is essential for health. Here are 10 tips to improve your sleep:\n\n1. **Maintain a consistent sleep schedule**: Go to bed and wake up at the same time every day, even on weekends. This helps regulate your body's internal clock and makes it easier to fall asleep and wake up naturally.\n\n2. **Avoid caffeine late in the day**: Caffeine can stay in your system for 6-8 hours. Try to avoid coffee, tea, or energy drinks after 2 PM to ensure they don't interfere with your sleep.\n\n3. **Create a relaxing bedtime routine**: Wind down with calming activities like reading, gentle stretching, or listening to soothing music. This signals to your body that it's time to sleep.\n\n4. **Make your bedroom comfortable**: Keep your room cool (60-67°F is ideal), dark, and quiet. Invest in comfortable bedding and consider blackout curtains or a white noise machine.\n\n5. **Limit screen time before bed**: Blue light from phones, tablets, and computers can suppress melatonin production. Try to avoid screens at least 1 hour before bedtime.\n\n6. **Exercise regularly**: Regular physical activity can help you fall asleep faster and enjoy deeper sleep. However, avoid vigorous exercise close to bedtime.\n\n7. **Watch what you eat before sleep**: Avoid large meals, spicy foods, and excessive liquids close to bedtime. A light snack is fine if you're hungry.\n\n8. **Manage stress**: Practice relaxation techniques like deep breathing, progressive muscle relaxation, or journaling to clear your mind before bed.\n\n9. **Try meditation**: Mindfulness meditation and guided sleep meditations can calm racing thoughts and prepare your mind for restful sleep.\n\n10. **Seek professional help if needed**: If you consistently struggle with sleep despite trying these tips, consult a healthcare provider. You may have a sleep disorder that requires treatment.\n\nRemember, improving sleep is a journey. Start with one or two tips and gradually incorporate more into your routine for lasting results.",
     author: "Dr. Sarah Jones",
     postedDate: "2025-10-01",
-    likeCount: 24,
+    likeCount: 124,
     image: "/images/sleepTips.webp",
+    category: "Sleep Health",
+    readTime: "5 min read"
   },
   {
     id: 2,
     title: "The Science of Dreams",
-    excerpt: "Ever wondered why we dream and what it means? Let’s explore the science...",
-    content: `Dreams are fascinating. They reflect our subconscious and can reveal emotions, memories, and even problem-solving processes. Understanding your dreams can improve self-awareness and emotional health.`,
+    excerpt: "Ever wondered why we dream and what it means? Let's explore the fascinating science behind our nightly visions.",
+    content: "Dreams have fascinated humanity for centuries. They're not just random images—they're a window into our subconscious mind and play crucial roles in our mental and emotional health.\n\n**What Are Dreams?**\n\nDreams occur primarily during REM (Rapid Eye Movement) sleep, a stage where brain activity is high and resembles waking states. During REM sleep, your brain processes emotions, consolidates memories, and may even solve problems creatively.\n\n**Why Do We Dream?**\n\nScientists propose several theories:\n\n- **Memory Consolidation**: Dreams help transfer information from short-term to long-term memory, strengthening important neural connections.\n- **Emotional Processing**: Dreams allow us to process and regulate emotions from daily experiences in a safe environment.\n- **Threat Simulation**: Some researchers believe dreams evolved as a way to rehearse threatening situations, preparing us for real-world challenges.\n- **Creative Problem-Solving**: Many creative breakthroughs happen in dreams when the logical brain relaxes and allows unusual connections to form.\n\n**Types of Dreams**\n\n- **Lucid Dreams**: When you're aware you're dreaming and can sometimes control the dream narrative.\n- **Nightmares**: Distressing dreams often linked to stress, trauma, or anxiety.\n- **Recurring Dreams**: Dreams with repeated themes may indicate unresolved issues or concerns.\n- **Prophetic Dreams**: While scientifically unexplained, some people report dreams that seem to predict future events.\n\n**What Do Dreams Mean?**\n\nWhile Freud believed dreams revealed hidden desires, modern neuroscience suggests they reflect our daily concerns, emotions, and experiences. Keeping a dream journal can help you identify patterns and gain insights into your emotional state.\n\nDreams are your brain's way of maintaining mental health—embrace them as a natural and beneficial part of sleep!",
     author: "John Doe",
     postedDate: "2025-10-05",
-    likeCount: 15,
+    likeCount: 98,
     image: "/images/dreaming.jpeg",
+    category: "Sleep Science",
+    readTime: "6 min read"
   },
   {
     id: 3,
     title: "How Sleep Affects Memory",
-    excerpt: "Memory consolidation happens during sleep. Learn how to enhance your memory through sleep habits...",
-    content: `Sleep plays a crucial role in memory. During deep sleep, the brain consolidates information from the day, strengthens neural connections, and prepares you for learning the next day.`,
+    excerpt: "Memory consolidation happens during sleep. Learn how to enhance your memory and learning through better sleep habits.",
+    content: "Sleep isn't just rest—it's when your brain does some of its most important work: consolidating memories and preparing you to learn new information.\n\n**The Sleep-Memory Connection**\n\nDuring sleep, especially during deep sleep and REM stages, your brain:\n\n1. **Consolidates Memories**: Transfers information from temporary storage (hippocampus) to long-term storage (cortex), making memories more permanent.\n\n2. **Strengthens Neural Pathways**: Repeated activation of neural connections during sleep makes memories stronger and easier to recall.\n\n3. **Prunes Unnecessary Information**: Your brain filters out irrelevant details, keeping what's important and discarding the rest.\n\n4. **Integrates New Information**: Connects new memories with existing knowledge, creating a richer understanding.\n\n**Types of Memory Affected by Sleep**\n\n- **Declarative Memory** (facts and events): Benefits most from slow-wave sleep (deep sleep).\n- **Procedural Memory** (skills and habits): Enhanced during REM sleep—think learning to play an instrument or ride a bike.\n- **Emotional Memory**: Sleep helps regulate emotional responses to memories, reducing their emotional intensity over time.\n\n**How to Optimize Sleep for Memory**\n\n- **Get 7-9 Hours**: Consistent, adequate sleep is crucial for all memory processes.\n- **Don't Skip Naps**: Even a 20-minute nap can boost memory consolidation.\n- **Review Before Sleep**: Studying or practicing before bed can enhance memory retention as your brain processes the information overnight.\n- **Avoid Sleep Deprivation**: Just one night of poor sleep can impair memory formation by up to 40%.\n- **Maintain Sleep Schedule**: Irregular sleep patterns disrupt memory consolidation cycles.\n\n**The Bottom Line**\n\nIf you want to remember more, learn faster, and perform better mentally, prioritize sleep. It's not wasted time—it's when your brain transforms experiences into lasting knowledge.",
     author: "Dr. Emily Clark",
     postedDate: "2025-10-08",
-    likeCount: 18,
+    likeCount: 87,
     image: "/images/memory.jpg",
+    category: "Sleep Science",
+    readTime: "7 min read"
   },
+  {
+    id: 4,
+    title: "Understanding Sleep Cycles",
+    excerpt: "Dive deep into the four stages of sleep and discover why each cycle is crucial for your health and wellbeing.",
+    content: "Understanding your sleep cycles can help you optimize your rest and wake up feeling more refreshed.\n\n**The Four Stages of Sleep**\n\n**Stage 1 (Light Sleep)**: This is the transition phase between wakefulness and sleep, lasting 5-10 minutes. Your muscles relax, heart rate slows, and you can be easily awakened.\n\n**Stage 2 (Light Sleep)**: Your body temperature drops, eye movements stop, and brain waves slow down with occasional bursts called sleep spindles. This stage accounts for about 50% of your total sleep time.\n\n**Stage 3 (Deep Sleep)**: Also called slow-wave sleep, this is the most restorative stage. Your body repairs tissues, builds muscle, strengthens the immune system, and consolidates memories. It's hardest to wake someone during this stage.\n\n**REM Sleep (Dream Sleep)**: Occurs about 90 minutes after falling asleep. Your brain becomes more active, eyes move rapidly, and most vivid dreaming occurs. REM sleep is crucial for learning, memory, and emotional regulation.\n\n**A Complete Sleep Cycle**\n\nA full sleep cycle lasts about 90 minutes and repeats 4-6 times per night. Early cycles have more deep sleep, while later cycles have more REM sleep.\n\n**Why Cycles Matter**\n\nWaking up mid-cycle, especially during deep sleep, causes grogginess (sleep inertia). Try to time your alarm for the end of a 90-minute cycle. For example, if you go to bed at 11 PM, set your alarm for 6:30 AM (7.5 hours = 5 complete cycles) rather than 7 AM.\n\n**Tips for Better Cycles**\n\n- Avoid alcohol before bed—it disrupts REM sleep\n- Keep your bedroom cool to promote deep sleep\n- Maintain consistent sleep and wake times\n- Avoid heavy meals 3 hours before bedtime\n- Use sleep tracking apps to understand your personal patterns\n\nRespecting your natural sleep cycles is one of the most effective ways to improve sleep quality without changing how long you sleep.",
+    author: "Dr. Michael Chen",
+    postedDate: "2025-10-12",
+    likeCount: 156,
+    image: "/images/sleep-cycles.jpg",
+    category: "Sleep Science",
+    readTime: "8 min read"
+  },
+  {
+    id: 5,
+    title: "The Impact of Blue Light on Sleep",
+    excerpt: "How your smartphone and devices are sabotaging your sleep, and what you can do to protect your circadian rhythm.",
+    content: "In our digital age, blue light exposure has become one of the biggest threats to healthy sleep patterns. Here's what you need to know.\n\n**What is Blue Light?**\n\nBlue light is a high-energy visible light with a wavelength between 400-495 nanometers. While sunlight is the main source, electronic devices like smartphones, tablets, computers, and LED lights emit significant amounts.\n\n**How Blue Light Affects Sleep**\n\nBlue light suppresses melatonin production more than any other wavelength. Melatonin is the hormone that signals your body it's time to sleep. Even 2 hours of blue light exposure before bed can:\n\n- Delay sleep onset by 30-60 minutes\n- Reduce total sleep time\n- Decrease REM sleep quality\n- Shift your circadian rhythm later\n- Make you feel less refreshed in the morning\n\n**The Science Behind It**\n\nYour eyes contain special cells called intrinsically photosensitive retinal ganglion cells (ipRGCs) that are particularly sensitive to blue light. These cells send signals to your brain's master clock (suprachiasmatic nucleus), telling it whether it's day or night.\n\n**Practical Solutions**\n\n1. **Use Night Mode**: Enable blue light filters on all devices after sunset. Most smartphones have 'Night Shift' or 'Night Mode' features.\n\n2. **Blue Light Glasses**: Wear amber-tinted glasses that block blue light 2-3 hours before bed.\n\n3. **Screen Curfew**: Establish a 'no screens' rule 1 hour before bedtime. Read a physical book instead.\n\n4. **Dim Your Lights**: Use warm, dim lighting in the evening. Consider smart bulbs that automatically adjust color temperature.\n\n5. **Morning Light Exposure**: Get bright light (preferably sunlight) in the morning to reinforce healthy circadian rhythms.\n\n6. **Use Dark Mode**: Many apps now offer dark mode, which reduces overall light emission.\n\n**Not All Blue Light is Bad**\n\nDuring the day, blue light helps you stay alert, improves mood, and enhances cognitive performance. The problem is evening exposure.\n\n**Special Considerations**\n\n- Children and teens are more sensitive to blue light's effects\n- Night shift workers need special strategies to manage blue light exposure\n- People with insomnia should be especially careful about evening screen time\n\nBy managing your blue light exposure, you can significantly improve your sleep quality and overall health. Your screens can wait—your sleep can't.",
+    author: "Dr. Lisa Martinez",
+    postedDate: "2025-10-15",
+    likeCount: 203,
+    image: "/images/blue-light.jpg",
+    category: "Sleep Health",
+    readTime: "7 min read"
+  },
+  {
+    id: 6,
+    title: "Sleep and Mental Health",
+    excerpt: "The bidirectional relationship between sleep and mental health, and how improving one can dramatically help the other.",
+    content: "Sleep and mental health are intimately connected. Poor sleep can worsen mental health conditions, while mental health issues can make it harder to sleep. Understanding this relationship is key to breaking the cycle.\n\n**The Sleep-Mental Health Connection**\n\n**Depression and Sleep**: Up to 90% of people with depression experience sleep problems. Insomnia can be both a symptom and a cause of depression. Studies show that treating insomnia can reduce depression symptoms by 50% in some cases.\n\n**Anxiety and Sleep**: Anxiety can make it difficult to fall asleep as your mind races with worries. Conversely, sleep deprivation increases activity in the amygdala (fear center) and decreases prefrontal cortex regulation, making you more anxious.\n\n**PTSD and Sleep**: Trauma survivors often experience nightmares, hypervigilance, and fragmented sleep, which can worsen PTSD symptoms and delay recovery.\n\n**Bipolar Disorder**: Sleep disruption can trigger manic or depressive episodes. Maintaining a regular sleep schedule is crucial for mood stability.\n\n**How Poor Sleep Affects Mental Health**\n\n- **Emotional Regulation**: Sleep deprivation impairs your ability to process and regulate emotions, making you more reactive and irritable.\n- **Stress Response**: Lack of sleep increases cortisol levels, heightening your stress response.\n- **Negative Thinking**: Sleep loss amplifies negative emotions and reduces positive ones, creating a pessimistic outlook.\n- **Decision Making**: Poor sleep impairs judgment and increases impulsive behavior.\n\n**Breaking the Cycle**\n\n**1. Cognitive Behavioral Therapy for Insomnia (CBT-I)**: This evidence-based treatment is often more effective than medication for chronic insomnia.\n\n**2. Sleep Hygiene**: Basic sleep hygiene is crucial—regular schedule, comfortable environment, no caffeine/alcohol before bed.\n\n**3. Mindfulness and Meditation**: These practices reduce rumination and anxiety that interfere with sleep.\n\n**4. Exercise**: Regular physical activity improves both sleep and mood, but avoid vigorous exercise close to bedtime.\n\n**5. Light Therapy**: Morning bright light exposure can help regulate circadian rhythms and improve mood.\n\n**6. Professional Help**: If you're struggling with both sleep and mental health, consult a healthcare provider. Sometimes medication or therapy is necessary.\n\n**Sleep as Mental Health Treatment**\n\nEmerging research shows that improving sleep can be a powerful intervention for mental health:\n\n- Better sleep reduces suicide risk\n- Quality sleep enhances therapy outcomes\n- Adequate rest improves medication effectiveness\n- Good sleep supports long-term recovery\n\n**The Bottom Line**\n\nDon't dismiss sleep problems as just a symptom. Prioritizing sleep is one of the most effective things you can do for your mental health. If you're experiencing persistent sleep issues or mental health concerns, seek professional help—you don't have to struggle alone.\n\nRemember: Sleep is not a luxury, it's a necessity for mental wellness.",
+    author: "Dr. Robert Thompson",
+    postedDate: "2025-10-18",
+    likeCount: 178,
+    image: "/images/mental-health-sleep.jpg",
+    category: "Sleep Health",
+    readTime: "9 min read"
+  },
+  {
+    id: 7,
+    title: "Napping: The Good, The Bad, and The Optimal",
+    excerpt: "Everything you need to know about naps—from power naps to avoiding sleep inertia and improving productivity.",
+    content: "Napping can be a powerful tool for boosting energy, improving mood, and enhancing performance—when done correctly. Here's your complete guide to strategic napping.\n\n**The Benefits of Napping**\n\n- **Improved Alertness**: A short nap can increase alertness for several hours\n- **Better Memory**: Naps enhance memory consolidation and learning\n- **Enhanced Creativity**: REM naps can boost creative problem-solving\n- **Mood Boost**: Napping reduces stress and improves emotional regulation\n- **Performance**: Studies show naps improve reaction time and accuracy\n- **Heart Health**: Regular napping is associated with reduced cardiovascular disease risk\n\n**Types of Naps**\n\n**Power Nap (10-20 minutes)**: The gold standard for most people. You stay in light sleep (Stage 1-2), wake up refreshed without grogginess, and get an immediate energy boost.\n\n**Short Nap (30 minutes)**: Can cause sleep inertia (grogginess) because you might enter deep sleep but not complete it. Generally not recommended.\n\n**Long Nap (60 minutes)**: Includes deep sleep, great for memory and cognitive processing, but expect 20-30 minutes of grogginess upon waking.\n\n**Full Cycle Nap (90 minutes)**: A complete sleep cycle including REM sleep. Benefits creativity and procedural memory without sleep inertia since you wake at the end of a cycle.\n\n**Optimal Napping Strategy**\n\n**Best Time**: Early afternoon (1-3 PM) aligns with your natural circadian dip and won't interfere with nighttime sleep.\n\n**Duration**: For most people, 10-20 minutes is ideal. Set an alarm!\n\n**Environment**: Dark, quiet, and cool. Use an eye mask and earplugs if needed.\n\n**Caffeine Nap**: Drink coffee right before a 20-minute nap. The caffeine kicks in as you wake up, providing a double boost of energy.\n\n**When Napping Can Be Problematic**\n\n- **Insomnia**: If you have trouble sleeping at night, napping can make it worse\n- **Late Afternoon/Evening**: Naps after 3 PM can interfere with nighttime sleep\n- **Too Long**: Naps over 30 minutes (except 90-minute full cycles) cause grogginess\n- **Sleep Disorders**: People with sleep apnea or narcolepsy should consult a doctor about napping\n\n**Napping in Different Life Stages**\n\n**Students**: Short naps after studying boost memory retention\n**Athletes**: 20-minute naps improve physical performance and recovery\n**Shift Workers**: Strategic napping can help manage irregular schedules\n**Older Adults**: Napping becomes more common with age but should be monitored\n**Parents**: Power naps can help cope with nighttime disruptions\n\n**Cultural Perspectives**\n\nMany cultures embrace napping:\n- Spain's siesta tradition\n- Japan's inemuri (public napping)\n- China's wu shui (post-lunch rest)\n\nSome companies now provide nap rooms, recognizing the productivity benefits.\n\n**Tips for Napping Success**\n\n1. Don't feel guilty—napping is scientifically validated\n2. Find your optimal nap duration through experimentation\n3. Keep naps consistent if possible\n4. Use sleep sounds or white noise if needed\n5. Don't replace nighttime sleep with naps\n\n**The Bottom Line**\n\nA well-timed, properly-dured nap is not a sign of laziness—it's a performance enhancer. Listen to your body, experiment with different nap lengths, and find what works for you. Just remember: naps are supplements to, not replacements for, good nighttime sleep.",
+    author: "Dr. Amanda Foster",
+    postedDate: "2025-10-22",
+    likeCount: 145,
+    image: "/images/napping.jpg",
+    category: "Sleep Tips",
+    readTime: "8 min read"
+  }
 ];
