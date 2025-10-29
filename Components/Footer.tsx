@@ -4,7 +4,7 @@ import React from 'react'
 
 export const Footer = () => {
   return (
-    <footer className="footer footer-horizontal footer-center bg-gradient-to-tl from-secondary to-primary mt-20 text-primary-content p-10">
+    <footer className="footer footer-horizontal footer-center bg-gradient-to-tl from-secondary to-primary  text-primary-content p-10">
   <aside>
    <Image src='/images/SleepSync.png' alt="sleepSync-logo" width={52} height={52}></Image>
     <p className="font-bold">
