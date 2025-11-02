@@ -1,7 +1,13 @@
+"use client";
 import { FaRegClock, FaChartLine, FaFireAlt, FaRobot } from "react-icons/fa";
 import Container from "./Container";
+import { useRef } from "react";
+import { useInView, motion } from "framer-motion";
 
 const Features = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: false, margin: "-100px" });
+
   const features = [
     {
       icon: <FaRegClock className="text-4xl text-secondary" />,
@@ -26,11 +32,23 @@ const Features = () => {
   ];
 
   return (
-    <Container >
-      <h2 className="text-4xl  font-bold text-center mb-12">
+    <Container>
+      <motion.h2
+        ref={ref}
+        initial={{ opacity: 0, y: 80 }} // start below & invisible
+        animate={isInView ? { opacity: 1, y: 0 } : {}} // animate when in view
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="text-4xl  font-bold text-center mb-12"
+      >
         Features <span className="">& How It Works</span>
-      </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      </motion.h2>
+      <motion.div
+        ref={ref}
+        initial={{ opacity: 0, y: 80 }} // start below & invisible
+        animate={isInView ? { opacity: 1, y: 0 } : {}} // animate when in view
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+      >
         {features.map((feature, idx) => (
           <div
             key={idx}
@@ -41,7 +59,7 @@ const Features = () => {
             <p className="text-gray-600 text-sm">{feature.desc}</p>
           </div>
         ))}
-      </div>
+      </motion.div>
     </Container>
   );
 };
