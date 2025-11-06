@@ -7,7 +7,7 @@ const AiSleepCoach = () => {
   return (
     <Container className=" grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
       {/* Left Content */}
-      <motion.div  initial={{ opacity: 0, x: -50 }}
+      <motion.div  initial={{ opacity: 0, x: -200 }}
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: false, amount: 0.3 }}
         transition={{ duration: 0.6, ease: "easeOut" }} className="text-center lg:text-left">
@@ -22,7 +22,9 @@ const AiSleepCoach = () => {
       </motion.div>
 
       {/* Right Image */}
-      <div className="flex justify-center lg:justify-end">
+      <motion.div  whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: false, amount: 0.3 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}  className="flex justify-center lg:justify-end">
         <Image
           src="/images/Ai.png"
           alt="AI Sleep Coach"
@@ -30,7 +32,7 @@ const AiSleepCoach = () => {
           height={400}
           className="drop-shadow-2xl rounded-xl"
         />
-      </div>
+      </motion.div>
     </Container>
   );
 };
