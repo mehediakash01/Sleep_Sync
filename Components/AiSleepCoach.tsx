@@ -22,7 +22,9 @@ const AiSleepCoach = () => {
       </motion.div>
 
       {/* Right Image */}
-      <motion.div  whileInView={{ opacity: 1, x: 0 }}
+      <motion.div 
+       initial={{ opacity: 0, x: 200 }}
+       whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: false, amount: 0.3 }}
         transition={{ duration: 0.6, ease: "easeOut" }}  className="flex justify-center lg:justify-end">
         <Image
