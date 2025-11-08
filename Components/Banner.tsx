@@ -9,9 +9,9 @@ export const Banner = () => {
     <Container className="pt-16">
       <section className="flex flex-col lg:flex-row justify-between items-center  ">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0, x: -200 }}
+         whileInView={{opacity:1,x:0}}
+          transition={{ duration: 0.6 , ease:"easeInOut"}}
           className="space-y-8"
         >
           <h1 className=" font-bold text-2xl lg:text-6xl">
@@ -24,7 +24,9 @@ export const Banner = () => {
 
           <SleepTrackBtn></SleepTrackBtn>
         </motion.div>
-        <motion.div initial={{opacity:0,x:20}} animate={{opacity:1,x:-50}} transition={{duration:0.6}} className="lg:mt-6">
+        <motion.div initial={{ opacity: 0, x: 200 }}
+         whileInView={{opacity:1,x:0}}
+          transition={{ duration: 0.6 , ease:"easeInOut"}} className="lg:mt-6">
           <Image
             src="/images/heroBg.png"
             alt="girl sleeping in bed"
