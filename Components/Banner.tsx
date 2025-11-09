@@ -10,6 +10,7 @@ export const Banner = () => {
       <section className="flex flex-col lg:flex-row justify-between items-center  ">
         <motion.div
           initial={{ opacity: 0, x: -200 }}
+            viewport={{ once: false, amount: 0.3 }}
          whileInView={{opacity:1,x:0}}
           transition={{ duration: 0.6 , ease:"easeInOut"}}
           className="space-y-8"
@@ -25,6 +26,7 @@ export const Banner = () => {
           <SleepTrackBtn></SleepTrackBtn>
         </motion.div>
         <motion.div initial={{ opacity: 0, x: 200 }}
+          viewport={{ once: false, amount: 0.3 }}
          whileInView={{opacity:1,x:0}}
           transition={{ duration: 0.6 , ease:"easeInOut"}} className="lg:mt-6">
           <Image
