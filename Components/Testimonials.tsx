@@ -1,7 +1,8 @@
+"use client"
 import { FaStar } from "react-icons/fa";
 import Image from "next/image";
 import Container from "./Container";
-
+import {motion} from "framer-motion"
 const Testimonials = () => {
   const testimonials = [
     {
@@ -22,15 +23,24 @@ const Testimonials = () => {
   ];
 
   return (
-    <Container className="  text-white ">
+    <Container className="  text-black ">
       <h2 className="text-4xl font-bold text-center mb-12">
         Sleep Stories from Our Users
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {testimonials.map((t, index) => (
-          <div
-            key={index}
+          <motion.div
+             key={index}
+         initial={{ opacity: 0, x: -250 }} // start faded and down
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.6,
+              delay: index * 0.2, // delay each card a bit
+              ease: "easeOut",
+            }}
+            viewport={{ once: false, amount: 0.3 }}
+         
             className="p-6 bg-white text-gray-800 rounded-2xl shadow-md hover:shadow-lg transition text-center"
           >
             <Image
@@ -50,9 +60,9 @@ const Testimonials = () => {
             </div>
 
             <p className="text-sm text-gray-600 italic">“{t.quote}”</p>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </Container>
   );
 };
