@@ -22,34 +22,28 @@ const Streaks = () => {
       </motion.div>
 
       {/* Streak Stat */}
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: false, amount: 0.3 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+      <div
+        
         className="flex flex-col items-center mb-12"
       >
         <FaFireAlt className="text-6xl text-orange-400 animate-pulse mb-4" />
         <h3 className="text-2xl font-semibold">
-          {" "}
+    
           You completed 25 nights in a row!
         </h3>
 
         {/* Progress Bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.3 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+        <div
+         
           className="w-full max-w-lg bg-gray-200 rounded-full h-4 mt-6"
         >
           <div
             className="bg-orange-400 h-4 rounded-full"
             style={{ width: "75%" }}
           ></div>
-        </motion.div>
+        </div>
         <p className="mt-2 text-sm text-gray-600">75% to your next milestone</p>
-      </motion.div>
+      </div>
 
       {/* Achievement Badges */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mt-12 p-6">

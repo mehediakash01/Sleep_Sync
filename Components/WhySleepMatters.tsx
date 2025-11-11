@@ -1,21 +1,20 @@
 "use client";
-import React, { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import React from "react";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import Container from "./Container";
 
 export const WhySleepMatters = () => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: false, margin: "-100px" }); 
+ 
   
 
   return (
     <Container>
       <motion.div
-        ref={ref}
-        initial={{ opacity: 0, y: 80 }} // start below & invisible
-        animate={isInView ? { opacity: 1, y: 0 } : {}} // animate when in view
-        transition={{ duration: 0.8, ease: "easeOut" }}
+      initial={{opacity:0,x:-200}}
+      whileInView={{opacity:1,x:0}}
+      viewport={{once:false,amount:0.3}}
+      transition={{duration:0.6,ease:"easeInOut"}}
         className="flex flex-col lg:flex-row justify-between items-center"
       >
         <div className="space-y-8">
@@ -62,9 +61,10 @@ export const WhySleepMatters = () => {
         </div>
 
         <motion.div
-          initial={{ opacity: 0, x: 50 }}
-          animate={isInView ? { opacity: 1, x: 0 } : {}}
-          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+         initial={{opacity:0, x: 400}}
+      whileInView={{opacity:1,x:0}}
+      viewport={{once:false,amount:0.3}}
+      transition={{duration:0.8,ease:"easeInOut"}}
         >
           <Image
             src="/images/brainHeart.png"
