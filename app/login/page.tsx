@@ -76,7 +76,7 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition"
+              className="btn w-full  bg-gradient-to-l from-secondary to-primary rounded-full"
             >
               LOGIN
             </button>
@@ -106,7 +106,7 @@ export default function LoginPage() {
         </div>
 
         {/* Right Image Section */}
-        <div className="w-full lg:w-1/2 bg-gradient-to-tl from-secondary to-primary flex flex-col items-center justify-center p-8 text-white text-center lg:text-left">
+        <div className="w-full lg:w-1/2 bg-gradient-to-tl from-secondary to-primary flex flex-col items-center justify-center p-8 text-black text-center lg:text-left">
           <h2 className="text-xl font-semibold mb-2">HELLO,</h2>
           <h1 className="text-3xl font-bold mb-6">WELCOME BACK</h1>
 

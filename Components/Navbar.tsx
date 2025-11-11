@@ -45,14 +45,19 @@ export const Navbar = () => {
           </button>
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <Link
+            href="/"
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          >
             <Image
               src="/images/SleepSync.png"
               alt="sleepSync-logo"
               width={52}
               height={52}
             />
-            <h1 className="text-2xl font-bold text-gray-900 hidden sm:block">SleepSync</h1>
+            <h1 className="text-2xl font-bold text-gray-900 hidden sm:block">
+              SleepSync
+            </h1>
           </Link>
         </div>
 
@@ -61,7 +66,7 @@ export const Navbar = () => {
           <ul className="flex gap-8">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
-              
+
               return (
                 <li key={item.href}>
                   <Link
@@ -105,7 +110,7 @@ export const Navbar = () => {
             </button>
           ) : (
             <Link href="/login">
-              <button className="btn bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-none rounded-full px-6 transition-all duration-200 hover:shadow-lg">
+              <button className="btn   bg-gradient-to-l from-secondary to-primary rounded-full">
                 Login
               </button>
             </Link>
@@ -170,7 +175,9 @@ export const Navbar = () => {
                       <p className="font-semibold text-gray-900">
                         {session.user.name || "User"}
                       </p>
-                      <p className="text-sm text-gray-600">{session.user.email}</p>
+                      <p className="text-sm text-gray-600">
+                        {session.user.email}
+                      </p>
                     </div>
                   </div>
                 </div>
