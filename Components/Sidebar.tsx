@@ -18,14 +18,14 @@ export default function Sidebar() {
   return (
     <div className="lg:flex flex-col h-full hidden">
            <Link href={'/'}>
-             <div className="flex items-center justify-center">
+             <div className="flex items-center justify-center pt-6 ">
                  <Image
                    src="/images/SleepSync.png"
                    alt="sleepSync-logo"
                    width={40}
                    height={40}
                  ></Image>
-                 <h1 className="text-lg font-bold  ">SleepSync</h1>
+                 <h1 className="text-lg font-bold   ">SleepSync</h1>
                </div>
            </Link>
       <nav className="flex-1 p-4 space-y-2">

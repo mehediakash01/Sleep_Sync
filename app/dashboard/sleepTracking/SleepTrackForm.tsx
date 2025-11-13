@@ -184,7 +184,7 @@ export const SleepTrackForm = () => {
           />
         </div>
 
-        <button type="submit" className="btn btn-primary w-full text-lg">
+        <button type="submit"  className="btn w-full   bg-gradient-to-l from-secondary to-primary rounded-full">
           Log Sleep Session
         </button>
         <AiTipsSection email={email} />
