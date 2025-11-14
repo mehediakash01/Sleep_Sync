@@ -3,19 +3,19 @@
 import React from "react";
 import Image from "next/image";
 import Container from "@/Components/Container";
-
+import {motion} from "framer-motion"
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 py-20">
       {/* Hero Section */}
-      <section className="bg-gradient-to-b from-primary/10 to-white py-20 text-center">
+      <motion.section initial={{opacity:0,y:-200}} whileInView={{opacity:1,y:0}} transition={{delay:0.2,duration:0.8,ease:"easeInOut"}} className="bg-gradient-to-b from-primary/10 to-white py-20 text-center">
         <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
           About SleepSync
         </h1>
         <p className="max-w-2xl mx-auto text-gray-600 text-lg">
           Your trusted companion in understanding and improving sleep quality — powered by science, data, and design.
         </p>
-      </section>
+      </motion.section>
 
       {/* Mission & Vision Section */}
       <section className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-12 items-center">
