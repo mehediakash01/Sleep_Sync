@@ -75,7 +75,7 @@ export default function AboutPage() {
             Our Core Values
           </h2>
 
-          <div className="grid md:grid-cols-3 gap-10">
+          <motion.div className="grid md:grid-cols-3 gap-10">
             {[
               {
                 title: "Innovation",
@@ -93,8 +93,17 @@ export default function AboutPage() {
                 icon: "🔍",
               },
             ].map((value, i) => (
-              <div
+              <motion.div 
+
                 key={i}
+                 initial={{ opacity: 0, y: 50 }} // start faded and down
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.6,
+              delay: i * 0.2, // delay each card a bit
+              ease: "easeOut",
+            }}
+            viewport={{ once: false, amount: 0.3 }}
                 className="bg-gray-50 border border-gray-100 p-8 rounded-2xl shadow-sm hover:shadow-md transition"
               >
                 <div className="text-5xl mb-4">{value.icon}</div>
@@ -104,9 +113,9 @@ export default function AboutPage() {
                 <p className="text-gray-600 text-sm leading-relaxed">
                   {value.desc}
                 </p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </Container>
       </section>
 
