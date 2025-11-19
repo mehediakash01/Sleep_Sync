@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { 
   Heart, 
   Share2, 
@@ -12,7 +14,8 @@ import {
   MessageCircle, 
   ArrowLeft,
   Tag,
-  User
+  User,
+  Loader2
 } from "lucide-react";
 import Link from "next/link";
 
@@ -28,11 +31,63 @@ interface BlogPageProps {
 
 const BlogPage: React.FC<BlogPageProps> = ({ params }) => {
   const blog: Blog | undefined = blogs.find((b) => b.id === Number(params.id));
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
-  const [likes, setLikes] = useState(blog?.likeCount || 0);
+  const [likes, setLikes] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
-  const [comments, setComments] = useState(blog?.comments || []);
+  const [comments, setComments] = useState<any[]>([]);
   const [viewCount] = useState(blog?.viewCount || 0);
+  const [isLiking, setIsLiking] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Protect the page - redirect if not logged in
+  useEffect(() => {
+    if (status === "loading") return; // Wait for session to load
+    
+    if (!session) {
+      // Redirect to login page
+      router.push("/api/auth/signin");
+    }
+  }, [session, status, router]);
+
+  // Load comments and likes from database
+  useEffect(() => {
+    if (!blog || !session) return;
+    
+    loadBlogData();
+  }, [blog, session]);
+
+  const loadBlogData = async () => {
+    try {
+      // Load comments
+      const commentsRes = await fetch(`/api/comments?blogId=${blog?.id}`);
+      const commentsData = await commentsRes.json();
+      setComments(commentsData.comments || []);
+
+      // Load likes
+      const likesRes = await fetch(`/api/likes?blogId=${blog?.id}`);
+      const likesData = await likesRes.json();
+      setLikes(likesData.likeCount || 0);
+      setIsLiked(likesData.hasLiked || false);
+    } catch (error) {
+      console.error("Failed to load blog data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Show loading while checking auth
+  if (status === "loading" || !session) {
+    return (
+      <Container className="py-32">
+        <div className="flex flex-col items-center justify-center">
+          <Loader2 className="w-12 h-12 animate-spin text-indigo-600 mb-4" />
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </Container>
+    );
+  }
 
   if (!blog) {
     return (
@@ -50,26 +105,45 @@ const BlogPage: React.FC<BlogPageProps> = ({ params }) => {
     );
   }
 
-  const handleLike = () => {
-    if (isLiked) {
-      setLikes(likes - 1);
-      setIsLiked(false);
-    } else {
-      setLikes(likes + 1);
-      setIsLiked(true);
+  const handleLike = async () => {
+    if (isLiking) return;
+
+    // Optimistic update
+    const prevLiked = isLiked;
+    const prevLikes = likes;
+    setIsLiked(!isLiked);
+    setLikes(isLiked ? likes - 1 : likes + 1);
+    setIsLiking(true);
+
+    try {
+      const response = await fetch("/api/likes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blogId: blog.id.toString() }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to like");
+      }
+
+      // Update with server response
+      setIsLiked(data.hasLiked);
+      setLikes(data.likeCount);
+    } catch (error: any) {
+      // Revert on error
+      setIsLiked(prevLiked);
+      setLikes(prevLikes);
+      alert(error.message || "Failed to like post");
+    } finally {
+      setIsLiking(false);
     }
   };
 
-  const handleComment = (message: string) => {
-    const newComment = {
-      id: `c${Date.now()}`,
-      user: "Guest User",
-      userAvatar: "/avatars/default.jpg",
-      message,
-      date: new Date().toISOString(),
-      likes: 0
-    };
-    setComments([...comments, newComment]);
+  const handleComment = (newComment: any) => {
+    // Add new comment to the list
+    setComments([newComment, ...comments]);
   };
 
   const handleShare = async () => {
@@ -216,13 +290,18 @@ const BlogPage: React.FC<BlogPageProps> = ({ params }) => {
           <div className="flex flex-wrap items-center gap-4 mb-12">
             <button 
               onClick={handleLike}
-              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
+              disabled={isLiking}
+              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all disabled:opacity-50 ${
                 isLiked 
                   ? "bg-red-500 text-white hover:bg-red-600" 
                   : "bg-gray-100 text-gray-700 hover:bg-red-50 hover:text-red-600"
               }`}
             >
-              <Heart className={`w-5 h-5 ${isLiked ? "fill-white" : ""}`} />
+              {isLiking ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Heart className={`w-5 h-5 ${isLiked ? "fill-white" : ""}`} />
+              )}
               <span>{likes} Likes</span>
             </button>
 
@@ -241,7 +320,16 @@ const BlogPage: React.FC<BlogPageProps> = ({ params }) => {
           </div>
 
           {/* Comments Section */}
-          <CommentSection comments={comments} onAddComment={handleComment} />
+          <CommentSection 
+            blogId={blog.id.toString()}
+            comments={comments} 
+            onAddComment={handleComment}
+            isLoggedIn={true} // User is always logged in on this page
+            currentUser={{
+              name: session.user?.name || "Anonymous",
+              avatar: session.user?.image || "Noob"
+            }}
+          />
         </motion.div>
 
         {/* Sidebar */}
