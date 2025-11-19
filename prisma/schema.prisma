@@ -42,3 +42,27 @@ model SleepLog {
 
   user            User      @relation(fields: [userId], references: [id])
 }
+model Comment {
+  id         String   @id @default(cuid())
+  blogId     String
+  userId     String
+  user       String
+  userAvatar String?
+  message    String   @db.Text
+  createdAt  DateTime @default(now())
+  
+  @@index([blogId])
+  @@index([userId])
+  @@map("comments")
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  blogId    String
+  userId    String
+  createdAt DateTime @default(now())
+  
+  @@unique([blogId, userId])
+  @@index([blogId])
+  @@map("likes")
+}
