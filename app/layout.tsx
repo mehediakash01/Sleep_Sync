@@ -5,7 +5,7 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { ClientSessionProvider } from "@/ClientSessionProvider";
 import { LayoutWrapper } from "@/Components/LayoutWrapper";
-
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,6 +37,7 @@ export default function RootLayout({
         <ClientSessionProvider>
           <LayoutWrapper>{children}</LayoutWrapper>
           <Toaster position="top-center" reverseOrder={false} />
+          <SpeedInsights/>
         </ClientSessionProvider>
       
      
