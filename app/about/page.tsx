@@ -121,18 +121,18 @@ export default function AboutPage() {
 
       {/* Our Story Section */}
       <section className="max-w-5xl mx-auto px-6 py-20 text-center">
-        <h2 className="text-3xl font-bold mb-6 text-gray-800">Our Story</h2>
-        <p className="text-gray-600 leading-relaxed text-lg">
+        <motion.h2 initial={{opacity:0,y:50}} whileInView={{opacity:1,y:0}} transition={{duration:0.6,ease:"easeIn"}} className="text-3xl font-bold mb-6 text-gray-800">Our Story</motion.h2>
+        <motion.p initial={{opacity:0,y:70}} whileInView={{opacity:1,y:0}} transition={{duration:0.6, delay:0.1,ease:"easeIn"}} className="text-gray-600 leading-relaxed text-lg">
           SleepSync was born out of frustration and curiosity. Our founders — a
           team of developers, neuroscientists, and wellness enthusiasts —
           realized that most sleep apps track data but fail to help people truly
           understand it. So we set out to build a smarter solution that
           interprets, educates, and motivates.
-        </p>
-        <p className="text-gray-600 leading-relaxed mt-4 text-lg">
+        </motion.p>
+        <motion.p initial={{opacity:0,y:90}} whileInView={{opacity:1,y:0}} transition={{duration:0.6, delay:0.2,ease:"easeIn"}} className="text-gray-600 leading-relaxed mt-4 text-lg">
           Today, SleepSync serves thousands of users worldwide, bridging the gap
           between data and better rest.
-        </p>
+        </motion.p>
       </section>
 
       {/* Meet the Team */}

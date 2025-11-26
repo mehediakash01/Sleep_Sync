@@ -238,7 +238,7 @@ export default function AiChatSection() {
             </button>
           </div>
 
-          <div className="p-4 border-b border-gray-200">
+          <div className="p-4 border-b py-22 lg:py-2 border-gray-200">
             <button
               onClick={createNewConversation}
               className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition shadow-lg shadow-indigo-200"
