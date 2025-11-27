@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 export default function AboutPage() {
-    const router = useRouter();
+  const router = useRouter();
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 py-20">
       {/* Hero Section */}
@@ -41,15 +41,17 @@ export default function AboutPage() {
         </motion.div>
 
         <div className="space-y-6">
-          <motion.div  initial={{ opacity: 0, y: -100 }}
+          <motion.div
+            initial={{ opacity: 0, y: -100 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.8, ease: "easeInOut" }}>
+            transition={{ delay: 0.1, duration: 0.8, ease: "easeInOut" }}
+          >
             <h2 className="text-3xl font-bold text-gray-800">Our Mission</h2>
             <p className="text-gray-600 leading-relaxed">
               At <span className="font-semibold text-primary">SleepSync</span>,
-              our mission is to empower individuals to take control of their sleep
-              habits and live healthier, more energized lives. We believe that
-              quality sleep fuels productivity, creativity, and emotional
+              our mission is to empower individuals to take control of their
+              sleep habits and live healthier, more energized lives. We believe
+              that quality sleep fuels productivity, creativity, and emotional
               well-being.
             </p>
           </motion.div>
@@ -95,17 +97,16 @@ export default function AboutPage() {
                 icon: "🔍",
               },
             ].map((value, i) => (
-              <motion.div 
-
+              <motion.div
                 key={i}
-                 initial={{ opacity: 0, y: 50 }} // start faded and down
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.6,
-              delay: i * 0.2, // delay each card a bit
-              ease: "easeOut",
-            }}
-            viewport={{ once: false, amount: 0.3 }}
+                initial={{ opacity: 0, y: 50 }} // start faded and down
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.6,
+                  delay: i * 0.2, // delay each card a bit
+                  ease: "easeOut",
+                }}
+                viewport={{ once: false, amount: 0.3 }}
                 className="bg-gray-50 border border-gray-100 p-8 rounded-2xl shadow-sm hover:shadow-md transition"
               >
                 <div className="text-5xl mb-4">{value.icon}</div>
@@ -123,15 +124,32 @@ export default function AboutPage() {
 
       {/* Our Story Section */}
       <section className="max-w-5xl mx-auto px-6 py-20 text-center">
-        <motion.h2 initial={{opacity:0,y:50}} whileInView={{opacity:1,y:0}} transition={{duration:0.6,ease:"easeIn"}} className="text-3xl font-bold mb-6 text-gray-800">Our Story</motion.h2>
-        <motion.p initial={{opacity:0,y:70}} whileInView={{opacity:1,y:0}} transition={{duration:0.6, delay:0.1,ease:"easeIn"}} className="text-gray-600 leading-relaxed text-lg">
+        <motion.h2
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeIn" }}
+          className="text-3xl font-bold mb-6 text-gray-800"
+        >
+          Our Story
+        </motion.h2>
+        <motion.p
+          initial={{ opacity: 0, y: 70 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1, ease: "easeIn" }}
+          className="text-gray-600 leading-relaxed text-lg"
+        >
           SleepSync was born out of frustration and curiosity. Our founders — a
           team of developers, neuroscientists, and wellness enthusiasts —
           realized that most sleep apps track data but fail to help people truly
           understand it. So we set out to build a smarter solution that
           interprets, educates, and motivates.
         </motion.p>
-        <motion.p initial={{opacity:0,y:90}} whileInView={{opacity:1,y:0}} transition={{duration:0.6, delay:0.2,ease:"easeIn"}} className="text-gray-600 leading-relaxed mt-4 text-lg">
+        <motion.p
+          initial={{ opacity: 0, y: 90 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: "easeIn" }}
+          className="text-gray-600 leading-relaxed mt-4 text-lg"
+        >
           Today, SleepSync serves thousands of users worldwide, bridging the gap
           between data and better rest.
         </motion.p>
@@ -144,7 +162,7 @@ export default function AboutPage() {
             Meet the Team
           </h2>
 
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-10">
+          <motion.div className="grid sm:grid-cols-2 md:grid-cols-3 gap-10">
             {[
               {
                 name: " Mehedi Akash",
@@ -162,8 +180,16 @@ export default function AboutPage() {
                 img: "https://randomuser.me/api/portraits/men/19.jpg",
               },
             ].map((member, i) => (
-              <div
+              <motion.div
                 key={i}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.6,
+                  delay: i * 0.2,
+                  ease: "easeOut",
+                }}
+                viewport={{ once: false, amount: 0.3 }}
                 className="bg-white rounded-2xl p-6 shadow-md hover:shadow-lg transition"
               >
                 <Image
@@ -177,23 +203,39 @@ export default function AboutPage() {
                   {member.name}
                 </h3>
                 <p className="text-gray-500 text-sm">{member.role}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* CTA */}
-      <section  className="py-20 text-center bg-primary ">
-        <motion.h2 initial={{opacity:0,y:50}} whileInView={{opacity:1,y:0}} transition={{duration:0.6,ease:"easeIn"}} className="text-3xl font-bold mb-4">
+      <section className="py-20 text-center bg-primary ">
+        <motion.h2
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeIn" }}
+          className="text-3xl font-bold mb-4"
+        >
           Join the Sleep Revolution 🌙
         </motion.h2>
-        <motion.p initial={{opacity:0,y:70}} whileInView={{opacity:1,y:0}} transition={{duration:0.6,ease:"easeIn",delay:0.1}} className="text-lg mb-6">
+        <motion.p
+          initial={{ opacity: 0, y: 70 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeIn", delay: 0.1 }}
+          className="text-lg mb-6"
+        >
           Start tracking, improving, and understanding your sleep today.
         </motion.p>
-         <motion.button onClick={()=>router.push('/dashboard/sleepTracking')} initial={{opacity:0,y:90}} whileInView={{opacity:1,y:0}} transition={{duration:0.6,ease:"easeIn",delay:0.2}}  className="btn   bg-gradient-to-l from-secondary to-primary rounded-full">
-               Get Started
-              </motion.button>
+        <motion.button
+          onClick={() => router.push("/dashboard/sleepTracking")}
+          initial={{ opacity: 0, y: 90 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeIn", delay: 0.2 }}
+          className="btn   bg-gradient-to-l from-secondary to-primary rounded-full"
+        >
+          Get Started
+        </motion.button>
       </section>
     </div>
   );
