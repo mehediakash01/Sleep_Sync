@@ -3,7 +3,9 @@
 import Container from "@/Components/Container";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 export default function AboutPage() {
+    const router = useRouter();
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 py-20">
       {/* Hero Section */}
@@ -182,16 +184,16 @@ export default function AboutPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 text-center bg-primary text-white">
-        <h2 className="text-3xl font-bold mb-4">
+      <section  className="py-20 text-center bg-primary ">
+        <motion.h2 initial={{opacity:0,y:50}} whileInView={{opacity:1,y:0}} transition={{duration:0.6,ease:"easeIn"}} className="text-3xl font-bold mb-4">
           Join the Sleep Revolution 🌙
-        </h2>
-        <p className="text-lg mb-6">
+        </motion.h2>
+        <motion.p initial={{opacity:0,y:70}} whileInView={{opacity:1,y:0}} transition={{duration:0.6,ease:"easeIn",delay:0.1}} className="text-lg mb-6">
           Start tracking, improving, and understanding your sleep today.
-        </p>
-        <button className="btn bg-white text-primary hover:bg-gray-200">
-          Get Started
-        </button>
+        </motion.p>
+         <motion.button onClick={()=>router.push('/dashboard/sleepTracking')} initial={{opacity:0,y:90}} whileInView={{opacity:1,y:0}} transition={{duration:0.6,ease:"easeIn",delay:0.2}}  className="btn   bg-gradient-to-l from-secondary to-primary rounded-full">
+               Get Started
+              </motion.button>
       </section>
     </div>
   );
