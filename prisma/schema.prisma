@@ -13,35 +13,39 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-   sleepLogs SleepLog[]
+  id                  Int                  @id @default(autoincrement())
+  name                String
+  email               String               @unique
+  password            String
+  createdAt           DateTime             @default(now())
+  sleepLogs           SleepLog[]
+  notifications       Notification[]
+  notificationSetting NotificationSetting?
 }
 
 model SleepLog {
-  id              Int       @id @default(autoincrement())
-  userId          Int
-  dateOfSession   DateTime
-  timeInBed       DateTime
-  wakeUpTime      DateTime
-  sleepQuality    Int
-  mood            String?
-  caffeineIntake  Boolean?
-  alcoholIntake   Boolean?
-  workout         Boolean?
-  heavyMeal       Boolean?
-  lateScreenTime  Boolean?
-  stressfulDay    Boolean?
-  notes           String?
-  duration        Float?
-  createdAt       DateTime  @default(now())
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  dateOfSession  DateTime
+  timeInBed      DateTime
+  wakeUpTime     DateTime
+  sleepQuality   Int
+  mood           String?
+  caffeineIntake Boolean?
+  alcoholIntake  Boolean?
+  workout        Boolean?
+  heavyMeal      Boolean?
+  lateScreenTime Boolean?
+  stressfulDay   Boolean?
+  notes          String?
+  duration       Float?
+  createdAt      DateTime @default(now())
 
-  user            User      @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }
+
 model Comment {
   id         String   @id @default(cuid())
   blogId     String
@@ -50,7 +54,7 @@ model Comment {
   userAvatar String?
   message    String   @db.Text
   createdAt  DateTime @default(now())
-  
+
   @@index([blogId])
   @@index([userId])
   @@map("comments")
@@ -61,8 +65,38 @@ model Like {
   blogId    String
   userId    String
   createdAt DateTime @default(now())
-  
+
   @@unique([blogId, userId])
   @@index([blogId])
   @@map("likes")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    Int
+  type      String // SLEEP_LOGGED | STREAK | POOR_SLEEP | BEDTIME_REMINDER
+  title     String
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("notifications")
+}
+
+model NotificationSetting {
+  id              Int     @id @default(autoincrement())
+  userId          Int     @unique
+  emailEnabled    Boolean @default(true)
+  bedtimeReminder Boolean @default(false)
+  bedtimeHour     Int?
+  bedtimeMinute   Int?
+  poorSleepAlert  Boolean @default(true)
+  streakAlert     Boolean @default(true)
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("notification_settings")
 }

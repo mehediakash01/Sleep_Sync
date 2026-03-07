@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import LoggedOutBtn from "@/Action/LoggedOutBtn";
 import { Home, BarChart2, Users, Clock, Moon, X, Menu } from "lucide-react";
+import NotificationBell from "./NotificationBell";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -10,23 +11,15 @@ import Link from "next/link";
 export default function DashNavbar() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleToggle = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const handleClose = () => {
-    setIsOpen(false);
-  };
+  const handleToggle = () => setIsOpen((prev) => !prev);
+  const handleClose = () => setIsOpen(false);
 
   const menuItems = [
-  { name: "Overview", icon: <Home size={18} />, href: "/dashboard" },
-  { name: "SleepLog", icon: <Users size={18} />, href: "/dashboard/sleepTracking" },
-
-{ name: "Sleep Insights", icon: <BarChart2 size={18} />, href: "/dashboard/sleepInsights" },
-
-  { name: "Sleep History", icon: <Clock size={18} />, href: "/dashboard/sleepHistory" },
-
-];
+    { name: "Overview", icon: <Home size={18} />, href: "/dashboard" },
+    { name: "SleepLog", icon: <Users size={18} />, href: "/dashboard/sleepTracking" },
+    { name: "Sleep Insights", icon: <BarChart2 size={18} />, href: "/dashboard/sleepInsights" },
+    { name: "Sleep History", icon: <Clock size={18} />, href: "/dashboard/sleepHistory" },
+  ];
 
   return (
     <>
@@ -39,14 +32,13 @@ export default function DashNavbar() {
           <Menu size={24} className="text-gray-700" />
         </button>
 
-        <h1 className="text-lg font-semibold text-gray-900">Dashboard Overview</h1>
+        <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
 
-        <div className="flex items-center gap-3">
-          
+        <div className="flex items-center gap-2">
+          <NotificationBell />
           <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
             A
           </div>
-          <span className="hidden sm:block font-medium text-gray-700">Akash</span>
         </div>
       </header>
 
@@ -131,15 +123,16 @@ export default function DashNavbar() {
               </nav>
 
               {/* Drawer Footer */}
-              <div className="p-4 border-t border-gray-200">
-                <motion.button
+              <div className="p-4 border-t border-gray-200 flex items-center justify-between">
+                <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors w-full group"
+                  className="flex items-center gap-3"
                 >
-                  <LoggedOutBtn></LoggedOutBtn>
-                </motion.button>
+                  <LoggedOutBtn />
+                </motion.div>
+                <NotificationBell />
               </div>
             </motion.div>
           </>
