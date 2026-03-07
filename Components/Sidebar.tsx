@@ -1,16 +1,17 @@
 "use client";
 import LoggedOutBtn from "@/Action/LoggedOutBtn";
-import { Home, BarChart2, Users, Clock } from "lucide-react";
+import { Home, BarChart2, Users, Clock, Flame } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import NotificationBell from "./NotificationBell";
 
 const menuItems = [
-  { name: "Overview", icon: <Home size={18} />, href: "/dashboard" },
-  { name: "SleepLog", icon: <Users size={18} />, href: "/dashboard/sleepTracking" },
-  { name: "Sleep Insights", icon: <BarChart2 size={18} />, href: "/dashboard/sleepInsights" },
-  { name: "Sleep History", icon: <Clock size={18} />, href: "/dashboard/sleepHistory" },
+  { name: "Overview",      icon: <Home size={18} />,     href: "/dashboard" },
+  { name: "SleepLog",      icon: <Users size={18} />,    href: "/dashboard/sleepTracking" },
+  { name: "Sleep Insights",icon: <BarChart2 size={18} />,href: "/dashboard/sleepInsights" },
+  { name: "Sleep History", icon: <Clock size={18} />,    href: "/dashboard/sleepHistory" },
+  { name: "Streaks",       icon: <Flame size={18} />,   href: "/dashboard/streak" },
 ];
 
 export default function Sidebar() {

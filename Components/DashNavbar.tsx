@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import LoggedOutBtn from "@/Action/LoggedOutBtn";
-import { Home, BarChart2, Users, Clock, Moon, X, Menu } from "lucide-react";
+import { Home, BarChart2, Users, Clock, Moon, X, Menu, Flame } from "lucide-react";
 import NotificationBell from "./NotificationBell";
 
 import { useState } from "react";
@@ -15,10 +15,11 @@ export default function DashNavbar() {
   const handleClose = () => setIsOpen(false);
 
   const menuItems = [
-    { name: "Overview", icon: <Home size={18} />, href: "/dashboard" },
-    { name: "SleepLog", icon: <Users size={18} />, href: "/dashboard/sleepTracking" },
-    { name: "Sleep Insights", icon: <BarChart2 size={18} />, href: "/dashboard/sleepInsights" },
-    { name: "Sleep History", icon: <Clock size={18} />, href: "/dashboard/sleepHistory" },
+    { name: "Overview",      icon: <Home size={18} />,     href: "/dashboard" },
+    { name: "SleepLog",      icon: <Users size={18} />,    href: "/dashboard/sleepTracking" },
+    { name: "Sleep Insights",icon: <BarChart2 size={18} />,href: "/dashboard/sleepInsights" },
+    { name: "Sleep History", icon: <Clock size={18} />,    href: "/dashboard/sleepHistory" },
+    { name: "Streaks",       icon: <Flame size={18} />,   href: "/dashboard/streak" },
   ];
 
   return (
