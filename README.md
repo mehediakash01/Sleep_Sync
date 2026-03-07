@@ -1,56 +1,56 @@
-﻿#  SleepSync
+﻿# 🌙 SleepSync
 
-**SleepSync** is an AI-powered sleep tracking and coaching web application. It helps users log their nightly sleep sessions, visualise trends, maintain streaks, receive personalised AI-generated tips, and stay on top of their rest with smart notifications  all in one place.
+**SleepSync** is an AI-powered sleep tracking and coaching web application. It helps users log their nightly sleep sessions, visualise trends, maintain streaks, receive personalised AI-generated tips, and stay on top of their rest with smart notifications — all in one place.
 
 ---
 
-##  Features
+## ✨ Features
 
-###  Sleep Tracking
-- Log every sleep session with date, bed time, wake-up time, sleep quality (15), and mood
+### 🛏️ Sleep Tracking
+- Log every sleep session with date, bed time, wake-up time, sleep quality (1–5), and mood
 - Record before-bed factors: caffeine, alcohol, workout, heavy meal, late screen time, stressful day
 - Add optional freeform notes per session
 - 4-step guided wizard form so users are never lost
 
-###  Dashboard & Analytics
-- **Overview**  quick stats, recent log table, sleep quality chart, sleep trend chart, and today's AI sleep tip
-- **Sleep History**  full paginated table of all past sessions with colour-coded quality badges
-- **Sleep Insights**  trend charts and mood analysis powered by Recharts
-- **Sleep Streaks**  current streak, longest streak, heatmap calendar, and milestone badges
+### 📊 Dashboard & Analytics
+- **Overview** — quick stats, recent log table, sleep quality chart, sleep trend chart, and today's AI sleep tip
+- **Sleep History** — full paginated table of all past sessions with colour-coded quality badges
+- **Sleep Insights** — trend charts and mood analysis powered by Recharts
+- **Sleep Streaks** — current streak, longest streak, heatmap calendar, and milestone badges
 
-###  AI Sleep Coach
+### 🤖 AI Sleep Coach
 - Real-time chat interface powered by **Google Gemini AI**
 - Persistent conversation history stored in `localStorage`
 - Suggested starter prompts for new users
 - Personalised AI tips generated from recent sleep data (`/api/aiTips`)
 
-###  Streaks System
+### 🔥 Streaks System
 - Tracks consecutive nights of logged sleep
 - Milestone badges (3, 7, 14, 21, 30, 60 nights)
 - Public marketing page explaining the streak mechanic
 - Dashboard streak page with full heatmap calendar
 
-###  Notification System
+### 🔔 Notification System
 - In-app notification bell with unread badge count
 - Four notification types: `SLEEP_LOGGED`, `STREAK`, `POOR_SLEEP`, `BEDTIME_REMINDER`
 - Per-user notification settings: email on/off, bedtime reminder, poor sleep alerts, streak alerts
 - Email delivery via **Nodemailer + Gmail SMTP**
 - Bedtime reminder check endpoint (`/api/notifications/bedtime-check`)
 
-###  Blog & Community
+### 📝 Blog & Community
 - Static blog articles with slug-based routing
 - Comments section (create / read) per article
 - Like / unlike per article
 - Suggested related posts sidebar
 
-###  Authentication
+### 🔐 Authentication
 - Email + password registration with bcrypt hashing
 - NextAuth v4 JWT sessions
 - Protected routes via `getServerSession` / middleware redirect
 
 ---
 
-##  Project Structure
+## 🗂️ Project Structure
 
 ```
 sleep-sync/
@@ -113,14 +113,14 @@ sleep-sync/
 
 ---
 
-##  Database Schema
+## 🗄️ Database Schema
 
 Six Prisma models backed by **MySQL**:
 
 | Model | Key Fields |
 |---|---|
 | `User` | id, name, email, password, createdAt |
-| `SleepLog` | userId, dateOfSession, timeInBed, wakeUpTime, sleepQuality, mood, duration, factors |
+| `SleepLog` | userId, dateOfSession, timeInBed, wakeUpTime, sleepQuality, mood, duration, factors… |
 | `Comment` | blogId, userId, user, message |
 | `Like` | blogId, userId (unique pair) |
 | `Notification` | userId, type, title, message, isRead |
@@ -128,7 +128,7 @@ Six Prisma models backed by **MySQL**:
 
 ---
 
-##  Tech Stack
+## 🛠️ Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -148,7 +148,7 @@ Six Prisma models backed by **MySQL**:
 
 ---
 
-##  Getting Started
+## ⚙️ Getting Started
 
 ### 1. Clone the repository
 
@@ -183,7 +183,7 @@ EMAIL_USER="your-gmail@gmail.com"
 EMAIL_PASS="your-gmail-app-password"
 ```
 
-> **Gmail App Password**: Go to [Google Account  Security  App Passwords](https://myaccount.google.com/apppasswords) and generate a password for "Mail". Use that 16-character code instead of your real Gmail password.
+> **Gmail App Password**: Go to [Google Account → Security → App Passwords](https://myaccount.google.com/apppasswords) and generate a password for "Mail". Use that 16-character code instead of your real Gmail password.
 
 ### 4. Set up the database
 
@@ -205,7 +205,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-##  Available Scripts
+## 📜 Available Scripts
 
 | Script | Description |
 |---|---|
@@ -216,7 +216,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-##  Key API Routes
+## 🔑 Key API Routes
 
 | Method | Endpoint | Description |
 |---|---|---|
@@ -235,7 +235,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-##  Design System
+## 🎨 Design System
 
 | Token | Value |
 |---|---|
@@ -249,7 +249,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-##  Deployment
+## 🚀 Deployment
 
 The easiest way to deploy is [Vercel](https://vercel.com):
 
@@ -262,6 +262,6 @@ The easiest way to deploy is [Vercel](https://vercel.com):
 
 ---
 
-##  License
+## 📄 License
 
 This project is for personal / educational use. Feel free to fork and build on top of it.
