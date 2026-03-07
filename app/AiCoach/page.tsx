@@ -40,17 +40,8 @@ export default function AiChatSection() {
         console.error("Failed to load conversations:", error);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Save conversations to localStorage whenever they change
-  useEffect(() => {
-    if (conversations.length > 0) {
-      localStorage.setItem(
-        "sleep-conversations",
-        JSON.stringify(conversations)
-      );
-    }
-  }, [conversations]);
 
   // Auto-scroll to latest message
   useEffect(() => {
@@ -217,42 +208,58 @@ export default function AiChatSection() {
 
   const currentConvo = getCurrentConversation();
 
+  const SUGGESTED = [
+    "How can I fall asleep faster?",
+    "What's the ideal sleep schedule?",
+    "Tips to stop waking up at night",
+    "How does screen time affect sleep?",
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 pt-20 pb-4 px-2 sm:px-4">
-      <div className="max-w-7xl mx-auto h-[calc(100vh-7rem)] flex flex-col md:flex-row gap-2 sm:gap-4">
-        {/* Sidebar - Mobile Overlay / Desktop Fixed */}
+    <div className="min-h-screen bg-gradient-to-br from-[#e8f7ff] via-white to-[#f3eeff] pt-20 pb-4 px-2 sm:px-4">
+      <div className="max-w-7xl mx-auto h-[calc(100vh-7rem)] flex flex-col md:flex-row gap-3">
+
+        {/* ── SIDEBAR ── */}
         <div
           className={`${
             sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
           } ${
-            sidebarOpen ? "w-full md:w-80" : "w-0 md:w-0"
-          } fixed md:relative inset-0 md:inset-auto z-40 md:z-0 transition-all duration-300 bg-white md:rounded-2xl border border-gray-200 flex flex-col overflow-hidden shadow-xl md:shadow-lg`}
+            sidebarOpen ? "w-full md:w-72" : "w-0 md:w-0"
+          } fixed md:relative inset-0 md:inset-auto z-40 md:z-0 transition-all duration-300 bg-white md:rounded-2xl border border-gray-100 flex flex-col overflow-hidden shadow-xl md:shadow-md`}
         >
-          {/* Mobile Close Button */}
-          <div className="md:hidden absolute top-4 right-4 z-50">
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition"
-            >
-              <X className="w-5 h-5 text-gray-600" />
-            </button>
-          </div>
+          {/* Sidebar header */}
+          <div className="p-4 border-b border-gray-100">
+            {/* Brand row */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#89CFF0] to-[#B19CD9] flex items-center justify-center">
+                  <Moon className="w-4 h-4 text-white" />
+                </div>
+                <span className="font-bold text-gray-800 text-sm">Sleep AI</span>
+              </div>
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="md:hidden p-1.5 hover:bg-gray-100 rounded-lg transition"
+              >
+                <X className="w-4 h-4 text-gray-500" />
+              </button>
+            </div>
 
-          <div className="p-4 border-b py-22 lg:py-2 border-gray-200">
             <button
               onClick={createNewConversation}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition shadow-lg shadow-indigo-200"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#89CFF0] to-[#B19CD9] text-white rounded-xl hover:opacity-90 transition font-medium text-sm shadow-md shadow-[#89CFF0]/30"
             >
-              <Plus className="w-5 h-5" />
-              <span className="font-medium">New Conversation</span>
+              <Plus className="w-4 h-4" />
+              New conversation
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+          {/* Conversation list */}
+          <div className="flex-1 overflow-y-auto p-3 space-y-1.5">
             {conversations.length === 0 ? (
-              <div className="text-center text-gray-400 mt-8">
-                <MessageSquare className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">No conversations yet</p>
+              <div className="text-center text-gray-400 mt-10">
+                <MessageSquare className="w-10 h-10 mx-auto mb-2 opacity-30" />
+                <p className="text-xs">No conversations yet</p>
               </div>
             ) : (
               conversations.map((convo) => (
@@ -260,37 +267,31 @@ export default function AiChatSection() {
                   key={convo.id}
                   onClick={() => {
                     setCurrentConvoId(convo.id);
-                    // Close sidebar on mobile when selecting conversation
-                    if (window.innerWidth < 768) {
-                      setSidebarOpen(false);
-                    }
+                    if (window.innerWidth < 768) setSidebarOpen(false);
                   }}
-                  className={`group relative p-3 rounded-xl cursor-pointer transition ${
+                  className={`group relative p-3 rounded-xl cursor-pointer transition-all duration-150 ${
                     currentConvoId === convo.id
-                      ? "bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-200"
-                      : "bg-gray-50 hover:bg-gray-100 border-2 border-transparent"
+                      ? "bg-gradient-to-r from-[#89CFF0]/15 to-[#B19CD9]/15 border border-[#89CFF0]/40"
+                      : "hover:bg-gray-50 border border-transparent"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-800 truncate">
+                      <p className={`text-xs font-semibold truncate ${currentConvoId === convo.id ? "text-[#4a9fc0]" : "text-gray-700"}`}>
                         {convo.title}
                       </p>
-                      <div className="flex items-center gap-1 mt-1 text-xs text-gray-500">
+                      <div className="flex items-center gap-1 mt-1 text-[11px] text-gray-400">
                         <Clock className="w-3 h-3" />
                         <span>{formatTime(convo.updatedAt)}</span>
-                        <span className="mx-1">•</span>
+                        <span>·</span>
                         <span>{convo.messages.length} msgs</span>
                       </div>
                     </div>
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteConversation(convo.id);
-                      }}
-                      className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-100 rounded-lg transition"
+                      onClick={(e) => { e.stopPropagation(); deleteConversation(convo.id); }}
+                      className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-50 rounded-lg transition"
                     >
-                      <Trash2 className="w-4 h-4 text-red-500" />
+                      <Trash2 className="w-3.5 h-3.5 text-red-400" />
                     </button>
                   </div>
                 </div>
@@ -299,93 +300,124 @@ export default function AiChatSection() {
           </div>
         </div>
 
-        {/* Backdrop for mobile sidebar */}
+        {/* Mobile backdrop */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 bg-black/50 z-30 md:hidden"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 md:hidden"
             onClick={() => setSidebarOpen(false)}
           />
         )}
 
-        {/* Main Chat Area */}
-        <div className="flex-1 flex flex-col bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+        {/* ── MAIN CHAT ── */}
+        <div className="flex-1 flex flex-col bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
+
           {/* Header */}
-          <div className="bg-white border-b border-gray-200 px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between shadow-sm">
-            <div className="flex items-center gap-2 sm:gap-3">
+          <div className="px-4 sm:px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-white">
+            <div className="flex items-center gap-3">
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition"
+                className="p-2 hover:bg-gray-100 rounded-xl transition"
               >
-                <Menu className="w-5 h-5 text-gray-600" />
+                <Menu className="w-4 h-4 text-gray-500" />
               </button>
-              <div className="flex items-center gap-2">
-                <Moon className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600" />
-                <h1 className="text-base sm:text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  AI Sleep Assistant
-                </h1>
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#89CFF0] to-[#B19CD9] flex items-center justify-center shadow-sm shadow-[#89CFF0]/30">
+                  <Moon className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-sm font-bold text-gray-800 leading-none">AI Sleep Coach</h1>
+                  <p className="text-[11px] text-gray-400 mt-0.5">Powered by Gemini AI</p>
+                </div>
               </div>
             </div>
-            <div className="text-xs sm:text-sm text-gray-500 hidden sm:block">
-              {currentConvo && `${currentConvo.messages.length} messages`}
-            </div>
+            {currentConvo && (
+              <span className="text-xs text-gray-400 bg-gray-50 border border-gray-100 px-3 py-1 rounded-full hidden sm:block">
+                {currentConvo.messages.length} messages
+              </span>
+            )}
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-3 sm:p-6">
-            <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
+          <div className="flex-1 overflow-y-auto px-3 sm:px-6 py-5">
+            <div className="max-w-3xl mx-auto space-y-4">
               {!currentConvo || currentConvo.messages.length === 0 ? (
-                <div className="text-center py-8 sm:py-12">
-                  <Moon className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 text-indigo-300" />
-                  <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
-                    Welcome to Your Sleep Assistant
-                  </h2>
-                  <p className="text-sm sm:text-base text-gray-500 px-4">
-                    Ask me anything about improving your sleep habits 😴
-                  </p>
+                <div className="flex flex-col items-center text-center py-10 gap-6">
+                  {/* Icon */}
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#89CFF0] to-[#B19CD9] flex items-center justify-center shadow-lg shadow-[#89CFF0]/30">
+                    <Moon className="w-9 h-9 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-extrabold text-gray-800 mb-2">
+                      Your Sleep Coach is Ready
+                    </h2>
+                    <p className="text-gray-400 text-sm max-w-sm">
+                      Ask me anything about sleep hygiene, schedules, or habits. I&apos;m here to help you rest better.
+                    </p>
+                  </div>
+                  {/* Suggested prompts */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-lg">
+                    {SUGGESTED.map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => { setInput(s); }}
+                        className="text-left text-xs px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 hover:border-[#89CFF0]/50 hover:bg-[#89CFF0]/5 text-gray-600 transition-all duration-150"
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               ) : (
                 currentConvo.messages.map((msg, i) => (
                   <div
                     key={i}
-                    className={`flex ${
-                      msg.role === "user" ? "justify-end" : "justify-start"
-                    }`}
+                    className={`flex items-end gap-2.5 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                   >
-                    <div
-                      className={`px-3 sm:px-5 py-2 sm:py-3 rounded-2xl max-w-[85%] sm:max-w-[75%] shadow-sm ${
-                        msg.role === "user"
-                          ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white"
-                          : "bg-white text-gray-800 border border-gray-200"
-                      }`}
-                    >
-                      <p className="text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">
+                    {/* AI avatar */}
+                    {msg.role === "assistant" && (
+                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#89CFF0] to-[#B19CD9] flex items-center justify-center shrink-0 mb-1 shadow-sm">
+                        <Moon className="w-3.5 h-3.5 text-white" />
+                      </div>
+                    )}
+
+                    <div className={`flex flex-col gap-1 max-w-[80%] sm:max-w-[70%] ${msg.role === "user" ? "items-end" : "items-start"}`}>
+                      <div
+                        className={`px-4 py-3 rounded-2xl shadow-sm text-sm leading-relaxed whitespace-pre-wrap ${
+                          msg.role === "user"
+                            ? "bg-gradient-to-r from-[#89CFF0] to-[#B19CD9] text-white rounded-br-sm"
+                            : "bg-gray-50 border border-gray-100 text-gray-800 rounded-bl-sm"
+                        }`}
+                      >
                         {msg.content}
-                      </p>
+                      </div>
                       {msg.timestamp && (
-                        <p
-                          className={`text-[10px] sm:text-xs mt-1 sm:mt-2 ${
-                            msg.role === "user"
-                              ? "text-indigo-100"
-                              : "text-gray-400"
-                          }`}
-                        >
-                          {new Date(msg.timestamp).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
+                        <p className="text-[10px] text-gray-400 px-1">
+                          {new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                         </p>
                       )}
                     </div>
+
+                    {/* User avatar */}
+                    {msg.role === "user" && (
+                      <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center shrink-0 mb-1 text-xs font-bold text-gray-500">
+                        U
+                      </div>
+                    )}
                   </div>
                 ))
               )}
+
+              {/* Typing indicator */}
               {loading && (
-                <div className="flex justify-start">
-                  <div className="bg-white border border-gray-200 rounded-2xl px-4 sm:px-5 py-2 sm:py-3 shadow-sm">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" />
-                      <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce delay-150" />
-                      <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce delay-300" />
+                <div className="flex items-end gap-2.5 justify-start">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#89CFF0] to-[#B19CD9] flex items-center justify-center shrink-0 mb-1">
+                    <Moon className="w-3.5 h-3.5 text-white" />
+                  </div>
+                  <div className="bg-gray-50 border border-gray-100 rounded-2xl rounded-bl-sm px-5 py-3 shadow-sm">
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-2 h-2 bg-[#89CFF0] rounded-full animate-bounce" />
+                      <div className="w-2 h-2 bg-[#B19CD9] rounded-full animate-bounce [animation-delay:150ms]" />
+                      <div className="w-2 h-2 bg-[#89CFF0] rounded-full animate-bounce [animation-delay:300ms]" />
                     </div>
                   </div>
                 </div>
@@ -394,32 +426,34 @@ export default function AiChatSection() {
             </div>
           </div>
 
-          {/* Input Area */}
-          <div className="bg-white border-t border-gray-200 p-3 sm:p-6">
-            <div className="max-w-4xl mx-auto">
-              <div className="flex items-end gap-2 sm:gap-3 bg-gray-50 rounded-xl sm:rounded-2xl p-2 sm:p-3 border-2 border-gray-200 focus-within:border-indigo-400 transition">
+          {/* Input */}
+          <div className="px-3 sm:px-6 py-4 border-t border-gray-100 bg-white">
+            <div className="max-w-3xl mx-auto">
+              <div className="flex items-center gap-2 bg-gray-50 border-2 border-gray-100 focus-within:border-[#89CFF0]/60 rounded-2xl px-4 py-2.5 transition-all duration-200 shadow-sm">
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyPress}
-                  placeholder="Type your message..."
-                  className="flex-1 bg-transparent outline-none text-sm sm:text-base text-gray-800 placeholder-gray-400 px-1 sm:px-2"
+                  placeholder="Ask about your sleep..."
+                  className="flex-1 bg-transparent outline-none text-sm text-gray-800 placeholder-gray-400"
                   disabled={loading}
                 />
                 <button
                   onClick={sendMessage}
                   disabled={loading || !input.trim()}
-                  className="px-3 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg sm:rounded-xl hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-lg shadow-indigo-200 flex items-center gap-1 sm:gap-2"
+                  className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-[#89CFF0] to-[#B19CD9] text-white rounded-xl text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90 transition shadow-md shadow-[#89CFF0]/30"
                 >
-                  <Send className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="text-xs sm:text-base font-medium hidden sm:inline">
-                    {loading ? "Sending..." : "Send"}
-                  </span>
+                  <Send className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">{loading ? "Thinking..." : "Send"}</span>
                 </button>
               </div>
+              <p className="text-[11px] text-gray-400 text-center mt-2">
+                Press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-gray-500 font-mono">Enter</kbd> to send
+              </p>
             </div>
           </div>
+
         </div>
       </div>
     </div>
