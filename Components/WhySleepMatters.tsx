@@ -54,7 +54,7 @@ export const WhySleepMatters = () => {
             <div className="flex items-start gap-3">
               <span className="text-2xl">🔄</span>
               <p>
-                <span className="font-semibold">Regulates Body Clock</span> – A consistent sleep cycle improves energy and daily rhythm.
+                <span className="font-semibold">Regulates Body clock</span> – A consistent sleep cycle improves energy and daily rhythm.
               </p>
             </div>
           </div>
