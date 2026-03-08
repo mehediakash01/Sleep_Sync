@@ -26,11 +26,12 @@ import { Blog } from "@/app/types/blog";
 import Container from "@/Components/Container";
 
 interface BlogPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 const BlogPage: React.FC<BlogPageProps> = ({ params }) => {
-  const blog: Blog | undefined = blogs.find((b) => b.id === Number(params.id));
+  const { id } = React.use(params);
+  const blog: Blog | undefined = blogs.find((b) => b.id === Number(id));
   const { data: session, status } = useSession();
   const router = useRouter();
 
