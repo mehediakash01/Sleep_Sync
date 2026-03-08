@@ -37,33 +37,32 @@ const STEPS = [
 
 const HowItWorks = () => {
   return (
-    <div className="bg-white py-20">
-      <Container className="pb-0">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.3 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-4xl font-extrabold text-gray-800">
-            Get started in{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#89CFF0] to-[#B19CD9]">
-              4 simple steps
-            </span>
-          </h2>
-          <p className="text-gray-500 mt-3 max-w-md mx-auto text-sm">
-            No complicated setup. No guesswork. Just better sleep starting tonight.
-          </p>
-        </motion.div>
+    <Container className="pt-16 pb-0">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: false, amount: 0.3 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="text-center mb-16"
+      >
+        <h2 className="text-4xl font-extrabold text-white">
+          Get started in{" "}
+          <span >
+            4 simple steps
+          </span>
+        </h2>
+        <p className="text-white/65 mt-3 max-w-md mx-auto text-sm">
+          No complicated setup. No guesswork. Just better sleep starting tonight.
+        </p>
+      </motion.div>
 
-        {/* Steps */}
-        <div className="relative">
-          {/* Connecting line (desktop) */}
-          <div className="hidden lg:block absolute top-10 left-[10%] right-[10%] h-px bg-gradient-to-r from-[#89CFF0] via-[#B19CD9] to-emerald-400 opacity-30" />
+      {/* Steps */}
+      <div className="relative">
+        {/* Connecting line (desktop) */}
+        <div className="hidden lg:block absolute top-10 left-[10%] right-[10%] h-px bg-gradient-to-r from-[#89CFF0] via-[#B19CD9] to-emerald-400 opacity-30" />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {STEPS.map((step, i) => (
               <motion.div
                 key={step.number}
@@ -78,7 +77,7 @@ const HowItWorks = () => {
                 <div className={`relative w-20 h-20 rounded-full ${step.iconBg} flex items-center justify-center shadow-lg`}>
                   {step.icon}
                   {/* Step number badge */}
-                  <span className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-white border-2 border-gray-100 flex items-center justify-center text-[10px] font-extrabold text-gray-500 shadow">
+                  <span className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-white/20 border-2 border-white/30 flex items-center justify-center text-[10px] font-extrabold text-white/80 shadow">
                     {step.number}
                   </span>
                 </div>
@@ -86,19 +85,19 @@ const HowItWorks = () => {
                 {/* Arrow connector (desktop) */}
                 {i < STEPS.length - 1 && (
                   <div className="hidden lg:flex absolute items-center" style={{ left: `${(i + 1) * 25 - 2}%`, top: "2.2rem" }}>
-                    <ArrowRight size={14} className="text-gray-300" />
+                    <ArrowRight size={14} className="text-white/30" />
                   </div>
                 )}
 
-                <h3 className="text-base font-bold text-gray-800">{step.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{step.desc}</p>
+                <h3 className="text-base font-bold text-white">{step.title}</h3>
+                <p className="text-white/65 text-sm leading-relaxed">{step.desc}</p>
               </motion.div>
             ))}
-          </div>
         </div>
+      </div>
 
-        {/* CTA */}
-        <motion.div
+      {/* CTA */}
+      <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.3 }}
@@ -112,8 +111,7 @@ const HowItWorks = () => {
             Start for free <ArrowRight size={15} />
           </Link>
         </motion.div>
-      </Container>
-    </div>
+    </Container>
   );
 };
 

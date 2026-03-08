@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 const STATS = [
-  { value: 120000, suffix: "+", label: "Sleep Logs Recorded", color: "text-[#89CFF0]" },
+  { value: 120000, suffix: "+", label: "Sleep Logs Recorded", color: "text-[#89CFF]" },
   { value: 94,     suffix: "%", label: "Users Sleep Better",   color: "text-[#B19CD9]" },
   { value: 45,     suffix: "K+",label: "Active Streaks",       color: "text-orange-400" },
   { value: 4.9,    suffix: "★", label: "Average Rating",       color: "text-yellow-400" },
@@ -46,43 +46,41 @@ function CountUp({ to, suffix, duration = 2 }: { to: number; suffix: string; dur
 
 const SleepStats = () => {
   return (
-    <div className="bg-white py-20">
-      <Container className="pb-0">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.3 }}
-          transition={{ duration: 0.55, ease: "easeOut" }}
-          className="text-center mb-14"
-        >
-          <h2 className="text-4xl font-extrabold text-gray-800">
-            Trusted by <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#89CFF0] to-[#B19CD9]">thousands</span> of sleepers
-          </h2>
-          <p className="text-gray-500 mt-3 text-sm max-w-md mx-auto">
-            Our community is growing every night. Here&apos;s what the numbers say.
-          </p>
-        </motion.div>
+    <Container className="pt-16 pb-0">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: false, amount: 0.3 }}
+        transition={{ duration: 0.55, ease: "easeOut" }}
+        className="text-center mb-14"
+      >
+        <h2 className="text-4xl font-extrabold text-white">
+          Trusted by <span >thousands</span> of sleepers
+        </h2>
+        <p className="text-white/65 mt-3 text-sm max-w-md mx-auto">
+          Our community is growing every night. Here&apos;s what the numbers say.
+        </p>
+      </motion.div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-          {STATS.map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ duration: 0.5, delay: i * 0.1, ease: "easeOut" }}
-              whileHover={{ scale: 1.04, y: -4 }}
-              className="flex flex-col items-center justify-center gap-2 p-8 rounded-2xl bg-gray-50 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 text-center"
-            >
-              <p className={`text-4xl lg:text-5xl font-extrabold leading-none ${stat.color}`}>
-                <CountUp to={stat.value} suffix={stat.suffix} />
-              </p>
-              <p className="text-gray-500 text-sm font-medium mt-1">{stat.label}</p>
-            </motion.div>
-          ))}
-        </div>
-      </Container>
-    </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        {STATS.map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.3 }}
+            transition={{ duration: 0.5, delay: i * 0.1, ease: "easeOut" }}
+            whileHover={{ scale: 1.04, y: -4 }}
+            className="flex flex-col items-center justify-center gap-2 p-8 rounded-2xl bg-white/15 backdrop-blur-md border border-white/25 hover:shadow-lg transition-all duration-300 text-center"
+          >
+            <p className={`text-4xl lg:text-5xl font-extrabold leading-none ${stat.color}`}>
+              <CountUp to={stat.value} suffix={stat.suffix} />
+            </p>
+            <p className="text-white/65 text-sm font-medium mt-1">{stat.label}</p>
+          </motion.div>
+        ))}
+      </div>
+    </Container>
   );
 };
 

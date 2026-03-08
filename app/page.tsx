@@ -12,32 +12,17 @@ import { WhySleepMatters } from "@/Components/WhySleepMatters";
 
 export default function Home() {
   return (
-    <div>
-      {/* === GRADIENT SECTIONS === */}
-      <div className="bg-gradient-to-tl from-secondary to-primary">
-        <Banner />
-        <WhySleepMatters />
-        <Features />
-      </div>
-
-      {/* === WHITE BREAK: Stats + How It Works === */}
+    <div className="bg-gradient-to-tl from-secondary to-primary">
+      <Banner />
+      <WhySleepMatters />
+      <Features />
       <SleepStats />
       <HowItWorks />
-
-      {/* === GRADIENT: Streaks + AI Coach + Testimonials === */}
-      <div className="bg-gradient-to-tl from-secondary to-primary">
-        <Streaks />
-        <AiSleepCoach />
-        <Testimonials />
-      </div>
-
-      {/* === WHITE BREAK: FAQ === */}
+      <Streaks />
+      <AiSleepCoach />
+      <Testimonials />
       <FAQ />
-
-      {/* === GRADIENT: Final CTA === */}
-      <div className="bg-gradient-to-tl from-secondary to-primary">
-        <CallToAction />
-      </div>
+      <CallToAction />
     </div>
   );
 }
