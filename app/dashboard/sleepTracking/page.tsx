@@ -2,7 +2,7 @@ import React from 'react'
 import { SleepTrackForm } from './SleepTrackForm'
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/authOptions';
 import Link from 'next/link';
 import { ChevronRight, Moon, ClipboardList } from 'lucide-react';
 
