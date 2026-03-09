@@ -51,28 +51,37 @@ export const authOptions: AuthOptions = {
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "google") {
-        const existingUser = await prisma.user.findUnique({
-          where: { email: user.email! },
-        });
-        if (!existingUser) {
-          await prisma.user.create({
-            data: {
-              name: user.name ?? "Google User",
-              email: user.email!,
-              password: "", // Google users don't use password login
-            },
+        try {
+          const existingUser = await prisma.user.findUnique({
+            where: { email: user.email! },
           });
+          if (!existingUser) {
+            await prisma.user.create({
+              data: {
+                name: user.name ?? "Google User",
+                email: user.email!,
+                password: "",
+              },
+            });
+          }
+        } catch (error) {
+          console.error("[Google signIn] DB error:", error);
+          // Allow sign-in even if DB sync fails
         }
       }
       return true;
     },
     async session({ session }) {
       if (session.user?.email) {
-        const dbUser = await prisma.user.findUnique({
-          where: { email: session.user.email },
-        });
-        if (dbUser) {
-          session.user.id = dbUser.id.toString();
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { email: session.user.email },
+          });
+          if (dbUser) {
+            session.user.id = dbUser.id.toString();
+          }
+        } catch (error) {
+          console.error("[session callback] DB error:", error);
         }
       }
       return session;
