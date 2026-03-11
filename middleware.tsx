@@ -1,38 +1,56 @@
-import { NextResponse, type NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { NextRequest, NextResponse } from 'next/server'
 
-const AUTH_PAGES = ["/login", "/register"];
-const PROTECTED_PREFIXES = ["/dashboard"]; // add more private sections if needed
+const PUBLIC_FILE = /\.(.*)$/
 
-function isProtectedPath(pathname: string) {
-  return PROTECTED_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
-  );
-}
+const publicRoutes = ['/', '/login', '/signup', '/forgot-password']
+const protectedRoutes = ['/dashboard', '/profile', '/settings', '/sleep']
 
-function isAuthPage(pathname: string) {
-  return AUTH_PAGES.includes(pathname);
-}
+export function middleware(request: NextRequest) {
+  const { pathname, search } = request.nextUrl
 
-export async function middleware(req: NextRequest) {
-  const { pathname, search } = req.nextUrl;
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-
-  // Guest trying to open private area -> login
-  if (!token && isProtectedPath(pathname)) {
-    const loginUrl = new URL("/login", req.url);
-    loginUrl.searchParams.set("callbackUrl", `${pathname}${search}`);
-    return NextResponse.redirect(loginUrl);
+  // Skip Next.js internals, API routes, and static files
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname === '/favicon.ico' ||
+    pathname === '/robots.txt' ||
+    pathname === '/sitemap.xml' ||
+    PUBLIC_FILE.test(pathname)
+  ) {
+    return NextResponse.next()
   }
 
-  // Logged-in user opening login/register -> dashboard
-  if (token && isAuthPage(pathname)) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+  const isPublicRoute = publicRoutes.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`)
+  )
+
+  const isProtectedRoute = protectedRoutes.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`)
+  )
+
+  // Update these cookie names to match the app
+  const token =
+    request.cookies.get('token')?.value ||
+    request.cookies.get('auth-token')?.value ||
+    request.cookies.get('session')?.value
+
+  // Redirect unauthenticated users away from protected pages
+  if (isProtectedRoute && !token) {
+    const loginUrl = new URL('/login', request.url)
+    loginUrl.searchParams.set('from', `${pathname}${search}`)
+    return NextResponse.redirect(loginUrl)
   }
 
-  return NextResponse.next();
+  // Prevent authenticated users from going back to auth pages
+  if (token && isPublicRoute && pathname !== '/') {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+
+  return NextResponse.next()
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/login", "/register"],
-};
+  matcher: [
+    '/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)',
+  ],
+}
