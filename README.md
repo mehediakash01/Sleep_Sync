@@ -178,6 +178,16 @@ NEXTAUTH_URL="http://localhost:3000"
 # Google Gemini AI
 GEMINI_API_KEY="your-gemini-api-key"
 
+# Cloudflare Browser Rendering Crawl API
+CLOUDFLARE_ACCOUNT_ID="your-cloudflare-account-id"
+CLOUDFLARE_API_TOKEN="your-cloudflare-api-token"
+
+# Crawl endpoint access control
+# Comma-separated admin emails allowed to call /api/crawl-knowledge and /api/crawl-status/[jobId]
+CRAWL_ADMIN_EMAILS="admin@example.com,owner@example.com"
+# Optional cron secret header for server-to-server jobs (send as x-cron-secret)
+CRAWL_CRON_SECRET="your-random-cron-secret"
+
 # Nodemailer (Gmail SMTP)
 EMAIL_USER="your-gmail@gmail.com"
 EMAIL_PASS="your-gmail-app-password"
@@ -226,6 +236,8 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 | GET | `/api/streak?email=` | Get current & longest streak data |
 | POST | `/api/aiChat` | Send a message to Gemini AI |
 | POST | `/api/aiTips` | Generate a personalised sleep tip |
+| POST | `/api/crawl-knowledge` | Start Cloudflare crawl job and return `jobId` |
+| GET | `/api/crawl-status/[jobId]` | Get crawl status/results (`wait=true` to poll, `store=true` to persist into DB) |
 | GET / POST | `/api/comments?blogId=` | Get or post blog comments |
 | POST / DELETE | `/api/likes` | Like or unlike a blog post |
 | GET / POST | `/api/notifications` | Fetch or create notifications |

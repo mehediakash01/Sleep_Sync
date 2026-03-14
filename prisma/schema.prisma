@@ -100,3 +100,17 @@ model NotificationSetting {
 
   @@map("notification_settings")
 }
+
+model KnowledgeArticle {
+  id        String   @id @default(cuid())
+  url       String   @unique
+  content   String   @db.Text
+  source    String
+  crawledAt DateTime @default(now()) @map("crawled_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([source])
+  @@index([crawledAt])
+  @@map("knowledge_articles")
+}
