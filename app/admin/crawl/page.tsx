@@ -1,5 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 import prisma from "@/prisma/prismaClient";
 import { authOptions } from "@/lib/authOptions";
 import { triggerWeeklyCrawl } from "@/lib/weeklyCrawl";
@@ -39,16 +40,16 @@ async function triggerWeeklyCrawlAction(): Promise<void> {
 export default async function AdminCrawlPage() {
   const session = await getServerSession(authOptions);
   const userEmail = session?.user?.email ? normalizeEmail(session.user.email) : "";
+
+  if (!userEmail) {
+    redirect("/login?from=/admin/crawl");
+  }
+
   const adminEmails = getAdminEmails();
   const isAdmin = Boolean(userEmail && adminEmails.has(userEmail));
 
   if (!isAdmin) {
-    return (
-      <main className="max-w-5xl mx-auto px-6 py-10">
-        <h1 className="text-2xl font-bold">Crawl Admin</h1>
-        <p className="mt-4 text-red-600">You are not authorized to view this page.</p>
-      </main>
-    );
+    redirect("/dashboard");
   }
 
   const [sources, entries] = await Promise.all([

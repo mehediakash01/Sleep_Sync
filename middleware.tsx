@@ -1,12 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-const PUBLIC_FILE = /\.(.*)$/
+const PUBLIC_FILE = /\.(.*)$/;
 
-const publicRoutes = ['/', '/login', '/signup', '/forgot-password']
-const protectedRoutes = ['/dashboard', '/profile', '/settings', '/sleep']
+const publicRoutes = ["/", "/login", "/register", "/forgot-password"];
+const protectedRoutes = ["/dashboard", "/profile", "/settings", "/sleep", "/admin"];
 
-export function middleware(request: NextRequest) {
-  const { pathname, search } = request.nextUrl
+export async function middleware(request: NextRequest) {
+  const { pathname, search } = request.nextUrl;
 
   // Skip Next.js internals, API routes, and static files
   if (
@@ -17,40 +18,41 @@ export function middleware(request: NextRequest) {
     pathname === '/sitemap.xml' ||
     PUBLIC_FILE.test(pathname)
   ) {
-    return NextResponse.next()
+    return NextResponse.next();
   }
 
   const isPublicRoute = publicRoutes.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`)
-  )
+  );
 
   const isProtectedRoute = protectedRoutes.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`)
-  )
+  );
 
-  // Update these cookie names to match the app
-  const token =
-    request.cookies.get('token')?.value ||
-    request.cookies.get('auth-token')?.value ||
-    request.cookies.get('session')?.value
+  // Read NextAuth JWT/session token in middleware-safe way.
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
+  const isAuthenticated = Boolean(token);
 
   // Redirect unauthenticated users away from protected pages
-  if (isProtectedRoute && !token) {
-    const loginUrl = new URL('/login', request.url)
-    loginUrl.searchParams.set('from', `${pathname}${search}`)
-    return NextResponse.redirect(loginUrl)
+  if (isProtectedRoute && !isAuthenticated) {
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("from", `${pathname}${search}`);
+    return NextResponse.redirect(loginUrl);
   }
 
   // Prevent authenticated users from going back to auth pages
-  if (token && isPublicRoute && pathname !== '/') {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+  if (isAuthenticated && isPublicRoute && pathname !== "/") {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  return NextResponse.next()
+  return NextResponse.next();
 }
 
 export const config = {
   matcher: [
     '/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)',
   ],
-}
+};
