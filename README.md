@@ -238,6 +238,8 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 | POST | `/api/aiTips` | Generate a personalised sleep tip |
 | POST | `/api/crawl-knowledge` | Start Cloudflare crawl job and return `jobId` |
 | GET | `/api/crawl-status/[jobId]` | Get crawl status/results (`wait=true` to poll, `store=true` to persist into DB) |
+| POST / GET | `/api/crawl/weekly` | Trigger incremental weekly crawl jobs for trusted sources |
+| POST | `/api/crawl/poll` | Poll a crawl job until complete and persist pages into DB |
 | GET / POST | `/api/comments?blogId=` | Get or post blog comments |
 | POST / DELETE | `/api/likes` | Like or unlike a blog post |
 | GET / POST | `/api/notifications` | Fetch or create notifications |
@@ -269,6 +271,23 @@ The easiest way to deploy is [Vercel](https://vercel.com):
 2. Import the project on [vercel.com/new](https://vercel.com/new)
 3. Add all environment variables from your `.env` file in the Vercel dashboard
 4. Click **Deploy**
+
+### Vercel Cron Example
+
+`vercel.json` can schedule weekly crawl every Monday at 03:00 UTC:
+
+```json
+{
+   "crons": [
+      {
+         "path": "/api/crawl/weekly",
+         "schedule": "0 3 * * 1"
+      }
+   ]
+}
+```
+
+Set `CRON_SECRET` (or `CRAWL_CRON_SECRET`) in Vercel env. The crawl auth accepts `Authorization: Bearer <secret>` and `x-cron-secret`.
 
 > Make sure your MySQL database is publicly accessible. Recommended managed providers: **PlanetScale**, **Railway**, **Aiven**, or **TiDB Cloud**.
 

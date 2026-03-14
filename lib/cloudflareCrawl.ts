@@ -8,6 +8,7 @@ export interface CrawlStartBody {
   depth?: number;
   formats?: CrawlFormat[];
   render?: boolean;
+  modifiedSince?: string;
   incremental?: Record<string, unknown>;
 }
 

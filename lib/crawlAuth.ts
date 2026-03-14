@@ -24,10 +24,18 @@ function getAdminEmails(): Set<string> {
 export async function authorizeCrawlAccess(
   request: NextRequest
 ): Promise<CrawlAuthResult> {
-  const cronSecret = process.env.CRAWL_CRON_SECRET;
+  const cronSecret = process.env.CRAWL_CRON_SECRET ?? process.env.CRON_SECRET;
   const providedCronSecret = request.headers.get("x-cron-secret");
+  const authHeader = request.headers.get("authorization") ?? "";
+  const bearerSecret = authHeader.startsWith("Bearer ")
+    ? authHeader.slice("Bearer ".length).trim()
+    : "";
 
-  if (cronSecret && providedCronSecret && providedCronSecret === cronSecret) {
+  if (
+    cronSecret &&
+    ((providedCronSecret && providedCronSecret === cronSecret) ||
+      (bearerSecret && bearerSecret === cronSecret))
+  ) {
     return { ok: true, via: "cron" };
   }
 

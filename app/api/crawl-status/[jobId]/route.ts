@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { authorizeCrawlAccess } from "@/lib/crawlAuth";
 import { getCloudflareCrawlStatus } from "@/lib/cloudflareCrawl";
 import prisma from "@/prisma/prismaClient";
+import { pollJob } from "@/lib/crawlPoller";
 
 interface CrawlStatusResponse {
   success: boolean;
@@ -67,19 +68,30 @@ export async function GET(
     }
 
     let persistedCount = 0;
-    if (shouldStore && status.done && status.pages.length > 0) {
+    if (shouldStore && shouldWait) {
+      const pollResult = await pollJob(jobId, source, {
+        intervalMs: safeIntervalMs,
+        timeoutMs: safeTimeoutMs,
+      });
+
+      pollCount = pollResult.pollCount;
+      persistedCount = pollResult.persistedCount;
+      status = await getCloudflareCrawlStatus(jobId);
+    } else if (shouldStore && status.done && status.pages.length > 0) {
       const operations = status.pages.map((page) =>
         prisma.knowledgeArticle.upsert({
           where: { url: page.url },
           update: {
             content: page.markdown,
             source,
+            status: "success",
             crawledAt: new Date(),
           },
           create: {
             url: page.url,
             content: page.markdown,
             source,
+            status: "success",
           },
         })
       );
