@@ -82,12 +82,61 @@ async function getSleepLogSummaryFromSession(): Promise<string> {
   return summarizeSleepLogs(logs);
 }
 
+// Simple in-process rate limiter: max 4 requests per user per minute
+const userRateMap = new Map<string, { count: number; windowStart: number }>();
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX = 4;
+
+function checkRateLimit(userId: string): { allowed: boolean; waitSeconds: number } {
+  const now = Date.now();
+  const entry = userRateMap.get(userId);
+
+  if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
+    userRateMap.set(userId, { count: 1, windowStart: now });
+    return { allowed: true, waitSeconds: 0 };
+  }
+
+  if (entry.count >= RATE_LIMIT_MAX) {
+    const waitSeconds = Math.ceil((RATE_LIMIT_WINDOW_MS - (now - entry.windowStart)) / 1000);
+    return { allowed: false, waitSeconds };
+  }
+
+  entry.count += 1;
+  return { allowed: true, waitSeconds: 0 };
+}
+
+function parseRetryDelay(error: unknown): number | null {
+  try {
+    const msg = error instanceof Error ? error.message : String(error);
+    const match = msg.match(/"retryDelay"\s*:\s*"(\d+(?:\.\d+)?)s"/);
+    if (match) return Math.ceil(parseFloat(match[1]));
+    const secMatch = msg.match(/retry in (\d+(?:\.\d+)?)s/i);
+    if (secMatch) return Math.ceil(parseFloat(secMatch[1]));
+  } catch {
+    // ignore
+  }
+  return null;
+}
+
 export async function POST(req: Request) {
   try {
     const { messages }: ChatRequestBody = await req.json();
 
     if (!Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json({ message: "messages are required" }, { status: 400 });
+    }
+
+    // Per-user rate limiting to protect API quota
+    const session = await getServerSession(authOptions);
+    const rateLimitKey = session?.user?.email ?? req.headers.get("x-forwarded-for") ?? "anon";
+    const rateCheck = checkRateLimit(rateLimitKey);
+    if (!rateCheck.allowed) {
+      return NextResponse.json(
+        {
+          reply: `You're sending messages too fast — please wait ${rateCheck.waitSeconds} second${rateCheck.waitSeconds !== 1 ? "s" : ""} before trying again 🌙`,
+        },
+        { status: 429 }
+      );
     }
 
     const userQuestion = getLastUserQuestion(messages);
@@ -156,13 +205,19 @@ Give practical, evidence-based advice. Keep response concise and encouraging.
   } catch (error) {
     console.error("AI Chat Error:", error);
 
-    const isRateLimit =
-      error instanceof Error && error.message.includes("429");
+    const is429 = error instanceof Error && error.message.includes("429");
+    if (is429) {
+      const waitSec = parseRetryDelay(error);
+      const waitMsg = waitSec
+        ? `Please wait ${waitSec} second${waitSec !== 1 ? "s" : ""} and try again.`
+        : "Please wait a moment and try again.";
+      return NextResponse.json({
+        reply: `The AI service is temporarily over capacity. ${waitMsg} 🌙`,
+      });
+    }
 
     return NextResponse.json({
-      reply: isRateLimit
-        ? "I'm getting too many requests right now — please wait a minute and try again 🌙"
-        : "I hit a temporary issue while thinking. Try asking again in a moment and I will help you with a practical sleep plan 🌙",
+      reply: "I hit a temporary issue while thinking. Try asking again in a moment 🌙",
     });
   }
 }
