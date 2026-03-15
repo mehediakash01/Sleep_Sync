@@ -1,5 +1,16 @@
 import prisma from "@/prisma/prismaClient";
 
+export interface RagSource {
+  label: string;
+  url: string;
+  crawledAt: string;
+}
+
+export interface RetrievalResult {
+  context: string;
+  sources: RagSource[];
+}
+
 const STOP_WORDS = new Set([
   "a",
   "an",
@@ -87,10 +98,12 @@ function trimRetrievedText(text: string): string {
   return `${text.slice(0, MAX_RETRIEVED_CHARS)}\n\n[Knowledge context truncated for token safety]`;
 }
 
-export async function retrieveRelevantKnowledge(query: string): Promise<string> {
+export async function retrieveRelevantKnowledgeWithSources(
+  query: string
+): Promise<RetrievalResult> {
   const keywords = tokenize(query);
   if (keywords.length === 0) {
-    return "";
+    return { context: "", sources: [] };
   }
 
   // Broadly filter with OR on keywords, then apply lightweight scoring in memory.
@@ -131,7 +144,7 @@ export async function retrieveRelevantKnowledge(query: string): Promise<string> 
     .slice(0, MAX_MATCHES);
 
   if (ranked.length === 0) {
-    return "";
+    return { context: "", sources: [] };
   }
 
   const now = Date.now();
@@ -145,5 +158,19 @@ export async function retrieveRelevantKnowledge(query: string): Promise<string> 
     return `${index + 1}. From ${domainLabel(entry.url)}${staleTag}\nSource: ${entry.url}\nExcerpt: ${snippet}`;
   });
 
-  return trimRetrievedText(sections.join("\n\n"));
+  const sources: RagSource[] = ranked.map((entry) => ({
+    label: domainLabel(entry.url),
+    url: entry.url,
+    crawledAt: entry.crawledAt.toISOString(),
+  }));
+
+  return {
+    context: trimRetrievedText(sections.join("\n\n")),
+    sources,
+  };
+}
+
+export async function retrieveRelevantKnowledge(query: string): Promise<string> {
+  const result = await retrieveRelevantKnowledgeWithSources(query);
+  return result.context;
 }

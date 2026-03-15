@@ -8,6 +8,11 @@ interface Message {
   role: "user" | "assistant";
   content: string;
   timestamp?: number;
+  sources?: Array<{
+    label: string;
+    url: string;
+    crawledAt: string;
+  }>;
 }
 
 interface Conversation {
@@ -148,6 +153,7 @@ export default function AiChatSection() {
         role: "assistant",
         content: res.data.reply ?? "Sorry, I couldn't respond properly.",
         timestamp: Date.now(),
+        sources: Array.isArray(res.data.sources) ? res.data.sources : undefined,
       };
 
       // Update conversation with AI response
@@ -390,6 +396,28 @@ export default function AiChatSection() {
                       >
                         {msg.content}
                       </div>
+                      {msg.role === "assistant" && msg.sources && msg.sources.length > 0 && (
+                        <div className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] text-slate-600">
+                          <p className="font-semibold text-slate-700">Sources:</p>
+                          <ul className="mt-1 space-y-1">
+                            {msg.sources.map((source, idx) => (
+                              <li key={`${source.url}-${idx}`} className="leading-relaxed">
+                                <a
+                                  href={source.url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-sky-700 underline hover:text-sky-800"
+                                >
+                                  {source.label}
+                                </a>{" "}
+                                <span className="text-slate-500">
+                                  ({new Date(source.crawledAt).getFullYear()})
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                       {msg.timestamp && (
                         <p className="text-[10px] text-gray-400 px-1">
                           {new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}

@@ -3,7 +3,10 @@ import { ai } from "@/lib/gemini";
 import prisma from "@/prisma/prismaClient";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
-import { retrieveRelevantKnowledge } from "@/lib/retrieveRelevantKnowledge";
+import {
+  retrieveRelevantKnowledgeWithSources,
+  type RagSource,
+} from "@/lib/retrieveRelevantKnowledge";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -12,6 +15,11 @@ interface ChatMessage {
 
 interface ChatRequestBody {
   messages: ChatMessage[];
+}
+
+interface ChatResponseBody {
+  reply: string;
+  sources?: RagSource[];
 }
 
 function getLastUserQuestion(messages: ChatMessage[]): string {
@@ -142,18 +150,21 @@ export async function POST(req: Request) {
     const userQuestion = getLastUserQuestion(messages);
     const useRag = process.env.USE_RAG?.toLowerCase() === "true";
 
-    const [retrievedKnowledge, sleepLogSummary] = await Promise.all([
+    const [ragResult, sleepLogSummary] = await Promise.all([
       useRag && userQuestion
-        ? retrieveRelevantKnowledge(userQuestion).catch((error) => {
+        ? retrieveRelevantKnowledgeWithSources(userQuestion).catch((error) => {
             console.error("[aiChat] RAG retrieval failed:", error);
-            return "";
+            return { context: "", sources: [] };
           })
-        : Promise.resolve(""),
+        : Promise.resolve({ context: "", sources: [] }),
       getSleepLogSummaryFromSession().catch((error) => {
         console.error("[aiChat] sleep log context failed:", error);
         return "No recent sleep logs available.";
       }),
     ]);
+
+    const retrievedKnowledge = ragResult.context;
+    const ragSources = ragResult.sources;
 
     // Convert your frontend message format to Gemini's expected format
     const formatted = messages.map((m) => ({
@@ -183,6 +194,7 @@ User question:
 ${userQuestion || "No explicit user question provided."}
 
 Give practical, evidence-based advice. Keep response concise and encouraging.
+Cite sources like (Mayo Clinic, 2026) for any used knowledge.
     `.trim();
 
     const systemPrompt = useRag && retrievedKnowledge ? ragPrompt : basePrompt;
@@ -201,7 +213,12 @@ Give practical, evidence-based advice. Keep response concise and encouraging.
       response?.candidates?.[0]?.content?.parts?.[0]?.text ??
       "Sorry, I couldn't think clearly 😴";
 
-    return NextResponse.json({ reply });
+    const responseBody: ChatResponseBody = { reply };
+    if (useRag && ragSources.length > 0) {
+      responseBody.sources = ragSources;
+    }
+
+    return NextResponse.json(responseBody);
   } catch (error) {
     console.error("AI Chat Error:", error);
 
