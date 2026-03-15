@@ -32,8 +32,8 @@ const STOP_WORDS = new Set([
 const MAX_KEYWORDS = 8;
 const MAX_CANDIDATES = 80;
 const MAX_MATCHES = 5;
-const MAX_SNIPPET_CHARS = 500;
-const MAX_RETRIEVED_CHARS = 3500;
+const MAX_SNIPPET_CHARS = 400;
+const MAX_RETRIEVED_CHARS = 1800;
 const KNOWLEDGE_STALE_DAYS = 30;
 
 function tokenize(query: string): string[] {

@@ -138,25 +138,32 @@ Give practical, evidence-based advice. Keep response concise and encouraging.
 
     const systemPrompt = useRag && retrievedKnowledge ? ragPrompt : basePrompt;
 
+    // Keep only the last 10 messages to limit token usage
+    const trimmedMessages = formatted.slice(-10);
+
     // Generate the AI response
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: [
-        { role: "user", parts: [{ text: systemPrompt }] },
-        ...formatted,
-      ],
+      model: "gemini-2.0-flash-lite",
+      config: { systemInstruction: systemPrompt },
+      contents: trimmedMessages,
     });
 
     const reply =
       response?.candidates?.[0]?.content?.parts?.[0]?.text ??
-      "Sorry, I couldn’t think clearly 😴";
+      "Sorry, I couldn't think clearly 😴";
 
     return NextResponse.json({ reply });
   } catch (error) {
     console.error("AI Chat Error:", error);
+
+    const isRateLimit =
+      error instanceof Error && error.message.includes("429");
+
     return NextResponse.json({
-      reply:
-        "I hit a temporary issue while thinking. Try asking again in a moment and I will help you with a practical sleep plan 🌙",
+      reply: isRateLimit
+        ? "I'm getting too many requests right now — please wait a minute and try again 🌙"
+        : "I hit a temporary issue while thinking. Try asking again in a moment and I will help you with a practical sleep plan 🌙",
     });
   }
 }
+
