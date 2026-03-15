@@ -121,7 +121,7 @@ model CrawlSource {
   source        String    @unique
   lastCrawledAt DateTime? @map("last_crawled_at")
   lastJobId     String?   @map("last_job_id")
-  lastStatus    String    @default("idle")
+  lastStatus    String    @default("idle") @map("last_status")
   lastError     String?   @map("last_error") @db.Text
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")

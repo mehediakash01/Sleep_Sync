@@ -154,9 +154,9 @@ Give practical, evidence-based advice. Keep response concise and encouraging.
     return NextResponse.json({ reply });
   } catch (error) {
     console.error("AI Chat Error:", error);
-    return NextResponse.json(
-      { message: "AI chat failed" },
-      { status: 500 }
-    );
+    return NextResponse.json({
+      reply:
+        "I hit a temporary issue while thinking. Try asking again in a moment and I will help you with a practical sleep plan 🌙",
+    });
   }
 }

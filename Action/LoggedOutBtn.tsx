@@ -2,15 +2,11 @@
 
 import { signOut } from "next-auth/react";
 import { LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
 const LoggedOutBtn= () => {
-  const router = useRouter();
-
   const handleLogout = async () => {
-    await signOut({ redirect: false });
-    router.push("/login"); // Redirect after logout
+    await signOut({ callbackUrl: "/login" });
   };
 
   return (
