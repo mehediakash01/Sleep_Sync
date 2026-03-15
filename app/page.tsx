@@ -5,6 +5,7 @@ import CallToAction from "@/Components/CallToAction";
 import FAQ from "@/Components/FAQ";
 import Features from "@/Components/Features";
 import HowItWorks from "@/Components/HowItWorks";
+import KnowledgeHubSection from "@/Components/KnowledgeHubSection";
 import SleepStats from "@/Components/SleepStats";
 import Streaks from "@/Components/Streaks";
 import Testimonials from "@/Components/Testimonials";
@@ -20,6 +21,7 @@ export default function Home() {
       <HowItWorks />
       <Streaks />
       <AiSleepCoach />
+      <KnowledgeHubSection />
       <Testimonials />
       <FAQ />
       <CallToAction />
