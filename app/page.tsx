@@ -489,14 +489,14 @@ export default function Home() {
           id="dashboard-preview"
           className="mx-auto max-w-7xl px-6 py-24 lg:px-8"
         >
-          <div className="grid items-start gap-10 lg:grid-cols-[0.78fr_1.22fr]">
+          <div className="lg:flex   gap-10 justify-center">
             <motion.div
               variants={rise}
               initial="hidden"
               whileInView="show"
               viewport={{ once: true, amount: 0.3 }}
               custom={0}
-              className="space-y-6"
+              className="space-y-6 sm:mb-8"
             >
               <div className={eyebrow}>Live Dashboard Preview</div>
               <h2 className="text-4xl  flex flex-col gap-3 font-semibold tracking-[-0.03em] sm:text-5xl">
@@ -616,9 +616,26 @@ export default function Home() {
                       ))}
                     </div>
                   </div>
+                       <div className={`${shell} p-6`}>
+                    <p className="text-sm font-medium">Current streak</p>
+                    <div className="mt-4 flex items-end justify-between gap-4">
+                      <div>
+                        <p className="text-4xl font-semibold tracking-[-0.03em]">
+                          14 nights
+                        </p>
+                        <p className="mt-2 text-sm leading-7 text-[#F5F0E8]/58">
+                          You&apos;re on fire. Consistency is becoming your
+                          superpower.
+                        </p>
+                      </div>
+                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#00E5C2]/12 text-[#00E5C2] shadow-[0_0_30px_rgba(0,229,194,0.16)]">
+                        <Flame className="h-7 w-7" />
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-6 lg:w-80">
                   <div
                     className={`${shell} bg-[linear-gradient(180deg,rgba(16,28,53,0.92),rgba(8,16,30,0.92))] p-6`}
                   >
@@ -669,23 +686,7 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className={`${shell} p-6`}>
-                    <p className="text-sm font-medium">Current streak</p>
-                    <div className="mt-4 flex items-end justify-between gap-4">
-                      <div>
-                        <p className="text-4xl font-semibold tracking-[-0.03em]">
-                          14 nights
-                        </p>
-                        <p className="mt-2 text-sm leading-7 text-[#F5F0E8]/58">
-                          You&apos;re on fire. Consistency is becoming your
-                          superpower.
-                        </p>
-                      </div>
-                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#00E5C2]/12 text-[#00E5C2] shadow-[0_0_30px_rgba(0,229,194,0.16)]">
-                        <Flame className="h-7 w-7" />
-                      </div>
-                    </div>
-                  </div>
+             
                 </div>
               </div>
             </motion.div>
