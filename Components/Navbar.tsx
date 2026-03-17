@@ -1,26 +1,58 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export const Navbar = () => {
   const { data: session } = useSession();
   const router = useRouter();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement | null>(null);
+
+  const avatarFallbackSrc = useMemo(() => {
+    const seed = session?.user?.name || session?.user?.email || "SleepSync User";
+    return `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(
+      seed
+    )}`;
+  }, [session?.user?.name, session?.user?.email]);
 
   const handleAvatarClick = () => {
+    setIsProfileMenuOpen(false);
     router.push("/dashboard");
+  };
+
+  const handleLogout = async () => {
+    setIsOpen(false);
+    setIsProfileMenuOpen(false);
+    await signOut({ callbackUrl: "/" });
   };
 
   const handleClose = () => {
     setIsOpen(false);
   };
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsProfileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
 
   const navItems = [
     { href: "/", label: "Home" },
@@ -99,15 +131,66 @@ export const Navbar = () => {
         </div>
 
         {/* User Avatar / Login Button */}
-        <div className="navbar-end">
+        <div className="navbar-end relative" ref={profileMenuRef}>
           {session?.user ? (
-            <button
-              onClick={handleAvatarClick}
-              className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-semibold text-lg hover:shadow-lg transition-all duration-200 hover:scale-105"
-              title="Go to Dashboard"
-            >
-              {session.user.email?.[0].toUpperCase()}
-            </button>
+            <>
+              <button
+                onClick={() => setIsProfileMenuOpen((prev) => !prev)}
+                className="w-12 h-12 rounded-full ring-2 ring-indigo-200 hover:ring-indigo-400 transition-all duration-200 overflow-hidden shadow-sm hover:shadow-lg"
+                title="Open profile menu"
+              >
+                <img
+                  src={session.user.image || avatarFallbackSrc}
+                  alt="User avatar"
+                  className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              </button>
+
+              <AnimatePresence>
+                {isProfileMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute top-14 right-0 w-64 rounded-2xl border border-gray-200 bg-white shadow-xl p-3"
+                  >
+                    <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
+                      <img
+                        src={session.user.image || avatarFallbackSrc}
+                        alt="User avatar"
+                        className="w-11 h-11 rounded-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-gray-900 truncate">
+                          {session.user.name || "User"}
+                        </p>
+                        <p className="text-xs text-gray-500 truncate">
+                          {session.user.email}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="pt-3 space-y-2">
+                      <button
+                        onClick={handleAvatarClick}
+                        className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+                      >
+                        Dashboard
+                      </button>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-rose-600 hover:bg-rose-50 transition-colors"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </>
           ) : (
             <Link href="/login">
               <button className="btn   bg-gradient-to-l from-secondary to-primary rounded-full">
@@ -168,9 +251,12 @@ export const Navbar = () => {
               {session?.user && (
                 <div className="p-6 bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-gray-200">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-semibold text-lg">
-                      {session.user.email?.[0].toUpperCase()}
-                    </div>
+                    <img
+                      src={session.user.image || avatarFallbackSrc}
+                      alt="User avatar"
+                      className="w-12 h-12 rounded-full object-cover ring-2 ring-indigo-200"
+                      referrerPolicy="no-referrer"
+                    />
                     <div>
                       <p className="font-semibold text-gray-900">
                         {session.user.name || "User"}
@@ -219,15 +305,23 @@ export const Navbar = () => {
               {/* Drawer Footer - Login/Dashboard Button */}
               <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-white">
                 {session?.user ? (
-                  <button
-                    onClick={() => {
-                      handleClose();
-                      handleAvatarClick();
-                    }}
-                    className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 rounded-lg font-medium hover:shadow-lg transition-all duration-200"
-                  >
-                    Go to Dashboard
-                  </button>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      onClick={() => {
+                        handleClose();
+                        handleAvatarClick();
+                      }}
+                      className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 rounded-lg font-medium hover:shadow-lg transition-all duration-200"
+                    >
+                      Dashboard
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full bg-rose-50 text-rose-600 py-3 rounded-lg font-medium hover:bg-rose-100 transition-colors"
+                    >
+                      Logout
+                    </button>
+                  </div>
                 ) : (
                   <Link href="/login" onClick={handleClose}>
                     <button className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 rounded-lg font-medium hover:shadow-lg transition-all duration-200">
