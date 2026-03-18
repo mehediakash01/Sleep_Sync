@@ -65,7 +65,7 @@ export const Navbar = () => {
 
   return (
     <>
-      <nav className="navbar  backdrop-blur-md py-4 fixed z-50 px-6 lg:px-24 ">
+      <nav className="navbar backdrop-blur-md py-3 sm:py-4 fixed z-50 left-0 right-0 w-full px-3 sm:px-6 lg:px-24">
         <div className="navbar-start">
           {/* Mobile Menu Button */}
           <button
@@ -95,7 +95,7 @@ export const Navbar = () => {
 
         {/* Desktop Navigation */}
         <div className="navbar-center hidden lg:flex">
-          <ul className="flex gap-8">
+          <ul className="flex gap-6 xl:gap-8">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
 
@@ -131,12 +131,12 @@ export const Navbar = () => {
         </div>
 
         {/* User Avatar / Login Button */}
-        <div className="navbar-end relative" ref={profileMenuRef}>
+        <div className="navbar-end relative gap-2" ref={profileMenuRef}>
           {session?.user ? (
             <>
               <button
                 onClick={() => setIsProfileMenuOpen((prev) => !prev)}
-                className="w-12 h-12 rounded-full ring-2 ring-indigo-200 hover:ring-indigo-400 transition-all duration-200 overflow-hidden shadow-sm hover:shadow-lg"
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full ring-2 ring-indigo-200 hover:ring-indigo-400 transition-all duration-200 overflow-hidden shadow-sm hover:shadow-lg"
                 title="Open profile menu"
               >
                 <img
@@ -154,7 +154,7 @@ export const Navbar = () => {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -8, scale: 0.98 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute top-14 right-0 w-64 rounded-2xl border border-gray-200 bg-white shadow-xl p-3"
+                    className="absolute top-12 sm:top-14 right-0 w-56 sm:w-64 rounded-2xl border border-gray-200 bg-white shadow-xl p-3"
                   >
                     <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
                       <img
@@ -193,7 +193,7 @@ export const Navbar = () => {
             </>
           ) : (
             <Link href="/login">
-              <button className="btn   bg-gradient-to-l from-secondary to-primary rounded-full">
+              <button className="btn btn-sm sm:btn-md bg-gradient-to-l from-secondary to-primary rounded-full">
                 Login
               </button>
             </Link>
@@ -225,7 +225,7 @@ export const Navbar = () => {
                 damping: 25,
                 stiffness: 200,
               }}
-              className="fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 lg:hidden overflow-y-auto"
+              className="fixed top-0 left-0 h-full w-[85vw] max-w-sm bg-white shadow-2xl z-50 lg:hidden flex flex-col"
             >
               {/* Drawer Header */}
               <div className="flex items-center justify-between p-6 border-b border-gray-200">
@@ -270,7 +270,7 @@ export const Navbar = () => {
               )}
 
               {/* Mobile Navigation Links */}
-              <nav className="p-4">
+              <nav className="p-4 flex-1 overflow-y-auto pb-28">
                 <ul className="space-y-2">
                   {navItems.map((item, index) => {
                     const isActive = pathname === item.href;
@@ -303,7 +303,7 @@ export const Navbar = () => {
               </nav>
 
               {/* Drawer Footer - Login/Dashboard Button */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-white">
+              <div className="sticky bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-white">
                 {session?.user ? (
                   <div className="grid grid-cols-2 gap-3">
                     <button
