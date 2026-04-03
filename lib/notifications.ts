@@ -77,6 +77,12 @@ export async function notifyStreak(
   userName: string,
   days: number
 ) {
+  const settings = await prisma.notificationSetting.findUnique({
+    where: { userId },
+  });
+
+  if (settings && !settings.streakAlert) return;
+
   await createNotification({
     userId,
     userEmail,
@@ -115,6 +121,12 @@ export async function notifyBedtimeReminder(
   userEmail: string,
   userName: string
 ) {
+  const settings = await prisma.notificationSetting.findUnique({
+    where: { userId },
+  });
+
+  if (settings && !settings.bedtimeReminder) return;
+
   await createNotification({
     userId,
     userEmail,

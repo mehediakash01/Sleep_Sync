@@ -22,6 +22,32 @@ interface ChatResponseBody {
   sources?: RagSource[];
 }
 
+const MAX_HISTORY_MESSAGES = 6;
+const MAX_SLEEP_LOGS = 3;
+const MAX_OUTPUT_TOKENS = 320;
+const RAG_TRIGGER_KEYWORDS = [
+  "insomnia",
+  "sleep apnea",
+  "sleep cycle",
+  "sleep quality",
+  "deep sleep",
+  "rem",
+  "circadian",
+  "melatonin",
+  "caffeine",
+  "alcohol",
+  "jet lag",
+  "stress",
+  "anxiety",
+  "research",
+  "study",
+  "evidence",
+  "supplement",
+  "blue light",
+  "wind down",
+  "bedtime",
+];
+
 function getLastUserQuestion(messages: ChatMessage[]): string {
   for (let i = messages.length - 1; i >= 0; i -= 1) {
     if (messages[i].role === "user") {
@@ -46,13 +72,14 @@ function summarizeSleepLogs(
   }
 
   return logs
+    .slice(0, MAX_SLEEP_LOGS)
     .map((log) => {
       const durationHours =
         (log.wakeUpTime.getTime() - log.timeInBed.getTime()) / (1000 * 60 * 60);
 
-      return `Date: ${log.dateOfSession.toDateString()}, Duration: ${durationHours.toFixed(
+      return `${log.dateOfSession.toDateString()}: ${durationHours.toFixed(
         1
-      )}h, Quality: ${log.sleepQuality}/5, Mood: ${log.mood ?? "N/A"}`;
+      )}h asleep, quality ${log.sleepQuality}/5, mood ${log.mood ?? "N/A"}`;
     })
     .join("\n");
 }
@@ -77,7 +104,7 @@ async function getSleepLogSummaryFromSession(): Promise<string> {
   const logs = await prisma.sleepLog.findMany({
     where: { userId: user.id },
     orderBy: { dateOfSession: "desc" },
-    take: 7,
+    take: MAX_SLEEP_LOGS,
     select: {
       dateOfSession: true,
       timeInBed: true,
@@ -126,6 +153,84 @@ function parseRetryDelay(error: unknown): number | null {
   return null;
 }
 
+function shouldUseRag(question: string): boolean {
+  const normalizedQuestion = question.toLowerCase();
+
+  return RAG_TRIGGER_KEYWORDS.some((keyword) =>
+    normalizedQuestion.includes(keyword)
+  );
+}
+
+function isCapacityError(error: unknown): boolean {
+  const message =
+    error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
+
+  return (
+    message.includes("429") ||
+    message.includes("over capacity") ||
+    message.includes("resource has been exhausted") ||
+    message.includes("quota")
+  );
+}
+
+function buildBasePrompt(sleepLogSummary: string): string {
+  return `
+You are SleepSync's friendly AI sleep coach.
+Respond like a calm, knowledgeable sleep therapist.
+Use the recent sleep data below when it is relevant:
+${sleepLogSummary}
+
+Keep advice practical, warm, and concise.
+Offer 2 or 3 concrete next steps when helpful.
+If the user mentions stress, insomnia, or anxiety, suggest a short wind-down or breathing exercise.
+End with a soft, human sign-off such as "Sleep well tonight."
+  `.trim();
+}
+
+function buildRagPrompt(
+  retrievedKnowledge: string,
+  sleepLogSummary: string,
+  userQuestion: string
+): string {
+  return `
+You are SleepSync's expert AI sleep coach.
+Use the retrieved expert knowledge only when it clearly helps answer the user's question.
+
+Retrieved knowledge:
+${retrievedKnowledge}
+
+User sleep data:
+${sleepLogSummary}
+
+User question:
+${userQuestion || "No explicit user question provided."}
+
+Give practical, evidence-based advice in a calm tone.
+Keep the answer concise and actionable.
+Only cite a source when you truly used it, like (Mayo Clinic).
+End with a soft, reassuring sign-off.
+  `.trim();
+}
+
+async function generateCoachReply(
+  systemPrompt: string,
+  contents: Array<{ role: string; parts: Array<{ text: string }> }>
+): Promise<string> {
+  const response = await ai.models.generateContent({
+    model: "gemini-2.0-flash-lite",
+    config: {
+      systemInstruction: systemPrompt,
+      maxOutputTokens: MAX_OUTPUT_TOKENS,
+    },
+    contents,
+  });
+
+  return (
+    response?.candidates?.[0]?.content?.parts?.[0]?.text ??
+    "I hit a temporary issue while thinking. Please try again in a moment."
+  );
+}
+
 export async function POST(req: Request) {
   try {
     const { messages }: ChatRequestBody = await req.json();
@@ -134,24 +239,26 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "messages are required" }, { status: 400 });
     }
 
-    // Per-user rate limiting to protect API quota
+    // Per-user rate limiting to protect API quota.
     const session = await getServerSession(authOptions);
     const rateLimitKey = session?.user?.email ?? req.headers.get("x-forwarded-for") ?? "anon";
     const rateCheck = checkRateLimit(rateLimitKey);
+
     if (!rateCheck.allowed) {
       return NextResponse.json(
         {
-          reply: `You're sending messages too fast — please wait ${rateCheck.waitSeconds} second${rateCheck.waitSeconds !== 1 ? "s" : ""} before trying again 🌙`,
+          reply: `You're sending messages too fast. Please wait ${rateCheck.waitSeconds} second${rateCheck.waitSeconds !== 1 ? "s" : ""} before trying again.`,
         },
         { status: 429 }
       );
     }
 
     const userQuestion = getLastUserQuestion(messages);
-    const useRag = process.env.USE_RAG?.toLowerCase() === "true";
+    const ragEnabled = process.env.USE_RAG?.toLowerCase() === "true";
+    const useRag = ragEnabled && Boolean(userQuestion) && shouldUseRag(userQuestion);
 
     const [ragResult, sleepLogSummary] = await Promise.all([
-      useRag && userQuestion
+      useRag
         ? retrieveRelevantKnowledgeWithSources(userQuestion).catch((error) => {
             console.error("[aiChat] RAG retrieval failed:", error);
             return { context: "", sources: [] };
@@ -163,79 +270,59 @@ export async function POST(req: Request) {
       }),
     ]);
 
-    const retrievedKnowledge = ragResult.context;
-    const ragSources = ragResult.sources;
-
-    // Convert your frontend message format to Gemini's expected format
-    const formatted = messages.map((m) => ({
-      role: m.role === "user" ? "user" : "model",
-      parts: [{ text: m.content }],
+    const formatted = messages.map((message) => ({
+      role: message.role === "user" ? "user" : "model",
+      parts: [{ text: message.content }],
     }));
 
-    const basePrompt = `
-You are SleepSync's friendly AI sleep coach.
-Respond like a calm, knowledgeable sleep therapist.
-Use short, practical suggestions backed by science.
-If user mentions stress, insomnia, or anxiety, recommend breathing or relaxation exercises.
-Keep tone warm and conversational, never robotic.
-End your message with a soft sleep-related emoji like 🌙 or 😴.
-    `.trim();
+    const trimmedMessages = formatted.slice(-MAX_HISTORY_MESSAGES);
+    const basePrompt = buildBasePrompt(sleepLogSummary);
+    const ragPrompt = buildRagPrompt(
+      ragResult.context,
+      sleepLogSummary,
+      userQuestion
+    );
 
-    const ragPrompt = `
-You are an expert sleep coach. Use ONLY the following retrieved expert knowledge and user's sleep logs to answer accurately and cite sources.
+    let reply = "";
+    let usedRag = useRag && Boolean(ragResult.context);
 
-Retrieved knowledge:
-${retrievedKnowledge}
-
-User sleep data:
-${sleepLogSummary}
-
-User question:
-${userQuestion || "No explicit user question provided."}
-
-Give practical, evidence-based advice. Keep response concise and encouraging.
-Cite sources like (Mayo Clinic, 2026) for any used knowledge.
-    `.trim();
-
-    const systemPrompt = useRag && retrievedKnowledge ? ragPrompt : basePrompt;
-
-    // Keep only the last 10 messages to limit token usage
-    const trimmedMessages = formatted.slice(-10);
-
-    // Generate the AI response
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash-lite",
-      config: { systemInstruction: systemPrompt },
-      contents: trimmedMessages,
-    });
-
-    const reply =
-      response?.candidates?.[0]?.content?.parts?.[0]?.text ??
-      "Sorry, I couldn't think clearly 😴";
+    try {
+      reply = await generateCoachReply(
+        usedRag ? ragPrompt : basePrompt,
+        trimmedMessages
+      );
+    } catch (error) {
+      if (usedRag && isCapacityError(error)) {
+        console.warn("[aiChat] Falling back to non-RAG response after capacity error.");
+        reply = await generateCoachReply(basePrompt, trimmedMessages);
+        usedRag = false;
+      } else {
+        throw error;
+      }
+    }
 
     const responseBody: ChatResponseBody = { reply };
-    if (useRag && ragSources.length > 0) {
-      responseBody.sources = ragSources;
+    if (usedRag && ragResult.sources.length > 0) {
+      responseBody.sources = ragResult.sources;
     }
 
     return NextResponse.json(responseBody);
   } catch (error) {
     console.error("AI Chat Error:", error);
 
-    const is429 = error instanceof Error && error.message.includes("429");
-    if (is429) {
+    if (isCapacityError(error)) {
       const waitSec = parseRetryDelay(error);
       const waitMsg = waitSec
         ? `Please wait ${waitSec} second${waitSec !== 1 ? "s" : ""} and try again.`
         : "Please wait a moment and try again.";
+
       return NextResponse.json({
-        reply: `The AI service is temporarily over capacity. ${waitMsg} 🌙`,
+        reply: `The AI service is temporarily over capacity. ${waitMsg}`,
       });
     }
 
     return NextResponse.json({
-      reply: "I hit a temporary issue while thinking. Try asking again in a moment 🌙",
+      reply: "I hit a temporary issue while thinking. Try asking again in a moment.",
     });
   }
 }
-
