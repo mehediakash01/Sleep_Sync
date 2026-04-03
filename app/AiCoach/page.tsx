@@ -56,13 +56,13 @@ export default function AiChatSection() {
     try {
       const parsed = JSON.parse(saved);
       setConversations(parsed);
-      if (parsed.length > 0 && !currentConvoId) {
-        setCurrentConvoId(parsed[0].id);
+      if (parsed.length > 0) {
+        setCurrentConvoId((prev) => prev ?? parsed[0].id);
       }
     } catch (error) {
       console.error("Failed to load conversations:", error);
     }
-  }, [currentConvoId]);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("sleep-conversations", JSON.stringify(conversations));

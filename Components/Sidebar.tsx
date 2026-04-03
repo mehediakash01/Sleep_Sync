@@ -8,7 +8,6 @@ import {
   Flame,
   Home,
   MoonStar,
-  Settings,
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
@@ -20,7 +19,6 @@ const menuItems = [
   { name: "Insights", href: "/dashboard/sleepInsights", icon: BarChart3 },
   { name: "History", href: "/dashboard/sleepHistory", icon: Clock3 },
   { name: "Streaks", href: "/dashboard/streak", icon: Flame },
-  { name: "Settings", href: "/settings", icon: Settings },
 ];
 
 export default function Sidebar() {

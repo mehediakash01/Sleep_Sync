@@ -10,14 +10,13 @@ import {
   Home,
   Menu,
   MoonStar,
-  Settings,
   Sparkles,
   X,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { usePathname, useRouter } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 
 const menuItems = [
@@ -26,12 +25,22 @@ const menuItems = [
   { name: "Insights", href: "/dashboard/sleepInsights", icon: BarChart3 },
   { name: "History", href: "/dashboard/sleepHistory", icon: Clock3 },
   { name: "Streaks", href: "/dashboard/streak", icon: Flame },
-  { name: "Settings", href: "/settings", icon: Settings },
 ];
+
+const titles: Record<string, string> = {
+  "/dashboard": "Overview",
+  "/dashboard/sleepTracking": "Sleep Log",
+  "/dashboard/sleepInsights": "Insights",
+  "/dashboard/sleepHistory": "History",
+  "/dashboard/streak": "Streaks",
+  "/settings": "Settings",
+};
 
 export default function DashNavbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
   const { data: session } = useSession();
 
   const avatarFallback = useMemo(() => {
@@ -39,28 +48,116 @@ export default function DashNavbar() {
     return `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(seed)}`;
   }, [session?.user?.email, session?.user?.name]);
 
+  const currentTitle =
+    titles[pathname] ||
+    (pathname.startsWith("/dashboard") ? "Dashboard" : pathname.startsWith("/settings") ? "Settings" : "SleepSync");
+
+  const handleLogout = async () => {
+    setIsOpen(false);
+    setProfileOpen(false);
+    await signOut({ callbackUrl: "/login" });
+  };
+
   return (
     <>
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-[var(--app-line)] bg-[var(--app-surface-muted)]/88 px-4 py-4 backdrop-blur-2xl lg:hidden">
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-[var(--app-line)] bg-[var(--app-surface-muted)]/88 px-4 py-4 backdrop-blur-2xl sm:px-6">
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => setIsOpen(true)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--app-line)] bg-white/5 text-[var(--app-text)]"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--app-line)] bg-white/5 text-[var(--app-text)] lg:hidden"
             aria-label="Open dashboard menu"
           >
             <Menu className="h-5 w-5" />
           </button>
           <div>
             <p className="text-xs uppercase tracking-[0.18em] text-[#9BC5FF]">Dashboard</p>
-            <p className="text-sm font-medium text-[var(--app-text)]">SleepSync</p>
+            <p className="text-sm font-medium text-[var(--app-text)]">{currentTitle}</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <NotificationBell />
-          <div className="rounded-full border border-[var(--app-line)] bg-white/5 px-3 py-1 text-xs font-medium text-[var(--app-text-muted)]">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="hidden rounded-full border border-[var(--app-line)] bg-white/5 px-3 py-1 text-xs font-medium text-[var(--app-text-muted)] sm:block">
             14 night streak
+          </div>
+          <NotificationBell />
+
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setProfileOpen((value) => !value)}
+              className="inline-flex items-center gap-3 rounded-full border border-[var(--app-line)] bg-white/5 px-2 py-2 transition-all duration-300 hover:bg-white/10"
+              aria-label="Open dashboard profile menu"
+            >
+              <Image
+                src={session?.user?.image || avatarFallback}
+                alt="User avatar"
+                width={36}
+                height={36}
+                className="h-9 w-9 rounded-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+              <span className="hidden pr-2 text-sm text-[var(--app-text-muted)] md:block">
+                {session?.user?.name || "Your account"}
+              </span>
+            </button>
+
+            <AnimatePresence>
+              {profileOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -12, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -12, scale: 0.96 }}
+                  transition={{ duration: 0.18 }}
+                  className="absolute right-0 top-14 z-40 w-72 rounded-[28px] border border-[var(--app-line)] bg-[var(--app-surface-strong)] p-4 shadow-[var(--app-shadow)] backdrop-blur-2xl"
+                >
+                  <div className="flex items-center gap-3 rounded-[22px] bg-white/5 p-3">
+                    <Image
+                      src={session?.user?.image || avatarFallback}
+                      alt="User avatar"
+                      width={48}
+                      height={48}
+                      className="h-12 w-12 rounded-2xl object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-[var(--app-text)]">{session?.user?.name || "User"}</p>
+                      <p className="truncate text-sm text-[var(--app-text-muted)]">{session?.user?.email || "SleepSync account"}</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 grid gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProfileOpen(false);
+                        router.push("/dashboard");
+                      }}
+                      className="rounded-[18px] px-4 py-3 text-left text-sm text-[var(--app-text-muted)] transition-colors duration-300 hover:bg-white/6 hover:text-[var(--app-text)]"
+                    >
+                      Dashboard
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProfileOpen(false);
+                        router.push("/settings");
+                      }}
+                      className="rounded-[18px] px-4 py-3 text-left text-sm text-[var(--app-text-muted)] transition-colors duration-300 hover:bg-white/6 hover:text-[var(--app-text)]"
+                    >
+                      Settings
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="rounded-[18px] px-4 py-3 text-left text-sm text-[#F97F9A] transition-colors duration-300 hover:bg-[#F97F9A]/10"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </header>
@@ -152,7 +249,27 @@ export default function DashNavbar() {
                 <NotificationBell />
               </div>
 
-              <div className="mt-4">
+              <div className="mt-4 grid gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsOpen(false);
+                    router.push("/dashboard");
+                  }}
+                  className="w-full rounded-full bg-[var(--app-accent-strong)] px-5 py-3 text-sm font-semibold text-[#062019]"
+                >
+                  Dashboard
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsOpen(false);
+                    router.push("/settings");
+                  }}
+                  className="w-full rounded-full border border-[var(--app-line)] bg-white/5 px-5 py-3 text-sm font-medium text-[var(--app-text)]"
+                >
+                  Settings
+                </button>
                 <LoggedOutBtn />
               </div>
             </motion.aside>

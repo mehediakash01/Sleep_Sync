@@ -10,10 +10,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "@/Providers";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard" },
   { href: "/Streak", label: "Streaks" },
   { href: "/AiCoach", label: "Coach" },
-  { href: "/settings", label: "Settings" },
   { href: "/blogs", label: "Blog" },
   { href: "/about", label: "About" },
 ];
@@ -172,6 +170,16 @@ export const Navbar = () => {
                         </button>
                         <button
                           type="button"
+                          onClick={() => {
+                            setProfileOpen(false);
+                            router.push("/settings");
+                          }}
+                          className="rounded-[18px] px-4 py-3 text-left text-sm text-[var(--app-text-muted)] transition-colors duration-300 hover:bg-white/6 hover:text-[var(--app-text)]"
+                        >
+                          Settings
+                        </button>
+                        <button
+                          type="button"
                           onClick={handleLogout}
                           className="rounded-[18px] px-4 py-3 text-left text-sm text-[#F97F9A] transition-colors duration-300 hover:bg-[#F97F9A]/10"
                         >
@@ -273,6 +281,16 @@ export const Navbar = () => {
                       className="w-full rounded-full bg-[var(--app-accent-strong)] px-5 py-3 text-sm font-semibold text-[#062019]"
                     >
                       Go to dashboard
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMenuOpen(false);
+                        router.push("/settings");
+                      }}
+                      className="w-full rounded-full border border-[var(--app-line)] bg-white/5 px-5 py-3 text-sm font-medium text-[var(--app-text)]"
+                    >
+                      Settings
                     </button>
                     <button
                       type="button"
