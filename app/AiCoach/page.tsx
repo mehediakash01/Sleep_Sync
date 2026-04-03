@@ -1,8 +1,19 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
-import { MessageSquare, Plus, Send, Moon, Trash2, Clock, Menu, X } from "lucide-react";
+import {
+  Bot,
+  Clock3,
+  Menu,
+  MessageSquare,
+  Mic,
+  MoonStar,
+  Plus,
+  Send,
+  Trash2,
+  X,
+} from "lucide-react";
 
 interface Message {
   role: "user" | "assistant";
@@ -23,6 +34,13 @@ interface Conversation {
   updatedAt: number;
 }
 
+const suggestedPrompts = [
+  "I noticed my REM was low last night. What should I try tonight?",
+  "Give me a realistic wind-down routine for work travel.",
+  "Why does my sleep score improve when I sleep earlier?",
+  "Suggest a short breathing ritual before bed.",
+];
+
 export default function AiChatSection() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [currentConvoId, setCurrentConvoId] = useState<string | null>(null);
@@ -31,106 +49,106 @@ export default function AiChatSection() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  // Load conversations from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem("sleep-conversations");
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setConversations(parsed);
-        if (parsed.length > 0 && !currentConvoId) {
-          setCurrentConvoId(parsed[0].id);
-        }
-      } catch (error) {
-        console.error("Failed to load conversations:", error);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (!saved) return;
 
-  // Auto-scroll to latest message
+    try {
+      const parsed = JSON.parse(saved);
+      setConversations(parsed);
+      if (parsed.length > 0 && !currentConvoId) {
+        setCurrentConvoId(parsed[0].id);
+      }
+    } catch (error) {
+      console.error("Failed to load conversations:", error);
+    }
+  }, [currentConvoId]);
+
+  useEffect(() => {
+    localStorage.setItem("sleep-conversations", JSON.stringify(conversations));
+  }, [conversations]);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [currentConvoId, conversations]);
+  }, [conversations, currentConvoId]);
 
-  const getCurrentConversation = () => {
-    return conversations.find((c) => c.id === currentConvoId);
-  };
+  const currentConversation = useMemo(
+    () => conversations.find((conversation) => conversation.id === currentConvoId),
+    [conversations, currentConvoId]
+  );
 
-  const createNewConversation = () => {
-    const newConvo: Conversation = {
+  const createConversation = () => {
+    const newConversation: Conversation = {
       id: `convo_${Date.now()}`,
       title: "New Conversation",
       messages: [],
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };
-    setConversations((prev) => [newConvo, ...prev]);
-    setCurrentConvoId(newConvo.id);
-    // Close sidebar on mobile after creating conversation
-    if (window.innerWidth < 768) {
-      setSidebarOpen(false);
-    }
+
+    setConversations((prev) => [newConversation, ...prev]);
+    setCurrentConvoId(newConversation.id);
+    if (window.innerWidth < 768) setSidebarOpen(false);
   };
 
   const deleteConversation = (id: string) => {
-    setConversations((prev) => prev.filter((c) => c.id !== id));
+    const remaining = conversations.filter((conversation) => conversation.id !== id);
+    setConversations(remaining);
+
     if (currentConvoId === id) {
-      const remaining = conversations.filter((c) => c.id !== id);
       setCurrentConvoId(remaining.length > 0 ? remaining[0].id : null);
     }
   };
 
   const updateConversationTitle = (messages: Message[]) => {
-    const firstUserMessage = messages.find((m) => m.role === "user");
-    if (firstUserMessage) {
-      return (
-        firstUserMessage.content.slice(0, 50) +
-        (firstUserMessage.content.length > 50 ? "..." : "")
-      );
-    }
-    return "New Conversation";
+    const firstUserMessage = messages.find((message) => message.role === "user");
+    if (!firstUserMessage) return "New Conversation";
+
+    return firstUserMessage.content.length > 50
+      ? `${firstUserMessage.content.slice(0, 50)}...`
+      : firstUserMessage.content;
   };
 
   const sendMessage = async () => {
     if (!input.trim()) return;
 
     let convoId = currentConvoId;
-
-    // Create new conversation if none exists
     if (!convoId) {
-      const newConvo: Conversation = {
+      const newConversation: Conversation = {
         id: `convo_${Date.now()}`,
         title: "New Conversation",
         messages: [],
         createdAt: Date.now(),
         updatedAt: Date.now(),
       };
-      setConversations((prev) => [newConvo, ...prev]);
-      convoId = newConvo.id;
-      setCurrentConvoId(convoId);
+      setConversations((prev) => [newConversation, ...prev]);
+      setCurrentConvoId(newConversation.id);
+      convoId = newConversation.id;
     }
 
-    const newMessage: Message = {
+    const userMessage: Message = {
       role: "user",
       content: input,
       timestamp: Date.now(),
     };
 
-    // Update conversation with new user message
+    const existingMessages =
+      conversations.find((conversation) => conversation.id === convoId)?.messages || [];
+    const nextMessages = [...existingMessages, userMessage];
+
     setConversations((prev) =>
-      prev.map((c) =>
-        c.id === convoId
+      prev.map((conversation) =>
+        conversation.id === convoId
           ? {
-              ...c,
-              messages: [...c.messages, newMessage],
+              ...conversation,
+              messages: nextMessages,
               title:
-                c.messages.length === 0
-                  ? updateConversationTitle([newMessage])
-                  : c.title,
+                conversation.messages.length === 0
+                  ? updateConversationTitle(nextMessages)
+                  : conversation.title,
               updatedAt: Date.now(),
             }
-          : c
+          : conversation
       )
     );
 
@@ -138,62 +156,50 @@ export default function AiChatSection() {
     setLoading(true);
 
     try {
-      // Get current conversation messages
-      const updatedMessages = [
-        ...(getCurrentConversation()?.messages || []),
-        newMessage,
-      ];
-
-      // Send to API
       const res = await axios.post("/api/aiChat", {
-        messages: updatedMessages,
+        messages: nextMessages,
       });
 
-      const aiMessage: Message = {
+      const assistantMessage: Message = {
         role: "assistant",
         content: res.data.reply ?? "Sorry, I couldn't respond properly.",
         timestamp: Date.now(),
         sources: Array.isArray(res.data.sources) ? res.data.sources : undefined,
       };
 
-      // Update conversation with AI response
       setConversations((prev) =>
-        prev.map((c) =>
-          c.id === convoId
+        prev.map((conversation) =>
+          conversation.id === convoId
             ? {
-                ...c,
-                messages: [...c.messages, aiMessage],
+                ...conversation,
+                messages: [...conversation.messages, assistantMessage],
                 updatedAt: Date.now(),
               }
-            : c
+            : conversation
         )
       );
     } catch (error) {
       console.error(error);
-      const errorMessage: Message = {
+
+      const assistantMessage: Message = {
         role: "assistant",
-        content: "⚠️ Something went wrong. Try again later.",
+        content: "Something went wrong. Try again in a moment.",
         timestamp: Date.now(),
       };
+
       setConversations((prev) =>
-        prev.map((c) =>
-          c.id === convoId
+        prev.map((conversation) =>
+          conversation.id === convoId
             ? {
-                ...c,
-                messages: [...c.messages, errorMessage],
+                ...conversation,
+                messages: [...conversation.messages, assistantMessage],
                 updatedAt: Date.now(),
               }
-            : c
+            : conversation
         )
       );
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && !loading) {
-      sendMessage();
     }
   };
 
@@ -212,222 +218,203 @@ export default function AiChatSection() {
     return date.toLocaleDateString();
   };
 
-  const currentConvo = getCurrentConversation();
-
-  const SUGGESTED = [
-    "How can I fall asleep faster?",
-    "What's the ideal sleep schedule?",
-    "Tips to stop waking up at night",
-    "How does screen time affect sleep?",
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#e8f7ff] via-white to-[#f3eeff] pt-20 pb-4 px-2 sm:px-4">
-      <div className="max-w-7xl mx-auto h-[calc(100vh-7rem)] flex flex-col md:flex-row gap-3">
-
-        {/* ── SIDEBAR ── */}
-        <div
-          className={`${
-            sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-          } ${
-            sidebarOpen ? "w-full md:w-72" : "w-0 md:w-0"
-          } fixed md:relative inset-0 md:inset-auto z-40 md:z-0 transition-all duration-300 bg-white md:rounded-2xl border border-gray-100 flex flex-col overflow-hidden shadow-xl md:shadow-md`}
+    <main className="premium-page min-h-screen px-4 pb-8 pt-24 text-[var(--app-text)] sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-[calc(100vh-8rem)] max-w-7xl gap-4">
+        <aside
+          className={`premium-panel-strong fixed inset-y-24 left-4 z-40 flex w-[86vw] max-w-sm flex-col rounded-[32px] p-4 transition-transform duration-300 md:static md:translate-x-0 md:w-80 ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-[120%]"
+          }`}
         >
-          {/* Sidebar header */}
-          <div className="p-4 border-b border-gray-100">
-            {/* Brand row */}
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#89CFF0] to-[#B19CD9] flex items-center justify-center">
-                  <Moon className="w-4 h-4 text-white" />
-                </div>
-                <span className="font-bold text-gray-800 text-sm">Sleep AI</span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--app-gradient-start),var(--app-gradient-end))] text-[var(--app-accent-strong)]">
+                <MoonStar className="h-5 w-5" />
               </div>
-              <button
-                onClick={() => setSidebarOpen(false)}
-                className="md:hidden p-1.5 hover:bg-gray-100 rounded-lg transition"
-              >
-                <X className="w-4 h-4 text-gray-500" />
-              </button>
+              <div>
+                <p className="text-sm font-semibold tracking-[0.24em] text-[#9BC5FF]">SLEEP COACH</p>
+                <p className="text-sm text-[var(--app-text-muted)]">Conversation history</p>
+              </div>
             </div>
 
             <button
-              onClick={createNewConversation}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#89CFF0] to-[#B19CD9] text-white rounded-xl hover:opacity-90 transition font-medium text-sm shadow-md shadow-[#89CFF0]/30"
+              type="button"
+              onClick={() => setSidebarOpen(false)}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--app-line)] bg-white/5 md:hidden"
+              aria-label="Close conversation sidebar"
             >
-              <Plus className="w-4 h-4" />
-              New conversation
+              <X className="h-4 w-4" />
             </button>
           </div>
 
-          {/* Conversation list */}
-          <div className="flex-1 overflow-y-auto p-3 space-y-1.5">
+          <button
+            type="button"
+            onClick={createConversation}
+            className="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-[var(--app-accent-strong)] px-5 py-3.5 text-sm font-semibold text-[#062019] shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_14px_44px_rgba(0,229,194,0.22)]"
+          >
+            <Plus className="h-4 w-4" />
+            New session
+          </button>
+
+          <div className="mt-6 flex-1 space-y-2 overflow-y-auto pr-1">
             {conversations.length === 0 ? (
-              <div className="text-center text-gray-400 mt-10">
-                <MessageSquare className="w-10 h-10 mx-auto mb-2 opacity-30" />
-                <p className="text-xs">No conversations yet</p>
+              <div className="premium-panel flex h-full min-h-[240px] flex-col items-center justify-center rounded-[28px] p-6 text-center">
+                <MessageSquare className="h-8 w-8 text-[var(--app-text-muted)]" />
+                <p className="mt-4 text-sm text-[var(--app-text-muted)]">No sessions yet. Start a conversation to save your coaching history.</p>
               </div>
             ) : (
-              conversations.map((convo) => (
-                <div
-                  key={convo.id}
+              conversations.map((conversation) => (
+                <button
+                  key={conversation.id}
+                  type="button"
                   onClick={() => {
-                    setCurrentConvoId(convo.id);
+                    setCurrentConvoId(conversation.id);
                     if (window.innerWidth < 768) setSidebarOpen(false);
                   }}
-                  className={`group relative p-3 rounded-xl cursor-pointer transition-all duration-150 ${
-                    currentConvoId === convo.id
-                      ? "bg-gradient-to-r from-[#89CFF0]/15 to-[#B19CD9]/15 border border-[#89CFF0]/40"
-                      : "hover:bg-gray-50 border border-transparent"
+                  className={`w-full rounded-[24px] border p-4 text-left transition-all duration-300 ${
+                    currentConvoId === conversation.id
+                      ? "border-[var(--app-accent-strong)]/25 bg-[var(--app-accent-strong)]/10"
+                      : "border-[var(--app-line)] bg-white/5 hover:bg-white/8"
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-xs font-semibold truncate ${currentConvoId === convo.id ? "text-[#4a9fc0]" : "text-gray-700"}`}>
-                        {convo.title}
-                      </p>
-                      <div className="flex items-center gap-1 mt-1 text-[11px] text-gray-400">
-                        <Clock className="w-3 h-3" />
-                        <span>{formatTime(convo.updatedAt)}</span>
-                        <span>·</span>
-                        <span>{convo.messages.length} msgs</span>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium">{conversation.title}</p>
+                      <div className="mt-2 flex items-center gap-2 text-xs text-[var(--app-text-muted)]">
+                        <Clock3 className="h-3 w-3" />
+                        <span>{formatTime(conversation.updatedAt)}</span>
+                        <span>•</span>
+                        <span>{conversation.messages.length} msgs</span>
                       </div>
                     </div>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); deleteConversation(convo.id); }}
-                      className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-50 rounded-lg transition"
+                    <span
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        deleteConversation(conversation.id);
+                      }}
+                      className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-[var(--app-text-muted)] transition-colors duration-300 hover:bg-[#F97F9A]/10 hover:text-[#F97F9A]"
                     >
-                      <Trash2 className="w-3.5 h-3.5 text-red-400" />
-                    </button>
+                      <Trash2 className="h-4 w-4" />
+                    </span>
                   </div>
-                </div>
+                </button>
               ))
             )}
           </div>
-        </div>
+        </aside>
 
-        {/* Mobile backdrop */}
         {sidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 md:hidden"
+          <button
+            type="button"
+            className="fixed inset-0 z-30 bg-[#020617]/50 backdrop-blur-sm md:hidden"
             onClick={() => setSidebarOpen(false)}
+            aria-label="Close conversation sidebar backdrop"
           />
         )}
 
-        {/* ── MAIN CHAT ── */}
-        <div className="flex-1 flex flex-col bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
-
-          {/* Header */}
-          <div className="px-4 sm:px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-white">
+        <section className="premium-panel-strong relative flex flex-1 flex-col overflow-hidden rounded-[36px]">
+          <header className="flex items-center justify-between border-b border-[var(--app-line)] px-4 py-4 sm:px-6">
             <div className="flex items-center gap-3">
               <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="p-2 hover:bg-gray-100 rounded-xl transition"
+                type="button"
+                onClick={() => setSidebarOpen(true)}
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--app-line)] bg-white/5 md:hidden"
+                aria-label="Open conversation sidebar"
               >
-                <Menu className="w-4 h-4 text-gray-500" />
+                <Menu className="h-5 w-5" />
               </button>
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#89CFF0] to-[#B19CD9] flex items-center justify-center shadow-sm shadow-[#89CFF0]/30">
-                  <Moon className="w-4 h-4 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-sm font-bold text-gray-800 leading-none">AI Sleep Coach</h1>
-                  <p className="text-[11px] text-gray-400 mt-0.5">Powered by Gemini AI</p>
-                </div>
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--app-gradient-start),var(--app-gradient-end))] text-[var(--app-accent-strong)]">
+                <Bot className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold">AI Sleep Coach</p>
+                <p className="text-xs text-[var(--app-text-muted)]">Empathetic sleep guidance, session by session</p>
               </div>
             </div>
-            {currentConvo && (
-              <span className="text-xs text-gray-400 bg-gray-50 border border-gray-100 px-3 py-1 rounded-full hidden sm:block">
-                {currentConvo.messages.length} messages
-              </span>
-            )}
-          </div>
 
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto px-3 sm:px-6 py-5">
-            <div className="max-w-3xl mx-auto space-y-4">
-              {!currentConvo || currentConvo.messages.length === 0 ? (
-                <div className="flex flex-col items-center text-center py-10 gap-6">
-                  {/* Icon */}
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#89CFF0] to-[#B19CD9] flex items-center justify-center shadow-lg shadow-[#89CFF0]/30">
-                    <Moon className="w-9 h-9 text-white" />
+            {currentConversation && (
+              <div className="hidden rounded-full border border-[var(--app-line)] bg-white/5 px-3 py-1.5 text-xs text-[var(--app-text-muted)] sm:block">
+                {currentConversation.messages.length} messages
+              </div>
+            )}
+          </header>
+
+          <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-6">
+            <div className="mx-auto flex max-w-4xl flex-col gap-4">
+              {!currentConversation || currentConversation.messages.length === 0 ? (
+                <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--app-gradient-start),var(--app-gradient-end))] text-[var(--app-accent-strong)] shadow-[0_0_30px_rgba(0,229,194,0.18)]">
+                    <MoonStar className="h-9 w-9" />
                   </div>
-                  <div>
-                    <h2 className="text-2xl font-extrabold text-gray-800 mb-2">
-                      Your Sleep Coach is Ready
-                    </h2>
-                    <p className="text-gray-400 text-sm max-w-sm">
-                      Ask me anything about sleep hygiene, schedules, or habits. I&apos;m here to help you rest better.
-                    </p>
-                  </div>
-                  {/* Suggested prompts */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-lg">
-                    {SUGGESTED.map((s) => (
+                  <h1 className="mt-8 text-3xl font-semibold tracking-[-0.03em]">Your sleep coach is ready.</h1>
+                  <p className="mt-4 max-w-2xl text-sm leading-8 text-[var(--app-text-muted)]">
+                    Ask about last night, request a wind-down routine, or get help interpreting a pattern. The tone stays calm, precise, and useful.
+                  </p>
+
+                  <div className="mt-8 grid w-full max-w-3xl gap-3 sm:grid-cols-2">
+                    {suggestedPrompts.map((prompt) => (
                       <button
-                        key={s}
-                        onClick={() => { setInput(s); }}
-                        className="text-left text-xs px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 hover:border-[#89CFF0]/50 hover:bg-[#89CFF0]/5 text-gray-600 transition-all duration-150"
+                        key={prompt}
+                        type="button"
+                        onClick={() => setInput(prompt)}
+                        className="premium-panel rounded-[24px] p-4 text-left text-sm leading-7 text-[var(--app-text-muted)] transition-colors duration-300 hover:border-[var(--app-accent-strong)]/20 hover:text-[var(--app-text)]"
                       >
-                        {s}
+                        {prompt}
                       </button>
                     ))}
                   </div>
                 </div>
               ) : (
-                currentConvo.messages.map((msg, i) => (
+                currentConversation.messages.map((message, index) => (
                   <div
-                    key={i}
-                    className={`flex items-end gap-2.5 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                    key={`${message.role}-${index}`}
+                    className={`flex items-end gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}
                   >
-                    {/* AI avatar */}
-                    {msg.role === "assistant" && (
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#89CFF0] to-[#B19CD9] flex items-center justify-center shrink-0 mb-1 shadow-sm">
-                        <Moon className="w-3.5 h-3.5 text-white" />
+                    {message.role === "assistant" && (
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--app-gradient-start),var(--app-gradient-end))] text-[var(--app-accent-strong)]">
+                        <MoonStar className="h-4 w-4" />
                       </div>
                     )}
 
-                    <div className={`flex flex-col gap-1 max-w-[80%] sm:max-w-[70%] ${msg.role === "user" ? "items-end" : "items-start"}`}>
+                    <div className={`max-w-[82%] ${message.role === "user" ? "items-end" : "items-start"} flex flex-col gap-2`}>
                       <div
-                        className={`px-4 py-3 rounded-2xl shadow-sm text-sm leading-relaxed whitespace-pre-wrap ${
-                          msg.role === "user"
-                            ? "bg-gradient-to-r from-[#89CFF0] to-[#B19CD9] text-white rounded-br-sm"
-                            : "bg-gray-50 border border-gray-100 text-gray-800 rounded-bl-sm"
+                        className={`rounded-[26px] px-5 py-4 text-sm leading-8 shadow-sm ${
+                          message.role === "user"
+                            ? "bg-[var(--app-accent-strong)] text-[#062019]"
+                            : "border border-[var(--app-line)] bg-white/5 text-[var(--app-text)]"
                         }`}
                       >
-                        {msg.content}
+                        {message.content}
                       </div>
-                      {msg.role === "assistant" && msg.sources && msg.sources.length > 0 && (
-                        <div className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] text-slate-600">
-                          <p className="font-semibold text-slate-700">Sources:</p>
-                          <ul className="mt-1 space-y-1">
-                            {msg.sources.map((source, idx) => (
-                              <li key={`${source.url}-${idx}`} className="leading-relaxed">
-                                <a
-                                  href={source.url}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="text-sky-700 underline hover:text-sky-800"
-                                >
+
+                      {message.role === "assistant" && message.sources && message.sources.length > 0 && (
+                        <div className="rounded-[22px] border border-[var(--app-line)] bg-white/5 px-4 py-3 text-xs leading-6 text-[var(--app-text-muted)]">
+                          <p className="font-semibold text-[var(--app-text)]">Sources</p>
+                          <ul className="mt-2 space-y-1">
+                            {message.sources.map((source, sourceIndex) => (
+                              <li key={`${source.url}-${sourceIndex}`}>
+                                <a href={source.url} target="_blank" rel="noreferrer" className="underline hover:text-[var(--app-accent-strong)]">
                                   {source.label}
                                 </a>{" "}
-                                <span className="text-slate-500">
-                                  ({new Date(source.crawledAt).getFullYear()})
-                                </span>
+                                ({new Date(source.crawledAt).getFullYear()})
                               </li>
                             ))}
                           </ul>
                         </div>
                       )}
-                      {msg.timestamp && (
-                        <p className="text-[10px] text-gray-400 px-1">
-                          {new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+
+                      {message.timestamp && (
+                        <p className="px-1 text-[10px] uppercase tracking-[0.16em] text-[var(--app-text-muted)]">
+                          {new Date(message.timestamp).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
                         </p>
                       )}
                     </div>
 
-                    {/* User avatar */}
-                    {msg.role === "user" && (
-                      <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center shrink-0 mb-1 text-xs font-bold text-gray-500">
+                    {message.role === "user" && (
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--app-line)] bg-white/5 text-sm font-semibold text-[var(--app-text-muted)]">
                         U
                       </div>
                     )}
@@ -435,55 +422,65 @@ export default function AiChatSection() {
                 ))
               )}
 
-              {/* Typing indicator */}
               {loading && (
-                <div className="flex items-end gap-2.5 justify-start">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#89CFF0] to-[#B19CD9] flex items-center justify-center shrink-0 mb-1">
-                    <Moon className="w-3.5 h-3.5 text-white" />
+                <div className="flex items-end gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--app-gradient-start),var(--app-gradient-end))] text-[var(--app-accent-strong)]">
+                    <MoonStar className="h-4 w-4" />
                   </div>
-                  <div className="bg-gray-50 border border-gray-100 rounded-2xl rounded-bl-sm px-5 py-3 shadow-sm">
+                  <div className="rounded-[24px] border border-[var(--app-line)] bg-white/5 px-5 py-4">
                     <div className="flex items-center gap-1.5">
-                      <div className="w-2 h-2 bg-[#89CFF0] rounded-full animate-bounce" />
-                      <div className="w-2 h-2 bg-[#B19CD9] rounded-full animate-bounce [animation-delay:150ms]" />
-                      <div className="w-2 h-2 bg-[#89CFF0] rounded-full animate-bounce [animation-delay:300ms]" />
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-[var(--app-accent-strong)]" />
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-[var(--app-accent-strong)] [animation-delay:150ms]" />
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-[var(--app-accent-strong)] [animation-delay:300ms]" />
                     </div>
                   </div>
                 </div>
               )}
+
               <div ref={messagesEndRef} />
             </div>
           </div>
 
-          {/* Input */}
-          <div className="px-3 sm:px-6 py-4 border-t border-gray-100 bg-white">
-            <div className="max-w-3xl mx-auto">
-              <div className="flex items-center gap-2 bg-gray-50 border-2 border-gray-100 focus-within:border-[#89CFF0]/60 rounded-2xl px-4 py-2.5 transition-all duration-200 shadow-sm">
+          <div className="border-t border-[var(--app-line)] px-4 py-4 sm:px-6">
+            <div className="mx-auto max-w-4xl">
+              <div className="flex items-center gap-2 rounded-[26px] border border-[var(--app-line)] bg-white/5 px-4 py-3 backdrop-blur-2xl">
+                <button
+                  type="button"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-[var(--app-text-muted)] transition-colors duration-300 hover:text-[var(--app-text)]"
+                  aria-label="Voice note coming soon"
+                >
+                  <Mic className="h-4 w-4" />
+                </button>
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={handleKeyPress}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !loading) {
+                      sendMessage();
+                    }
+                  }}
                   placeholder="Ask about your sleep..."
-                  className="flex-1 bg-transparent outline-none text-sm text-gray-800 placeholder-gray-400"
+                  className="flex-1 bg-transparent text-sm text-[var(--app-text)] outline-none placeholder:text-[var(--app-text-muted)]"
                   disabled={loading}
                 />
                 <button
+                  type="button"
                   onClick={sendMessage}
                   disabled={loading || !input.trim()}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-[#89CFF0] to-[#B19CD9] text-white rounded-xl text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90 transition shadow-md shadow-[#89CFF0]/30"
+                  className="inline-flex items-center gap-2 rounded-full bg-[var(--app-accent-strong)] px-5 py-3 text-sm font-semibold text-[#062019] transition-all duration-300 hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  <Send className="w-3.5 h-3.5" />
+                  <Send className="h-4 w-4" />
                   <span className="hidden sm:inline">{loading ? "Thinking..." : "Send"}</span>
                 </button>
               </div>
-              <p className="text-[11px] text-gray-400 text-center mt-2">
-                Press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-gray-500 font-mono">Enter</kbd> to send
+              <p className="mt-3 text-center text-xs text-[var(--app-text-muted)]">
+                Press Enter to send. Voice notes can layer on top later without changing the current flow.
               </p>
             </div>
           </div>
-
-        </div>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }

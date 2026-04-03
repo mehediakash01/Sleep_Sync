@@ -1,412 +1,188 @@
-﻿"use client";
+"use client";
 
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import Container from "@/Components/Container";
-import {
-  CheckCircle2,
-  Lock,
-  ArrowRight,
-  CalendarCheck,
-  Trophy,
-  Flame,
-  Star,
-} from "lucide-react";
-import { FaFireAlt } from "react-icons/fa";
+import { motion } from "framer-motion";
+import { ArrowRight, CheckCircle2, Flame, Lock, MoonStar, Sparkles, Star, Trophy } from "lucide-react";
 
-//  Milestones
-const MILESTONES = [
-  { days: 3,   label: "3-Day Starter",     emoji: "", color: "from-green-400 to-emerald-500",   unlocked: true  },
-  { days: 7,   label: "7-Day Champ",       emoji: "", color: "from-yellow-400 to-amber-500",    unlocked: true  },
-  { days: 14,  label: "2-Week Warrior",    emoji: "", color: "from-blue-400 to-cyan-500",       unlocked: false },
-  { days: 30,  label: "Monthly Master",    emoji: "", color: "from-orange-400 to-red-500",      unlocked: false },
-  { days: 60,  label: "Sleep Enthusiast",  emoji: "", color: "from-purple-400 to-fuchsia-500",  unlocked: false },
-  { days: 100, label: "Sleep Legend",      emoji: "", color: "from-pink-500 to-rose-600",       unlocked: false },
+const badges = [
+  { name: "7-Day Champ", status: "Unlocked", icon: Trophy, active: true },
+  { name: "Consistency Star", status: "Unlocked", icon: Star, active: true },
+  { name: "Sleep Master", status: "In progress", icon: MoonStar, active: false },
+  { name: "Recovery Flame", status: "In progress", icon: Flame, active: false },
 ];
 
-//  Steps
-const STEPS = [
-  {
-    icon: <CalendarCheck size={28} className="text-[#89CFF0]" />,
-    title: "Log Every Night",
-    desc: "Open the app, log your bedtime and wake-up time. Takes under 30 seconds.",
-    step: "01",
-  },
-  {
-    icon: <Flame size={28} className="text-orange-400" />,
-    title: "Build Your Streak",
-    desc: "Log consecutive nights to grow your streak. Miss a day and it resets  so stay consistent!",
-    step: "02",
-  },
-  {
-    icon: <Trophy size={28} className="text-amber-500" />,
-    title: "Unlock Milestones",
-    desc: "Hit 3, 7, 14, 30, 60 and 100-night milestones to earn badges and celebrate your progress.",
-    step: "03",
-  },
-];
-
-//  Demo Heatmap
-function DemoHeatmap() {
-  const seed = [1,0,1,1,0,1,1,1,0,1,1,1,1,0,1,1,0,1,1,1,0,1,1,1,1,0,1,1];
-  const weeks = Array.from({ length: 16 }, (_, wi) =>
-    Array.from({ length: 7 }, (_, di) => {
-      if (wi < 3) return 0;
-      const s = seed[(wi * 7 + di) % seed.length];
-      if (!s) return 0;
-      const q = ((wi * 3 + di * 2) % 3) + 3;
-      return q;
-    })
-  );
-  const color = (v: number) => {
-    if (v === 0) return "bg-gray-100 dark:bg-gray-700";
-    if (v === 3) return "bg-yellow-300";
-    if (v === 4) return "bg-green-400";
-    return "bg-emerald-500";
-  };
-  return (
-    <div className="flex gap-[3px]">
-      {weeks.map((week, wi) => (
-        <div key={wi} className="flex flex-col gap-[3px]">
-          {week.map((val, di) => (
-            <motion.div
-              key={di}
-              className={`w-3 h-3 rounded-sm ${color(val)}`}
-              initial={{ opacity: 0, scale: 0 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: false, amount: 0 }}
-              transition={{ delay: (wi * 7 + di) * 0.003, duration: 0.18 }}
-            />
-          ))}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-//  Animated Counter
-const DEMO_STEPS = [1, 5, 7, 14, 21, 30];
-
-function AnimatedCounter() {
-  const [idx, setIdx] = useState(0);
-  const val = DEMO_STEPS[idx];
-
-  useEffect(() => {
-    const t = setTimeout(() => setIdx((p) => (p + 1) % DEMO_STEPS.length), 1800);
-    return () => clearTimeout(t);
-  }, [idx]);
-
-  const nextM = MILESTONES.find((m) => m.days > val);
-  const progress = nextM ? Math.min((val / nextM.days) * 100, 100) : 100;
-  const next = DEMO_STEPS[(idx + 1) % DEMO_STEPS.length];
-
-  return (
-    <div className="flex flex-col items-center gap-5">
-      <div className="relative flex flex-col items-center justify-center w-52 h-52 rounded-full bg-gradient-to-br from-orange-400 to-red-500 shadow-2xl shadow-orange-200">
-        <FaFireAlt className="text-5xl text-white/80 mb-1" />
-        <motion.p
-          key={val}
-          initial={{ opacity: 0, y: 20, scale: 0.7 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          className="text-6xl font-extrabold text-white leading-none"
-        >
-          {val}
-        </motion.p>
-        <p className="text-white/80 text-sm font-medium mt-1">
-          day{val !== 1 ? "s" : ""} streak
-        </p>
-      </div>
-
-      {nextM && (
-        <div className="w-48">
-          <div className="flex justify-between text-xs text-gray-400 mb-1">
-            <span>{val} days</span>
-            <span>Next: {nextM.days}d {nextM.emoji}</span>
-          </div>
-          <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-            <motion.div
-              className="h-full bg-gradient-to-r from-orange-400 to-red-500 rounded-full"
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-            />
-          </div>
-        </div>
-      )}
-
-      <p className="text-xs text-gray-400">
-        Next demo value:{" "}
-        <span className="font-semibold text-orange-400">{next}</span>-day streak
-      </p>
-    </div>
-  );
-}
-
-//  Page
 export default function StreakPage() {
   return (
-    <div className="bg-gradient-to-b from-[#f0f9ff] via-white to-[#fdf4ff] min-h-screen">
-
-      {/* HERO */}
-      <Container className="pt-28 pb-20">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
+    <main className="premium-page relative min-h-screen overflow-hidden px-6 pb-24 pt-28 text-[var(--app-text)] lg:px-8">
+      <div className="relative mx-auto max-w-7xl space-y-6">
+        <section className="grid gap-6 xl:grid-cols-[0.88fr_1.12fr]">
           <motion.div
-            initial={{ opacity: 0, x: -100 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false, amount: 0.3 }}
-            transition={{ duration: 0.65, ease: "easeInOut" }}
-            className="max-w-xl space-y-7"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="premium-panel-strong rounded-[36px] p-8 lg:p-10"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-100 border border-orange-200">
-              <FaFireAlt className="text-orange-500 text-sm" />
-              <span className="text-xs font-semibold text-orange-600 uppercase tracking-wider">
-                Streak System
-              </span>
+            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--app-line)] bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-[#9BC5FF]">
+              <Flame className="h-4 w-4 text-[var(--app-accent-strong)]" />
+              Streak progress
             </div>
-
-            <h1 className="text-5xl lg:text-6xl font-extrabold leading-tight text-gray-900">
-              Sleep Better,{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">
-                Every Night.
-              </span>
+            <h1 className="mt-6 text-4xl font-semibold tracking-[-0.03em] lg:text-5xl">
+              You&apos;re on fire. 14 nights strong.
             </h1>
-
-            <p className="text-gray-500 text-lg leading-relaxed">
-              Build a streak like Duolingo  but for your health. Log your sleep
-              consistently, hit milestones, and unlock badges as you go.
+            <p className="mt-5 max-w-xl text-base leading-8 text-[var(--app-text-muted)]">
+              Consistency is becoming visible now. Keep the same bedtime window and let small, repeatable wins compound into better mornings.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link
-                href="/dashboard/streak"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-orange-400 to-red-500 text-white font-semibold shadow-lg hover:shadow-orange-200 hover:scale-105 transition-all duration-200"
-              >
-                View My Streaks <ArrowRight size={16} />
-              </Link>
+            <div className="mt-8 grid gap-4 md:grid-cols-3">
+              {[
+                ["Current streak", "14 nights"],
+                ["Best run", "21 nights"],
+                ["Next unlock", "21-day badge"],
+              ].map(([label, value]) => (
+                <div key={label} className="premium-panel rounded-[24px] p-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-[var(--app-text-muted)]">{label}</p>
+                  <p className="mt-3 text-2xl font-semibold tracking-[-0.03em]">{value}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/dashboard/sleepTracking"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-white border border-gray-200 text-gray-700 font-semibold hover:border-orange-300 hover:text-orange-500 transition-all duration-200"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--app-accent-strong)] px-6 py-3.5 text-sm font-semibold text-[#062019] shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_14px_44px_rgba(0,229,194,0.22)] transition-all duration-300 hover:scale-[1.02]"
               >
-                Log Tonights Sleep
+                Log tonight
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--app-line)] bg-white/5 px-6 py-3.5 text-sm font-semibold text-[var(--app-text)] transition-colors duration-300 hover:bg-white/10"
+              >
+                View dashboard
               </Link>
             </div>
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, x: 100 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false, amount: 0.3 }}
-            transition={{ duration: 0.7, ease: "easeInOut" }}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.08 }}
+            className="premium-panel-strong rounded-[36px] p-8 lg:p-10"
           >
-            <AnimatedCounter />
+            <div className="grid gap-6 md:grid-cols-[220px_1fr]">
+              <div className="flex flex-col items-center justify-center">
+                <div className="flex h-52 w-52 items-center justify-center rounded-full border border-[var(--app-line)] bg-[radial-gradient(circle,color-mix(in_srgb,var(--app-accent-strong)_18%,transparent),transparent_58%)]">
+                  <div className="flex h-36 w-36 flex-col items-center justify-center rounded-full border border-[var(--app-accent-strong)]/30 bg-[var(--app-surface-muted)] shadow-[0_0_28px_rgba(0,229,194,0.16)]">
+                    <Flame className="h-9 w-9 text-[var(--app-accent-strong)] animate-[breathe_4s_ease-in-out_infinite]" />
+                    <p className="mt-3 text-5xl font-semibold tracking-[-0.04em]">14</p>
+                    <p className="mt-1 text-xs uppercase tracking-[0.18em] text-[var(--app-text-muted)]">night streak</p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-[#9BC5FF]">Streak heatmap</p>
+                <div className="mt-5 rounded-[28px] border border-[var(--app-line)] bg-white/5 p-5">
+                  <div className="grid grid-cols-8 gap-2">
+                    {Array.from({ length: 8 }).map((_, col) => (
+                      <div key={col} className="grid gap-2">
+                        {Array.from({ length: 7 }).map((__, row) => {
+                          const value = (col * 7 + row + 3) % 5;
+                          const color =
+                            value === 0
+                              ? "bg-white/5"
+                              : value === 1
+                                ? "bg-[#153D4A]"
+                                : value === 2
+                                  ? "bg-[#126B72]"
+                                  : value === 3
+                                    ? "bg-[#00BDA4]"
+                                    : "bg-[var(--app-accent-strong)]";
+
+                          return <div key={row} className={`h-8 rounded-xl ${color}`} />;
+                        })}
+                      </div>
+                    ))}
+                  </div>
+                  <p className="mt-4 text-sm leading-7 text-[var(--app-text-muted)]">
+                    Your consistency map shows a much steadier rhythm over the last eight weeks.
+                  </p>
+                </div>
+              </div>
+            </div>
           </motion.div>
-        </div>
-      </Container>
+        </section>
 
-      {/* HOW IT WORKS */}
-      <Container className="pb-24">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.3 }}
-          transition={{ duration: 0.55, ease: "easeOut" }}
-          className="text-center mb-14"
-        >
-          <h2 className="text-4xl font-extrabold text-gray-800">
-            How{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#89CFF0] to-[#B19CD9]">
-              Streaks Work
-            </span>
-          </h2>
-          <p className="text-gray-500 mt-3 max-w-lg mx-auto">
-            Three simple steps to turn sleep into a rewarding daily habit.
-          </p>
-        </motion.div>
+        <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="premium-panel-strong rounded-[34px] p-8">
+            <p className="text-xs uppercase tracking-[0.24em] text-[#9BC5FF]">Badges</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em]">Your unlock gallery</h2>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              {badges.map(({ name, status, icon: Icon, active }) => (
+                <div key={name} className="premium-panel rounded-[26px] p-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${active ? "bg-[var(--app-accent-strong)]/12 text-[var(--app-accent-strong)]" : "bg-white/5 text-[var(--app-text-muted)]"}`}>
+                      <Icon className="h-6 w-6" />
+                    </div>
+                    {active ? <CheckCircle2 className="h-5 w-5 text-[var(--app-accent-strong)]" /> : <Lock className="h-5 w-5 text-[var(--app-text-muted)]" />}
+                  </div>
+                  <h3 className="mt-5 text-xl font-semibold tracking-[-0.02em]">{name}</h3>
+                  <p className="mt-2 text-sm leading-7 text-[var(--app-text-muted)]">{status}</p>
+                </div>
+              ))}
+            </div>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {STEPS.map((step, i) => (
-            <motion.div
-              key={step.step}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ duration: 0.55, delay: i * 0.12, ease: "easeOut" }}
-              whileHover={{ y: -6 }}
-              className="relative bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200"
-            >
-              <span className="absolute top-4 right-5 text-6xl font-extrabold text-gray-50 select-none leading-none">
-                {step.step}
-              </span>
-              <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center mb-5">
-                {step.icon}
+          <div className="space-y-6">
+            <div className="premium-panel-strong rounded-[34px] p-6">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--app-accent-strong)]/12 text-[var(--app-accent-strong)]">
+                  <Sparkles className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Motivation</p>
+                  <p className="text-xs text-[var(--app-text-muted)]">What this streak means</p>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-gray-800 mb-2">{step.title}</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">{step.desc}</p>
-            </motion.div>
-          ))}
-        </div>
-      </Container>
-
-      {/* HEATMAP PREVIEW */}
-      <div className="bg-white py-20">
-        <Container>
-          <div className="flex flex-col lg:flex-row items-center gap-14">
-            <motion.div
-              initial={{ opacity: 0, x: -80 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ duration: 0.6, ease: "easeInOut" }}
-              className="flex-1 space-y-6"
-            >
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#89CFF0]/15 border border-[#89CFF0]/30">
-                <Star size={14} className="text-[#4a9fc0]" />
-                <span className="text-xs font-semibold text-[#4a9fc0] uppercase tracking-wider">
-                  Activity Heatmap
-                </span>
-              </div>
-              <h2 className="text-4xl font-extrabold text-gray-800 leading-tight">
-                See Your Consistency{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#89CFF0] to-[#B19CD9]">
-                  at a Glance
-                </span>
-              </h2>
-              <p className="text-gray-500 leading-relaxed">
-                Your personal heatmap shows every night you logged, color-coded
-                by sleep quality. Like a GitHub contribution graph  but for your
-                health. Build a wall of green.
+              <p className="mt-4 text-base leading-8 text-[var(--app-text-muted)]">
+                Fourteen nights is no longer a lucky streak. Your rhythm is turning into an actual habit, and the sleep gains are getting easier to preserve.
               </p>
-              <div className="flex items-center gap-3 flex-wrap">
-                <span className="text-xs text-gray-400">Quality:</span>
-                {[
-                  { color: "bg-gray-100", label: "None" },
-                  { color: "bg-yellow-300", label: "Fair" },
-                  { color: "bg-green-400", label: "Good" },
-                  { color: "bg-emerald-500", label: "Excellent" },
-                ].map((l) => (
-                  <div key={l.label} className="flex items-center gap-1">
-                    <div className={`w-3 h-3 rounded-sm ${l.color}`} />
-                    <span className="text-xs text-gray-400">{l.label}</span>
+            </div>
+
+            <div className="premium-panel-strong rounded-[34px] p-6">
+              <p className="text-sm font-medium">Milestone progress</p>
+              <div className="mt-5 rounded-[24px] bg-white/5 p-4">
+                <div className="flex items-center justify-between text-xs uppercase tracking-[0.18em] text-[var(--app-text-muted)]">
+                  <span>14 / 21 nights</span>
+                  <span>Next badge</span>
+                </div>
+                <div className="mt-4 h-2 rounded-full bg-white/8">
+                  <div className="h-2 w-2/3 rounded-full bg-[linear-gradient(90deg,var(--app-accent-strong),var(--app-gradient-end))]" />
+                </div>
+              </div>
+            </div>
+
+            <div className="premium-panel-strong rounded-[34px] p-6">
+              <p className="text-sm font-medium">Historical trend</p>
+              <div className="mt-5 grid grid-cols-6 gap-3">
+                {[5, 7, 9, 12, 14, 18].map((value, index) => (
+                  <div key={value} className="space-y-3">
+                    <div className="flex h-28 items-end rounded-full bg-white/[0.05] p-1">
+                      <div
+                        className="w-full rounded-full bg-[linear-gradient(180deg,var(--app-accent-strong),var(--app-gradient-end))]"
+                        style={{ height: `${Math.min(100, value * 5)}%` }}
+                      />
+                    </div>
+                    <p className="text-center text-[10px] uppercase tracking-[0.18em] text-[var(--app-text-muted)]">
+                      W{index + 1}
+                    </p>
                   </div>
                 ))}
               </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 80 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ duration: 0.65, ease: "easeInOut" }}
-              className="bg-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm overflow-x-auto"
-            >
-              <p className="text-xs text-gray-400 mb-3 font-medium">
-                Last 16 weeks (demo)
-              </p>
-              <DemoHeatmap />
-            </motion.div>
-          </div>
-        </Container>
-      </div>
-
-      {/* MILESTONE BADGES */}
-      <Container className="py-24">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.3 }}
-          transition={{ duration: 0.55, ease: "easeOut" }}
-          className="text-center mb-14"
-        >
-          <h2 className="text-4xl font-extrabold text-gray-800">
-            Earn{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">
-              Milestone Badges
-            </span>
-          </h2>
-          <p className="text-gray-500 mt-3 max-w-md mx-auto">
-            Six badges to unlock across your sleep journey. The rarer the badge,
-            the sweeter the achievement.
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          {MILESTONES.map((m, i) => (
-            <motion.div
-              key={m.days}
-              initial={{ opacity: 0, scale: 0.7, y: 30 }}
-              whileInView={{ opacity: 1, scale: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{
-                duration: 0.5,
-                delay: i * 0.09,
-                type: "spring",
-                stiffness: 200,
-                damping: 18,
-              }}
-              whileHover={{ scale: 1.07, y: -4 }}
-              className={`relative flex flex-col items-center p-5 rounded-2xl border text-center cursor-default transition-shadow duration-200 hover:shadow-lg ${
-                m.unlocked
-                  ? `bg-gradient-to-br ${m.color} text-white border-transparent shadow-md`
-                  : "bg-white border-gray-100 text-gray-400"
-              }`}
-            >
-              <div className="absolute top-2.5 right-2.5">
-                {m.unlocked ? (
-                  <CheckCircle2 size={14} className="text-white/80" />
-                ) : (
-                  <Lock size={12} className="text-gray-300" />
-                )}
-              </div>
-              <div className={`text-4xl mb-2 ${m.unlocked ? "" : "grayscale opacity-30"}`}>
-                {m.emoji}
-              </div>
-              <p className={`text-xs font-bold leading-tight ${m.unlocked ? "text-white" : "text-gray-600"}`}>
-                {m.label}
-              </p>
-              <p className={`text-[11px] mt-1 ${m.unlocked ? "text-white/75" : "text-gray-400"}`}>
-                {m.days} nights
-              </p>
-            </motion.div>
-          ))}
-        </div>
-      </Container>
-
-      {/* CTA */}
-      <div className="bg-gradient-to-r from-orange-400 to-red-500 py-20">
-        <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.4 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="text-center text-white space-y-6"
-          >
-            <p className="text-6xl"></p>
-            <h2 className="text-4xl font-extrabold">
-              Your streak starts tonight.
-            </h2>
-            <p className="text-white/80 text-lg max-w-md mx-auto">
-              Every legend started at Day 1. Log your sleep tonight and ignite
-              your first flame.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
-              <Link
-                href="/dashboard/sleepTracking"
-                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-white text-orange-500 font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
-              >
-                Log Tonights Sleep <ArrowRight size={16} />
-              </Link>
-              <Link
-                href="/dashboard/streak"
-                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-white/20 border border-white/40 text-white font-semibold hover:bg-white/30 transition-all duration-200"
-              >
-                View My Dashboard
-              </Link>
             </div>
-          </motion.div>
-        </Container>
+          </div>
+        </section>
       </div>
-
-    </div>
+    </main>
   );
 }

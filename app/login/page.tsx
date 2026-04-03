@@ -2,17 +2,26 @@
 
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import { useState, FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
-import { Moon, Mail, Lock, ArrowRight, Eye, EyeOff, BrainCircuit, Flame, BarChart3 } from "lucide-react";
+import {
+  ArrowRight,
+  BrainCircuit,
+  Eye,
+  EyeOff,
+  Flame,
+  Lock,
+  Mail,
+  MoonStar,
+  ScanFace,
+} from "lucide-react";
 
-const PERKS = [
-  { icon: Moon, text: "Track your sleep every night" },
-  { icon: Flame, text: "Build streaks & earn badges" },
-  { icon: BrainCircuit, text: "AI-powered sleep coaching" },
-  { icon: BarChart3, text: "Visual insights & trends" },
+const cues = [
+  { icon: BrainCircuit, label: "Pick up where your sleep insights left off" },
+  { icon: Flame, label: "Keep your streak alive tonight" },
+  { icon: ScanFace, label: "Use Google now, biometrics later" },
 ];
 
 export default function LoginPage() {
@@ -29,11 +38,13 @@ export default function LoginPage() {
       toast.error("Please enter both email and password");
       return;
     }
+
     setLoading(true);
     const toastId = toast.loading("Signing in...");
     const res = await signIn("credentials", { redirect: false, email, password });
     toast.dismiss(toastId);
     setLoading(false);
+
     if (res?.ok) {
       toast.success("Welcome back!");
       router.push("/");
@@ -48,92 +59,74 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* ── LEFT: Brand Panel ── */}
-      <div className="hidden lg:flex w-1/2 bg-gradient-to-tl from-secondary to-primary flex-col justify-between p-12 relative overflow-hidden">
-        {/* Decorative blobs */}
-        <div className="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-white/10 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-white/10 blur-3xl pointer-events-none" />
-
-        {/* Logo */}
-        <div className="flex items-center gap-3 relative z-10">
-          <div className="w-10 h-10 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center">
-            <Moon size={20} className="text-white" />
-          </div>
-          <span className="text-white font-extrabold text-xl tracking-tight">SleepSync</span>
-        </div>
-
-        {/* Center copy */}
-        <div className="relative z-10 space-y-8">
-          <div className="space-y-3">
-            <h2 className="text-4xl font-extrabold text-white leading-tight">
-              Sleep better,<br />
-              <span className="text-white/70">starting tonight.</span>
-            </h2>
-            <p className="text-white/60 text-base max-w-xs">
-              Join thousands of people already tracking and improving their sleep with SleepSync.
-            </p>
-          </div>
-
-          {/* Perks list */}
-          <ul className="space-y-3">
-            {PERKS.map(({ icon: Icon, text }) => (
-              <li key={text} className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center shrink-0">
-                  <Icon size={15} className="text-white" />
-                </div>
-                <span className="text-white/75 text-sm">{text}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Bottom quote */}
-        <div className="relative z-10 bg-white/10 border border-white/20 rounded-2xl p-5">
-          <p className="text-white/80 text-sm leading-relaxed italic">
-            &ldquo;I haven&apos;t missed a single night of logging in 60 days. SleepSync keeps me motivated.&rdquo;
-          </p>
-          <div className="flex items-center gap-2 mt-3">
-            <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold text-white">J</div>
-            <div>
-              <p className="text-white text-xs font-semibold">James R.</p>
-              <p className="text-white/50 text-xs">Software Engineer</p>
-            </div>
-          </div>
-        </div>
+    <main className="premium-page relative min-h-screen overflow-hidden px-6 pb-20 pt-28 text-[var(--app-text)] lg:px-8">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute left-[12%] top-28 h-56 w-56 rounded-full bg-[var(--app-accent-strong)]/10 blur-3xl" />
+        <div className="absolute right-[10%] top-20 h-64 w-64 rounded-full bg-[var(--app-gradient-end)]/30 blur-3xl" />
+        <div className="absolute bottom-16 right-[20%] h-48 w-48 rounded-full bg-[var(--app-gradient-start)]/22 blur-3xl" />
       </div>
 
-      {/* ── RIGHT: Form Panel ── */}
-      <div className="flex-1 flex items-center justify-center bg-gray-50 px-6 py-16">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
+      <div className="relative mx-auto grid max-w-5xl items-center gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="w-full max-w-sm"
+          transition={{ duration: 0.7 }}
+          className="premium-panel-strong rounded-[36px] p-8 lg:p-10"
         >
-          {/* Mobile logo */}
-          <div className="flex items-center justify-center gap-2 mb-8 lg:hidden">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#89CFF0] to-[#B19CD9] flex items-center justify-center">
-              <Moon size={18} className="text-white" />
-            </div>
-            <span className="font-extrabold text-xl text-gray-800">SleepSync</span>
+          <div className="inline-flex items-center gap-2 rounded-full border border-[var(--app-line)] bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-[#9BC5FF]">
+            <MoonStar className="h-4 w-4 text-[var(--app-accent-strong)]" />
+            Welcome back
           </div>
 
-          <div className="mb-8">
-            <h1 className="text-2xl font-extrabold text-gray-800">Sign in</h1>
-            <p className="text-gray-500 text-sm mt-1">Welcome back — your streak is waiting.</p>
+          <h1 className="mt-6 text-4xl font-semibold tracking-[-0.03em] lg:text-5xl">
+            Return to your calmest version of the dashboard.
+          </h1>
+          <p className="mt-5 text-base leading-8 text-[var(--app-text-muted)]">
+            Log back in, review last night, and keep your momentum moving with a sleep routine that already knows you.
+          </p>
+
+          <div className="mt-8 grid gap-4">
+            {cues.map(({ icon: Icon, label }) => (
+              <div key={label} className="premium-panel rounded-[24px] p-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--app-accent-strong)]/12 text-[var(--app-accent-strong)]">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <p className="text-sm leading-7 text-[var(--app-text-muted)]">{label}</p>
+                </div>
+              </div>
+            ))}
           </div>
 
-          {/* Google */}
+          <div className="mt-8 rounded-[28px] border border-[var(--app-line)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--app-gradient-start)_22%,transparent),color-mix(in_srgb,var(--app-gradient-end)_18%,transparent))] p-5">
+            <p className="text-sm font-medium">Biometric-ready experience</p>
+            <p className="mt-2 text-sm leading-7 text-[var(--app-text-muted)]">
+              Sign in now with email or Google. Device unlock and faster return flows can sit on top later without changing your account.
+            </p>
+          </div>
+        </motion.section>
+
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.08 }}
+          className="premium-panel-strong rounded-[36px] p-8 lg:p-10"
+        >
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#9BC5FF]">Sign in</p>
+          <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em]">Your streak is waiting.</h2>
+          <p className="mt-3 text-sm leading-7 text-[var(--app-text-muted)]">
+            Continue with Google or use your email and password to jump back in.
+          </p>
+
           <button
             onClick={handleGoogle}
             disabled={googleLoading}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-2xl bg-white border border-gray-200 text-gray-700 font-semibold text-sm shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed mb-5"
+            className="premium-panel mt-8 flex w-full items-center justify-center gap-3 rounded-[22px] px-4 py-4 text-sm font-semibold transition-all duration-300 hover:scale-[1.01] hover:border-[var(--app-accent-strong)]/25 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {googleLoading ? (
-              <span className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+              <span className="h-5 w-5 animate-spin rounded-full border-2 border-[var(--app-text-muted)] border-t-transparent" />
             ) : (
-              <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" xmlns="http://www.w3.org/2000/svg">
+              <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0" xmlns="http://www.w3.org/2000/svg">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
                 <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05" />
@@ -143,46 +136,47 @@ export default function LoginPage() {
             Continue with Google
           </button>
 
-          {/* Divider */}
-          <div className="flex items-center gap-3 mb-5">
-            <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-gray-400 text-xs">or with email</span>
-            <div className="flex-1 h-px bg-gray-200" />
+          <div className="my-6 flex items-center gap-3">
+            <div className="h-px flex-1 bg-[var(--app-line)]" />
+            <span className="text-xs uppercase tracking-[0.2em] text-[var(--app-text-muted)]">or use email</span>
+            <div className="h-px flex-1 bg-[var(--app-line)]" />
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="relative">
-              <Mail size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--app-text-muted)]" />
               <input
                 type="email"
                 placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-white border border-gray-200 text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:border-[#89CFF0] focus:ring-2 focus:ring-[#89CFF0]/20 transition"
+                className="premium-input w-full rounded-[22px] py-4 pl-11 pr-4 text-sm placeholder:text-[var(--app-text-muted)]/80 focus:outline-none focus:premium-input-focus"
+                aria-label="Email address"
               />
             </div>
 
             <div className="relative">
-              <Lock size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--app-text-muted)]" />
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-11 pr-11 py-3 rounded-2xl bg-white border border-gray-200 text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:border-[#89CFF0] focus:ring-2 focus:ring-[#89CFF0]/20 transition"
+                className="premium-input w-full rounded-[22px] py-4 pl-11 pr-12 text-sm placeholder:text-[var(--app-text-muted)]/80 focus:outline-none focus:premium-input-focus"
+                aria-label="Password"
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+                onClick={() => setShowPassword((value) => !value)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--app-text-muted)] transition-colors hover:text-[var(--app-text)]"
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
-                {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
 
             <div className="flex justify-end">
-              <a href="#" className="text-xs text-gray-400 hover:text-gray-600 transition">
+              <a href="#" className="text-xs font-medium text-[var(--app-text-muted)] transition-colors hover:text-[var(--app-accent-strong)]">
                 Forgot password?
               </a>
             </div>
@@ -190,24 +184,31 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-gradient-to-r from-[#89CFF0] to-[#B19CD9] text-white font-bold text-sm shadow-md hover:shadow-lg hover:scale-[1.01] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[var(--app-accent-strong)] px-6 py-4 text-sm font-semibold text-[#062019] shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_14px_44px_rgba(0,229,194,0.22)] transition-all duration-300 hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? (
-                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#062019] border-t-transparent" />
               ) : (
-                <>Sign In <ArrowRight size={15} /></>
+                <>
+                  Sign In
+                  <ArrowRight className="h-4 w-4" />
+                </>
               )}
             </button>
           </form>
 
-          <p className="text-center text-gray-400 text-xs mt-6">
+          <div className="mt-6 rounded-[22px] border border-[var(--app-line)] bg-white/5 px-4 py-4 text-sm text-[var(--app-text-muted)]">
+            Magic-link and biometric shortcuts can layer on top later without changing your current auth flow.
+          </div>
+
+          <p className="mt-6 text-center text-sm text-[var(--app-text-muted)]">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-gray-700 font-semibold hover:text-[#89CFF0] transition">
-              Sign up free
+            <Link href="/register" className="font-semibold text-[var(--app-text)] transition-colors hover:text-[var(--app-accent-strong)]">
+              Create one free
             </Link>
           </p>
-        </motion.div>
+        </motion.section>
       </div>
-    </div>
+    </main>
   );
 }

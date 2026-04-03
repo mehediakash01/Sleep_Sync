@@ -3,7 +3,7 @@
 import { Bell } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function NotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -14,22 +14,25 @@ export default function NotificationBell() {
         const res = await fetch("/api/notifications");
         if (!res.ok) return;
         const data = await res.json();
-        const count = data.filter((n: { isRead: boolean }) => !n.isRead).length;
+        const count = data.filter((item: { isRead: boolean }) => !item.isRead).length;
         setUnreadCount(count);
       } catch {
-        // silently fail
+        // no-op
       }
     };
 
     fetchUnread();
-    // Refresh every 60 seconds
     const interval = setInterval(fetchUnread, 60_000);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <Link href="/notification" className="relative inline-flex items-center justify-center w-9 h-9 rounded-lg hover:bg-gray-100 transition-colors">
-      <Bell size={20} className="text-gray-600" />
+    <Link
+      href="/notification"
+      aria-label="Open notifications"
+      className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--app-line)] bg-white/5 text-[var(--app-text-muted)] transition-all duration-300 hover:scale-105 hover:bg-white/10 hover:text-[var(--app-text)]"
+    >
+      <Bell size={18} />
       <AnimatePresence>
         {unreadCount > 0 && (
           <motion.span
@@ -37,7 +40,7 @@ export default function NotificationBell() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             exit={{ scale: 0 }}
-            className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none"
+            className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[var(--app-accent-strong)] px-1 text-[10px] font-bold text-[#062019]"
           >
             {unreadCount > 99 ? "99+" : unreadCount}
           </motion.span>

@@ -1,141 +1,161 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import LoggedOutBtn from "@/Action/LoggedOutBtn";
-import { Home, BarChart2, Users, Clock, Moon, X, Menu, Flame } from "lucide-react";
 import NotificationBell from "./NotificationBell";
-
-import { useState } from "react";
+import {
+  BarChart3,
+  Clock3,
+  Flame,
+  Home,
+  Menu,
+  MoonStar,
+  Settings,
+  Sparkles,
+  X,
+} from "lucide-react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
+
+const menuItems = [
+  { name: "Overview", href: "/dashboard", icon: Home },
+  { name: "Sleep Log", href: "/dashboard/sleepTracking", icon: Sparkles },
+  { name: "Insights", href: "/dashboard/sleepInsights", icon: BarChart3 },
+  { name: "History", href: "/dashboard/sleepHistory", icon: Clock3 },
+  { name: "Streaks", href: "/dashboard/streak", icon: Flame },
+  { name: "Settings", href: "/settings", icon: Settings },
+];
 
 export default function DashNavbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+  const { data: session } = useSession();
 
-  const handleToggle = () => setIsOpen((prev) => !prev);
-  const handleClose = () => setIsOpen(false);
-
-  const menuItems = [
-    { name: "Overview",      icon: <Home size={18} />,     href: "/dashboard" },
-    { name: "SleepLog",      icon: <Users size={18} />,    href: "/dashboard/sleepTracking" },
-    { name: "Sleep Insights",icon: <BarChart2 size={18} />,href: "/dashboard/sleepInsights" },
-    { name: "Sleep History", icon: <Clock size={18} />,    href: "/dashboard/sleepHistory" },
-    { name: "Streaks",       icon: <Flame size={18} />,   href: "/dashboard/streak" },
-  ];
+  const avatarFallback = useMemo(() => {
+    const seed = session?.user?.name || session?.user?.email || "SleepSync";
+    return `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(seed)}`;
+  }, [session?.user?.email, session?.user?.name]);
 
   return (
     <>
-      <header className="flex lg:hidden items-center justify-between bg-white px-4 py-3 shadow-md sticky top-0 z-40">
-        <button
-          onClick={handleToggle}
-          className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          aria-label="Toggle menu"
-        >
-          <Menu size={24} className="text-gray-700" />
-        </button>
-
-        <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-[var(--app-line)] bg-[var(--app-surface-muted)]/88 px-4 py-4 backdrop-blur-2xl lg:hidden">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setIsOpen(true)}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--app-line)] bg-white/5 text-[var(--app-text)]"
+            aria-label="Open dashboard menu"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+          <div>
+            <p className="text-xs uppercase tracking-[0.18em] text-[#9BC5FF]">Dashboard</p>
+            <p className="text-sm font-medium text-[var(--app-text)]">SleepSync</p>
+          </div>
+        </div>
 
         <div className="flex items-center gap-2">
           <NotificationBell />
-          <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-            A
+          <div className="rounded-full border border-[var(--app-line)] bg-white/5 px-3 py-1 text-xs font-medium text-[var(--app-text-muted)]">
+            14 night streak
           </div>
         </div>
       </header>
 
-      {/* Drawer Component with Framer Motion */}
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* Overlay */}
-            <motion.div
+            <motion.button
+              type="button"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              onClick={handleClose}
-              className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+              onClick={() => setIsOpen(false)}
+              className="fixed inset-0 z-40 bg-[#020617]/60 backdrop-blur-sm lg:hidden"
+              aria-label="Close dashboard menu overlay"
             />
 
-            {/* Drawer */}
-            <motion.div
+            <motion.aside
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 lg:hidden"
+              transition={{ type: "spring", damping: 28, stiffness: 220 }}
+              className="fixed inset-y-0 left-0 z-50 flex w-[86vw] max-w-sm flex-col border-r border-[var(--app-line)] bg-[var(--app-surface-strong)] p-5 text-[var(--app-text)] backdrop-blur-2xl lg:hidden"
             >
-              {/* Drawer Header */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
-                    <Moon className="w-5 h-5 text-white" />
+              <div className="flex items-center justify-between">
+                <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--app-gradient-start),var(--app-gradient-end))] text-[var(--app-accent-strong)]">
+                    <MoonStar className="h-5 w-5" />
                   </div>
                   <div>
-                    <h2 className="font-semibold text-gray-900">Sleep Sync</h2>
-                    <p className="text-xs text-gray-500">Track your sleep</p>
+                    <p className="text-sm font-semibold tracking-[0.24em] text-[#9BC5FF]">SLEEPSYNC</p>
+                    <p className="text-sm text-[var(--app-text-muted)]">Dashboard workspace</p>
                   </div>
-                </div>
+                </Link>
                 <button
-                  onClick={handleClose}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                  aria-label="Close menu"
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--app-line)] bg-white/5"
+                  aria-label="Close dashboard menu"
                 >
-                  <X size={20} className="text-gray-600" />
+                  <X className="h-5 w-5" />
                 </button>
               </div>
 
-              {/* User Info */}
-              {/* <div className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-gray-200">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-lg">
-                    A
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">Akash</p>
-                    <p className="text-sm text-gray-600">akash@example.com</p>
-                  </div>
+              <div className="mt-6 flex items-center gap-3 rounded-[24px] border border-[var(--app-line)] bg-white/5 p-4">
+                <Image
+                  src={session?.user?.image || avatarFallback}
+                  alt="User avatar"
+                  width={48}
+                  height={48}
+                  className="h-12 w-12 rounded-2xl object-cover"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="min-w-0">
+                  <p className="truncate font-medium">{session?.user?.name || "SleepSync user"}</p>
+                  <p className="truncate text-sm text-[var(--app-text-muted)]">{session?.user?.email || "Ready for tonight"}</p>
                 </div>
-              </div> */}
+              </div>
 
-              {/* Navigation Menu */}
-              <nav className="flex-1 overflow-y-auto p-4">
-                <ul className="space-y-2">
-                  {menuItems.map((item, index) => (
-                    <motion.li
-                      key={index}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
+              <nav className="mt-6 flex-1 space-y-2">
+                {menuItems.map(({ name, href, icon: Icon }) => {
+                  const isActive = pathname === href;
+
+                  return (
+                    <Link
+                      key={href}
+                      href={href}
+                      onClick={() => setIsOpen(false)}
+                      className={`flex items-center gap-3 rounded-[20px] px-4 py-3 text-sm font-medium transition-all duration-300 ${
+                        isActive
+                          ? "bg-[var(--app-accent-strong)]/12 text-[var(--app-text)]"
+                          : "text-[var(--app-text-muted)] hover:bg-white/6 hover:text-[var(--app-text)]"
+                      }`}
                     >
-                      <Link
-                        href={item.href}
-                        onClick={handleClose}
-                        className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-indigo-50 hover:text-indigo-600 transition-colors group"
-                      >
-                        <span className="w-5 h-5 text-gray-600 group-hover:text-indigo-600" >{item.icon} </span>
-                        <span className="font-medium text-gray-700 group-hover:text-indigo-600">
-                          {item.name}
-                        </span>
-                      </Link>
-                    </motion.li>
-                  ))}
-                </ul>
+                      <span className={`flex h-9 w-9 items-center justify-center rounded-full ${isActive ? "bg-[var(--app-accent-strong)]/14 text-[var(--app-accent-strong)]" : "bg-white/5"}`}>
+                        <Icon size={16} />
+                      </span>
+                      <span>{name}</span>
+                    </Link>
+                  );
+                })}
               </nav>
 
-              {/* Drawer Footer */}
-              <div className="p-4 border-t border-gray-200 flex items-center justify-between">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="flex items-center gap-3"
-                >
-                  <LoggedOutBtn />
-                </motion.div>
+              <div className="mt-4 flex items-center justify-between rounded-[24px] border border-[var(--app-line)] bg-white/5 px-4 py-4">
+                <div>
+                  <p className="text-sm font-medium">Notifications</p>
+                  <p className="text-xs text-[var(--app-text-muted)]">Sleep reminders and updates</p>
+                </div>
                 <NotificationBell />
               </div>
-            </motion.div>
+
+              <div className="mt-4">
+                <LoggedOutBtn />
+              </div>
+            </motion.aside>
           </>
         )}
       </AnimatePresence>

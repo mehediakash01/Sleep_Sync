@@ -79,6 +79,22 @@
   --backdrop-blur: 20px;
   --glass-opacity: 0.4;
   --ghost-border-opacity: 0.15;
+
+  --app-bg: #eef3fb;
+  --app-bg-rgb: 238, 243, 251;
+  --app-bg-secondary: #f9fbff;
+  --app-surface: rgba(255, 255, 255, 0.72);
+  --app-surface-strong: rgba(255, 255, 255, 0.92);
+  --app-surface-muted: rgba(234, 240, 250, 0.88);
+  --app-text: #10203d;
+  --app-text-muted: #55637f;
+  --app-accent: #00cdb0;
+  --app-accent-strong: #00e5c2;
+  --app-line: rgba(16, 32, 61, 0.1);
+  --app-line-strong: rgba(16, 32, 61, 0.16);
+  --app-gradient-start: #d7ddff;
+  --app-gradient-end: #ead8ff;
+  --app-shadow: 0 24px 80px rgba(17, 28, 52, 0.12);
 }
 
 /* Dark Mode */
@@ -114,6 +130,22 @@ html.dark {
   --backdrop-blur: 20px;
   --glass-opacity: 0.4;
   --ghost-border-opacity: 0.15;
+
+  --app-bg: #0a1428;
+  --app-bg-rgb: 10, 20, 40;
+  --app-bg-secondary: #08111f;
+  --app-surface: rgba(16, 25, 45, 0.72);
+  --app-surface-strong: rgba(17, 27, 50, 0.9);
+  --app-surface-muted: rgba(10, 20, 40, 0.88);
+  --app-text: #f5f0e8;
+  --app-text-muted: rgba(245, 240, 232, 0.68);
+  --app-accent: #00d7b8;
+  --app-accent-strong: #00e5c2;
+  --app-line: rgba(255, 255, 255, 0.1);
+  --app-line-strong: rgba(255, 255, 255, 0.16);
+  --app-gradient-start: #1e1b4b;
+  --app-gradient-end: #4c2b8c;
+  --app-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
 }
 
 /* ─── TYPOGRAPHY ─── */
@@ -121,6 +153,7 @@ html.dark {
   body {
     @apply bg-[var(--surface)] text-[var(--on-surface)] transition-colors duration-300;
     font-family: 'Inter', sans-serif;
+    min-height: 100vh;
   }
 
   h1 {
@@ -171,6 +204,11 @@ html.dark {
   /* Smooth scrolling */
   html {
     scroll-behavior: smooth;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--app-accent-strong) 30%, transparent);
+    color: var(--app-text);
   }
 }
 
@@ -358,4 +396,45 @@ html.dark {
 
 html.dark .prose-dark :is(h1, h2, h3, h4, h5, h6) {
   color: var(--on-surface);
+}
+
+@utility premium-page {
+  background:
+    radial-gradient(circle at top, color-mix(in srgb, var(--app-gradient-end) 35%, transparent), transparent 32%),
+    radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--app-accent-strong) 12%, transparent), transparent 18%),
+    linear-gradient(180deg, var(--app-bg) 0%, var(--app-bg-secondary) 100%);
+  color: var(--app-text);
+}
+
+@utility premium-panel {
+  background: var(--app-surface);
+  border: 1px solid var(--app-line);
+  box-shadow: var(--app-shadow);
+  backdrop-filter: blur(24px);
+}
+
+@utility premium-panel-strong {
+  background: var(--app-surface-strong);
+  border: 1px solid var(--app-line-strong);
+  box-shadow: var(--app-shadow);
+  backdrop-filter: blur(24px);
+}
+
+@utility premium-pill {
+  background: color-mix(in srgb, var(--app-surface) 88%, transparent);
+  border: 1px solid var(--app-line);
+  color: var(--app-text-muted);
+  backdrop-filter: blur(20px);
+}
+
+@utility premium-input {
+  background: var(--app-surface-strong);
+  border: 1px solid var(--app-line);
+  color: var(--app-text);
+  backdrop-filter: blur(20px);
+}
+
+@utility premium-input-focus {
+  border-color: color-mix(in srgb, var(--app-accent-strong) 45%, var(--app-line));
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--app-accent-strong) 12%, transparent);
 }
