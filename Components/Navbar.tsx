@@ -3,334 +3,304 @@
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
+import { Menu, MoonStar, SunMedium, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTheme } from "@/Providers";
+
+const navItems = [
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/Streak", label: "Streaks" },
+  { href: "/AiCoach", label: "Coach" },
+  { href: "/blogs", label: "Blog" },
+  { href: "/about", label: "About" },
+];
 
 export const Navbar = () => {
   const { data: session } = useSession();
-  const router = useRouter();
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const profileMenuRef = useRef<HTMLDivElement | null>(null);
-
-  const avatarFallbackSrc = useMemo(() => {
-    const seed = session?.user?.name || session?.user?.email || "SleepSync User";
-    return `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(
-      seed
-    )}`;
-  }, [session?.user?.name, session?.user?.email]);
-
-  const handleAvatarClick = () => {
-    setIsProfileMenuOpen(false);
-    router.push("/dashboard");
-  };
-
-  const handleLogout = async () => {
-    setIsOpen(false);
-    setIsProfileMenuOpen(false);
-    await signOut({ callbackUrl: "/" });
-  };
-
-  const handleClose = () => {
-    setIsOpen(false);
-  };
+  const router = useRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const { theme, toggleTheme } = useTheme();
+  const profileRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const handleOutsideClick = (event: MouseEvent) => {
-      if (
-        profileMenuRef.current &&
-        !profileMenuRef.current.contains(event.target as Node)
-      ) {
-        setIsProfileMenuOpen(false);
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const onClick = (event: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setProfileOpen(false);
       }
     };
 
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
-  const navItems = [
-    { href: "/", label: "Home" },
-    { href: "/Streak", label: "Streak" },
-    { href: "/notification", label: "Notification" },
-    { href: "/AiCoach", label: "AI Coach" },
-    { href: "/about", label: "About Us" },
-    { href: "/blogs", label: "Blog" },
-  ];
+  const avatarFallback = useMemo(() => {
+    const seed = session?.user?.name || session?.user?.email || "SleepSync";
+    return `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(seed)}`;
+  }, [session?.user?.email, session?.user?.name]);
+
+  const handleLogout = async () => {
+    setMenuOpen(false);
+    setProfileOpen(false);
+    await signOut({ callbackUrl: "/" });
+  };
+
+  const shell =
+    "border border-white/10 bg-[#10192D]/70 backdrop-blur-2xl shadow-[0_20px_60px_rgba(0,0,0,0.28)]";
 
   return (
     <>
-      <nav className="navbar backdrop-blur-md py-3 sm:py-4 fixed z-50 left-0 right-0 w-full px-3 sm:px-6 lg:px-24">
-        <div className="navbar-start">
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(true)}
-            className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            aria-label="Toggle menu"
-          >
-            <Menu size={24} className="text-gray-700" />
-          </button>
+      <nav className="fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-6 lg:px-8">
+        <div className={`mx-auto flex max-w-7xl items-center justify-between rounded-full px-4 py-3 sm:px-6 ${shell}`}>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setMenuOpen(true)}
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-[#F5F0E8] transition-colors duration-300 hover:bg-white/10 lg:hidden"
+              aria-label="Open navigation"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
 
-          {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-          >
-            <Image
-              src="/images/SleepSync.png"
-              alt="sleepSync-logo"
-              width={52}
-              height={52}
-            />
-            <h1 className="text-2xl font-bold text-gray-900 hidden sm:block">
-              SleepSync
-            </h1>
-          </Link>
-        </div>
+            <Link href="/" className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#1E1B4B,#4C2B8C)] text-[#00E5C2] shadow-[0_0_24px_rgba(0,229,194,0.16)]">
+                <MoonStar className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold tracking-[0.24em] text-[#9BC5FF]">SLEEPSYNC</p>
+                <p className="text-sm text-[#F5F0E8]/58">AI sleep coaching</p>
+              </div>
+            </Link>
+          </div>
 
-        {/* Desktop Navigation */}
-        <div className="navbar-center hidden lg:flex">
-          <ul className="flex gap-6 xl:gap-8">
+          <div className="hidden items-center gap-1 lg:flex">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
 
               return (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className={`relative px-3 py-2 font-medium transition-all duration-200 ${
-                      isActive
-                        ? "text-indigo-600"
-                        : "text-gray-700 hover:text-indigo-600"
-                    }`}
-                  >
-                    {item.label}
-                    {/* Active indicator underline */}
-                    {isActive && (
-                      <motion.div
-                        layoutId="navbar-indicator"
-                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600"
-                        initial={false}
-                        transition={{
-                          type: "spring",
-                          stiffness: 380,
-                          damping: 30,
-                        }}
-                      />
-                    )}
-                  </Link>
-                </li>
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`rounded-full px-4 py-2 text-sm font-medium transition-all duration-300 ${
+                    isActive
+                      ? "bg-white/10 text-[#F5F0E8]"
+                      : "text-[#F5F0E8]/70 hover:bg-white/6 hover:text-[#F5F0E8]"
+                  }`}
+                >
+                  {item.label}
+                </Link>
               );
             })}
-          </ul>
-        </div>
+          </div>
 
-        {/* User Avatar / Login Button */}
-        <div className="navbar-end relative gap-2" ref={profileMenuRef}>
-          {session?.user ? (
-            <>
+          <div className="flex items-center gap-2 sm:gap-3" ref={profileRef}>
+            {mounted && (
               <button
-                onClick={() => setIsProfileMenuOpen((prev) => !prev)}
-                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full ring-2 ring-indigo-200 hover:ring-indigo-400 transition-all duration-200 overflow-hidden shadow-sm hover:shadow-lg"
-                title="Open profile menu"
+                type="button"
+                onClick={toggleTheme}
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-[#F5F0E8]/80 transition-all duration-300 hover:scale-105 hover:bg-white/10"
+                aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
               >
-                <img
-                  src={session.user.image || avatarFallbackSrc}
-                  alt="User avatar"
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
+                {theme === "dark" ? <SunMedium className="h-4.5 w-4.5" /> : <MoonStar className="h-4.5 w-4.5" />}
               </button>
+            )}
 
-              <AnimatePresence>
-                {isProfileMenuOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -8, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -8, scale: 0.98 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute top-12 sm:top-14 right-0 w-56 sm:w-64 rounded-2xl border border-gray-200 bg-white shadow-xl p-3"
-                  >
-                    <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
-                      <img
-                        src={session.user.image || avatarFallbackSrc}
-                        alt="User avatar"
-                        className="w-11 h-11 rounded-full object-cover"
-                        referrerPolicy="no-referrer"
-                      />
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold text-gray-900 truncate">
-                          {session.user.name || "User"}
-                        </p>
-                        <p className="text-xs text-gray-500 truncate">
-                          {session.user.email}
-                        </p>
+            {session?.user ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setProfileOpen((value) => !value)}
+                  className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-2 py-2 text-left transition-all duration-300 hover:bg-white/10"
+                  aria-label="Open profile menu"
+                >
+                  <Image
+                    src={session.user.image || avatarFallback}
+                    alt="User avatar"
+                    className="h-9 w-9 rounded-full object-cover"
+                    width={36}
+                    height={36}
+                    referrerPolicy="no-referrer"
+                  />
+                  <span className="hidden pr-3 text-sm text-[#F5F0E8]/72 sm:block">
+                    {session.user.name || "Your account"}
+                  </span>
+                </button>
+
+                <AnimatePresence>
+                  {profileOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -12, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -12, scale: 0.96 }}
+                      transition={{ duration: 0.18 }}
+                      className="absolute right-4 top-[4.75rem] w-72 rounded-[28px] border border-white/10 bg-[#10192D]/92 p-4 text-[#F5F0E8] shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-2xl sm:right-6 lg:right-8"
+                    >
+                      <div className="flex items-center gap-3 rounded-[22px] bg-white/5 p-3">
+                        <Image
+                          src={session.user.image || avatarFallback}
+                          alt="User avatar"
+                          className="h-12 w-12 rounded-2xl object-cover"
+                          width={48}
+                          height={48}
+                          referrerPolicy="no-referrer"
+                        />
+                        <div className="min-w-0">
+                          <p className="truncate font-medium">{session.user.name || "User"}</p>
+                          <p className="truncate text-sm text-[#F5F0E8]/50">{session.user.email}</p>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="pt-3 space-y-2">
-                      <button
-                        onClick={handleAvatarClick}
-                        className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
-                      >
-                        Dashboard
-                      </button>
-                      <button
-                        onClick={handleLogout}
-                        className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-rose-600 hover:bg-rose-50 transition-colors"
-                      >
-                        Logout
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </>
-          ) : (
-            <Link href="/login">
-              <button className="btn btn-sm sm:btn-md bg-gradient-to-l from-secondary to-primary rounded-full">
-                Login
-              </button>
-            </Link>
-          )}
+                      <div className="mt-3 grid gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setProfileOpen(false);
+                            router.push("/dashboard");
+                          }}
+                          className="rounded-[18px] px-4 py-3 text-left text-sm text-[#F5F0E8]/76 transition-colors duration-300 hover:bg-white/6 hover:text-[#F5F0E8]"
+                        >
+                          Go to dashboard
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleLogout}
+                          className="rounded-[18px] px-4 py-3 text-left text-sm text-[#F97F9A] transition-colors duration-300 hover:bg-[#F97F9A]/10"
+                        >
+                          Logout
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="hidden rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium text-[#F5F0E8]/76 transition-all duration-300 hover:bg-white/10 hover:text-[#F5F0E8] sm:inline-flex"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/register"
+                  className="inline-flex rounded-full bg-[#00E5C2] px-5 py-3 text-sm font-semibold text-[#062019] shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_12px_36px_rgba(0,229,194,0.24)] transition-all duration-300 hover:scale-[1.02]"
+                >
+                  Start Free
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       </nav>
 
-      {/* Mobile Drawer */}
       <AnimatePresence>
-        {isOpen && (
+        {menuOpen && (
           <>
-            {/* Overlay */}
-            <motion.div
+            <motion.button
+              type="button"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              onClick={handleClose}
-              className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+              onClick={() => setMenuOpen(false)}
+              className="fixed inset-0 z-40 bg-[#020617]/60 backdrop-blur-sm lg:hidden"
+              aria-label="Close navigation overlay"
             />
 
-            {/* Drawer */}
-            <motion.div
+            <motion.aside
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
-              transition={{
-                type: "spring",
-                damping: 25,
-                stiffness: 200,
-              }}
-              className="fixed top-0 left-0 h-full w-[85vw] max-w-sm bg-white shadow-2xl z-50 lg:hidden flex flex-col"
+              transition={{ type: "spring", stiffness: 220, damping: 28 }}
+              className="fixed inset-y-0 left-0 z-50 flex w-[86vw] max-w-sm flex-col border-r border-white/10 bg-[#0C1427]/94 p-5 text-[#F5F0E8] backdrop-blur-2xl lg:hidden"
             >
-              {/* Drawer Header */}
-              <div className="flex items-center justify-between p-6 border-b border-gray-200">
-                <div className="flex items-center gap-3">
-                  <Image
-                    src="/images/SleepSync.png"
-                    alt="sleepSync-logo"
-                    width={40}
-                    height={40}
-                  />
-                  <h2 className="text-xl font-bold text-gray-900">SleepSync</h2>
-                </div>
+              <div className="flex items-center justify-between">
+                <Link href="/" onClick={() => setMenuOpen(false)} className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#1E1B4B,#4C2B8C)] text-[#00E5C2]">
+                    <MoonStar className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold tracking-[0.24em] text-[#9BC5FF]">SLEEPSYNC</p>
+                    <p className="text-sm text-[#F5F0E8]/58">AI sleep coaching</p>
+                  </div>
+                </Link>
                 <button
-                  onClick={handleClose}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                  aria-label="Close menu"
+                  type="button"
+                  onClick={() => setMenuOpen(false)}
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5"
+                  aria-label="Close navigation"
                 >
-                  <X size={20} className="text-gray-600" />
+                  <X className="h-5 w-5" />
                 </button>
               </div>
 
-              {/* User Info (if logged in) */}
-              {session?.user && (
-                <div className="p-6 bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-gray-200">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={session.user.image || avatarFallbackSrc}
-                      alt="User avatar"
-                      className="w-12 h-12 rounded-full object-cover ring-2 ring-indigo-200"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div>
-                      <p className="font-semibold text-gray-900">
-                        {session.user.name || "User"}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {session.user.email}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
+              <div className="mt-8 grid gap-2">
+                {navItems.map((item) => {
+                  const isActive = pathname === item.href;
 
-              {/* Mobile Navigation Links */}
-              <nav className="p-4 flex-1 overflow-y-auto pb-28">
-                <ul className="space-y-2">
-                  {navItems.map((item, index) => {
-                    const isActive = pathname === item.href;
-
-                    return (
-                      <motion.li
-                        key={item.href}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                      >
-                        <Link
-                          href={item.href}
-                          onClick={handleClose}
-                          className={`flex items-center px-4 py-3 rounded-lg transition-all duration-200 ${
-                            isActive
-                              ? "bg-indigo-50 text-indigo-600 font-semibold"
-                              : "text-gray-700 hover:bg-gray-50"
-                          }`}
-                        >
-                          <span className="flex-1">{item.label}</span>
-                          {isActive && (
-                            <div className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse" />
-                          )}
-                        </Link>
-                      </motion.li>
-                    );
-                  })}
-                </ul>
-              </nav>
-
-              {/* Drawer Footer - Login/Dashboard Button */}
-              <div className="sticky bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-white">
-                {session?.user ? (
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      onClick={() => {
-                        handleClose();
-                        handleAvatarClick();
-                      }}
-                      className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 rounded-lg font-medium hover:shadow-lg transition-all duration-200"
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setMenuOpen(false)}
+                      className={`rounded-[22px] px-4 py-4 text-sm font-medium transition-colors duration-300 ${
+                        isActive ? "bg-white/10 text-[#F5F0E8]" : "text-[#F5F0E8]/72 hover:bg-white/6 hover:text-[#F5F0E8]"
+                      }`}
                     >
-                      Dashboard
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
+
+              <div className="mt-auto space-y-3 pt-6">
+                {session?.user ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMenuOpen(false);
+                        router.push("/dashboard");
+                      }}
+                      className="w-full rounded-full bg-[#00E5C2] px-5 py-3 text-sm font-semibold text-[#062019]"
+                    >
+                      Go to dashboard
                     </button>
                     <button
+                      type="button"
                       onClick={handleLogout}
-                      className="w-full bg-rose-50 text-rose-600 py-3 rounded-lg font-medium hover:bg-rose-100 transition-colors"
+                      className="w-full rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium text-[#F97F9A]"
                     >
                       Logout
                     </button>
-                  </div>
+                  </>
                 ) : (
-                  <Link href="/login" onClick={handleClose}>
-                    <button className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 rounded-lg font-medium hover:shadow-lg transition-all duration-200">
+                  <>
+                    <Link
+                      href="/register"
+                      onClick={() => setMenuOpen(false)}
+                      className="block rounded-full bg-[#00E5C2] px-5 py-3 text-center text-sm font-semibold text-[#062019]"
+                    >
+                      Start Free
+                    </Link>
+                    <Link
+                      href="/login"
+                      onClick={() => setMenuOpen(false)}
+                      className="block rounded-full border border-white/10 bg-white/5 px-5 py-3 text-center text-sm font-medium text-[#F5F0E8]/76"
+                    >
                       Login
-                    </button>
-                  </Link>
+                    </Link>
+                  </>
                 )}
               </div>
-            </motion.div>
+            </motion.aside>
           </>
         )}
       </AnimatePresence>

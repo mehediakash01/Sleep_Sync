@@ -16,49 +16,37 @@ const benefits = [
     icon: Brain,
     title: "Boosts Brain Power",
     desc: "Sleep strengthens memory, focus, and decision-making.",
-    iconBg: "bg-blue-50",
-    iconColor: "text-blue-500",
-    accent: "border-t-blue-400",
+    accent: "from-blue-400",
   },
   {
     icon: Heart,
     title: "Supports Heart Health",
     desc: "Reduces risk of high blood pressure and heart disease.",
-    iconBg: "bg-rose-50",
-    iconColor: "text-rose-500",
-    accent: "border-t-rose-400",
+    accent: "from-rose-400",
   },
   {
     icon: Zap,
     title: "Improves Productivity",
     desc: "Rested minds are sharper, more creative, and efficient.",
-    iconBg: "bg-yellow-50",
-    iconColor: "text-yellow-500",
-    accent: "border-t-yellow-400",
+    accent: "from-yellow-400",
   },
   {
     icon: Smile,
     title: "Reduces Stress & Anxiety",
     desc: "Quality sleep balances hormones and mood.",
-    iconBg: "bg-green-50",
-    iconColor: "text-green-500",
-    accent: "border-t-green-400",
+    accent: "from-green-400",
   },
   {
     icon: Shield,
     title: "Strengthens Immunity",
     desc: "Helps the body fight off illness and recover faster.",
-    iconBg: "bg-purple-50",
-    iconColor: "text-purple-500",
-    accent: "border-t-purple-400",
+    accent: "from-purple-400",
   },
   {
     icon: RefreshCw,
     title: "Regulates Body Clock",
     desc: "A consistent sleep cycle improves energy and daily rhythm.",
-    iconBg: "bg-sky-50",
-    iconColor: "text-sky-500",
-    accent: "border-t-sky-400",
+    accent: "from-cyan-400",
   },
 ];
 
@@ -76,62 +64,80 @@ const cardVariants = {
 
 export const WhySleepMatters = () => {
   return (
-    <Container>
+    <Container className="py-16 lg:py-24">
+      {/* Header */}
       <motion.div
-        initial={{ opacity: 0, y: 40 }}
+        initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: false, amount: 0.3 }}
         transition={{ duration: 0.6, ease: easeOut }}
-        className="flex flex-col items-center gap-10"
+        className="text-center mb-16 space-y-4 max-w-2xl mx-auto"
       >
-        {/* Header */}
-        <div className="text-center space-y-4 max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 border border-white/30 backdrop-blur-sm">
-            <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-            <span className="text-sm font-semibold text-white tracking-wide uppercase">
-              Sleep Science
-            </span>
-          </div>
-
-          <h2 className="text-4xl lg:text-5xl font-extrabold leading-tight text-white">
-            Why Sleep{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white/60 to-white">
-              Matters?
-            </span>
-          </h2>
-          <p className="text-white/65 text-base">
-            Quality sleep isn&apos;t a luxury — it&apos;s a biological necessity that
-            powers every aspect of your health.
-          </p>
+        {/* Badge */}
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full surface-high ghost-border backdrop-blur-[20px]">
+          <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
+          <span className="text-label text-[var(--on-surface-variant)]">
+            Sleep Science
+          </span>
         </div>
 
-        {/* Benefit Cards Grid */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 w-full"
-        >
-          {benefits.map((item) => {
-            const Icon = item.icon;
-            return (
-              <motion.div
-                key={item.title}
-                variants={cardVariants}
-                className={`flex items-start gap-4 p-5 bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border-t-4 ${item.accent}`}
-              >
-                <div className={`shrink-0 p-2.5 rounded-xl ${item.iconBg} ${item.iconColor}`}>
-                  <Icon size={22} strokeWidth={1.8} />
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-800 text-sm">{item.title}</p>
-                  <p className="text-gray-500 text-xs mt-1 leading-relaxed">{item.desc}</p>
-                </div>
-              </motion.div>
-            );
-          })}
-        </motion.div>
+        {/* Title */}
+        <h2 className="text-headline-md font-medium text-[var(--on-surface)]">
+          Why Sleep{" "}
+          <span className="text-[var(--on-surface-variant)]">
+            Matters?
+          </span>
+        </h2>
+
+        {/* Subtitle */}
+        <p className="text-body-md text-[var(--on-surface-variant)] max-w-lg mx-auto">
+          Understanding the science behind quality sleep helps you make better
+          decisions for your health and wellbeing.
+        </p>
+      </motion.div>
+
+      {/* Benefits Grid */}
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: false, amount: 0.2 }}
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      >
+        {benefits.map((benefit, idx) => {
+          const Icon = benefit.icon;
+          return (
+            <motion.div
+              key={benefit.title}
+              variants={cardVariants}
+              whileHover={{ y: -8, scale: 1.02 }}
+              className={`card-elevated group cursor-pointer ${
+                idx % 3 === 2 ? "lg:translate-y-6" : ""
+              }`}
+            >
+              {/* Top Accent Gradient */}
+              <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r to-transparent ${benefit.accent}`} />
+
+              {/* Icon Container */}
+              <div className="w-14 h-14 rounded-lg surface-high flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300 bg-gradient-to-br from-secondary/20 to-primary/10">
+                <Icon size={28} className="text-primary" />
+              </div>
+
+              {/* Title */}
+              <h3 className="text-title-lg font-semibold text-[var(--on-surface)] group-hover:text-primary transition-colors duration-300 mb-3">
+                {benefit.title}
+              </h3>
+
+              {/* Description */}
+              <p className="text-body-md text-[var(--on-surface-variant)] leading-relaxed">
+                {benefit.desc}
+              </p>
+
+              {/* Indicator Dot */}
+              <div className="mt-6 w-2 h-2 rounded-full bg-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </motion.div>
+          );
+        })}
       </motion.div>
     </Container>
   );
