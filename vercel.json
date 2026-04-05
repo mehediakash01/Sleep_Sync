@@ -3,6 +3,10 @@
     {
       "path": "/api/crawl/weekly",
       "schedule": "0 3 * * 1"
+    },
+    {
+      "path": "/api/cron/bedtime-reminders",
+      "schedule": "*/15 * * * *"
     }
   ]
 }

@@ -15,11 +15,13 @@ interface ChatMessage {
 
 interface ChatRequestBody {
   messages: ChatMessage[];
+  mode?: "standard" | "research";
 }
 
 interface ChatResponseBody {
   reply: string;
   sources?: RagSource[];
+  fallback?: boolean;
 }
 
 const MAX_HISTORY_MESSAGES = 6;
@@ -140,19 +142,6 @@ function checkRateLimit(userId: string): { allowed: boolean; waitSeconds: number
   return { allowed: true, waitSeconds: 0 };
 }
 
-function parseRetryDelay(error: unknown): number | null {
-  try {
-    const msg = error instanceof Error ? error.message : String(error);
-    const match = msg.match(/"retryDelay"\s*:\s*"(\d+(?:\.\d+)?)s"/);
-    if (match) return Math.ceil(parseFloat(match[1]));
-    const secMatch = msg.match(/retry in (\d+(?:\.\d+)?)s/i);
-    if (secMatch) return Math.ceil(parseFloat(secMatch[1]));
-  } catch {
-    // ignore
-  }
-  return null;
-}
-
 function shouldUseRag(question: string): boolean {
   const normalizedQuestion = question.toLowerCase();
 
@@ -212,6 +201,72 @@ End with a soft, reassuring sign-off.
   `.trim();
 }
 
+function buildOfflineCoachReply(userQuestion: string, sleepLogSummary: string): string {
+  const normalizedQuestion = userQuestion.toLowerCase();
+  const advice: string[] = [];
+
+  if (sleepLogSummary !== "No recent sleep logs available.") {
+    const qualityMatches = [...sleepLogSummary.matchAll(/quality (\d)\/5/gi)].map((match) =>
+      Number(match[1])
+    );
+    const durationMatches = [...sleepLogSummary.matchAll(/(\d+(?:\.\d+)?)h asleep/gi)].map(
+      (match) => Number(match[1])
+    );
+
+    const averageQuality =
+      qualityMatches.length > 0
+        ? qualityMatches.reduce((sum, value) => sum + value, 0) / qualityMatches.length
+        : null;
+    const averageDuration =
+      durationMatches.length > 0
+        ? durationMatches.reduce((sum, value) => sum + value, 0) / durationMatches.length
+        : null;
+
+    if (averageQuality !== null && averageQuality < 3) {
+      advice.push(
+        "Your recent sleep quality looks a bit strained, so tonight should be about reducing stimulation rather than squeezing in more tasks."
+      );
+    }
+
+    if (averageDuration !== null && averageDuration < 7) {
+      advice.push(
+        "Your recent sleep duration looks short, so the biggest win is protecting a slightly earlier wind-down and bedtime tonight."
+      );
+    }
+  }
+
+  if (normalizedQuestion.includes("stress") || normalizedQuestion.includes("anxiety")) {
+    advice.push(
+      "Try a 5-minute downshift: dim lights, put the phone away, and do slow 4-second inhale and 6-second exhale breathing for 10 rounds."
+    );
+  } else if (normalizedQuestion.includes("rem")) {
+    advice.push(
+      "Low REM often improves when you keep wake time consistent, avoid alcohol close to bed, and give yourself a longer sleep window."
+    );
+  } else if (normalizedQuestion.includes("deep sleep")) {
+    advice.push(
+      "For deep sleep, focus on a cool dark room, earlier caffeine cutoff, and avoiding heavy meals too close to bedtime."
+    );
+  } else if (
+    normalizedQuestion.includes("travel") ||
+    normalizedQuestion.includes("jet lag")
+  ) {
+    advice.push(
+      "For travel nights, anchor your wake time to local morning light, keep naps short, and use a very simple repeatable wind-down routine."
+    );
+  } else if (normalizedQuestion.includes("caffeine")) {
+    advice.push(
+      "A useful rule is to stop caffeine at least 8 hours before bed and watch for hidden caffeine in tea, soda, and pre-workout."
+    );
+  } else {
+    advice.push(
+      "A solid reset for tonight is an earlier screen cutoff, lower room light for the last hour, and a bedtime routine simple enough to repeat tomorrow."
+    );
+  }
+
+  return `${advice.slice(0, 2).join(" ")} Sleep well tonight.`;
+}
+
 async function generateCoachReply(
   systemPrompt: string,
   contents: Array<{ role: string; parts: Array<{ text: string }> }>
@@ -233,13 +288,12 @@ async function generateCoachReply(
 
 export async function POST(req: Request) {
   try {
-    const { messages }: ChatRequestBody = await req.json();
+    const { messages, mode }: ChatRequestBody = await req.json();
 
     if (!Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json({ message: "messages are required" }, { status: 400 });
     }
 
-    // Per-user rate limiting to protect API quota.
     const session = await getServerSession(authOptions);
     const rateLimitKey = session?.user?.email ?? req.headers.get("x-forwarded-for") ?? "anon";
     const rateCheck = checkRateLimit(rateLimitKey);
@@ -253,9 +307,14 @@ export async function POST(req: Request) {
       );
     }
 
+    const requestedMode = mode === "research" ? "research" : "standard";
     const userQuestion = getLastUserQuestion(messages);
     const ragEnabled = process.env.USE_RAG?.toLowerCase() === "true";
-    const useRag = ragEnabled && Boolean(userQuestion) && shouldUseRag(userQuestion);
+    const useRag =
+      requestedMode === "research" &&
+      ragEnabled &&
+      Boolean(userQuestion) &&
+      shouldUseRag(userQuestion);
 
     const [ragResult, sleepLogSummary] = await Promise.all([
       useRag
@@ -285,6 +344,7 @@ export async function POST(req: Request) {
 
     let reply = "";
     let usedRag = useRag && Boolean(ragResult.context);
+    let fallback = false;
 
     try {
       reply = await generateCoachReply(
@@ -292,16 +352,33 @@ export async function POST(req: Request) {
         trimmedMessages
       );
     } catch (error) {
-      if (usedRag && isCapacityError(error)) {
-        console.warn("[aiChat] Falling back to non-RAG response after capacity error.");
-        reply = await generateCoachReply(basePrompt, trimmedMessages);
-        usedRag = false;
+      if (isCapacityError(error)) {
+        console.warn("[aiChat] Gemini quota/capacity exceeded. Using local fallback reply.");
       } else {
-        throw error;
+        console.error("[aiChat] Gemini generation failed:", error);
+      }
+
+      if (usedRag && isCapacityError(error)) {
+        try {
+          reply = await generateCoachReply(basePrompt, trimmedMessages);
+          usedRag = false;
+        } catch (fallbackError) {
+          console.error("[aiChat] Base prompt retry failed:", fallbackError);
+          reply = buildOfflineCoachReply(userQuestion, sleepLogSummary);
+          usedRag = false;
+          fallback = true;
+        }
+      } else if (isCapacityError(error)) {
+        reply = buildOfflineCoachReply(userQuestion, sleepLogSummary);
+        fallback = true;
+      } else {
+        reply = buildOfflineCoachReply(userQuestion, sleepLogSummary);
+        usedRag = false;
+        fallback = true;
       }
     }
 
-    const responseBody: ChatResponseBody = { reply };
+    const responseBody: ChatResponseBody = { reply, fallback };
     if (usedRag && ragResult.sources.length > 0) {
       responseBody.sources = ragResult.sources;
     }
@@ -310,19 +387,9 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("AI Chat Error:", error);
 
-    if (isCapacityError(error)) {
-      const waitSec = parseRetryDelay(error);
-      const waitMsg = waitSec
-        ? `Please wait ${waitSec} second${waitSec !== 1 ? "s" : ""} and try again.`
-        : "Please wait a moment and try again.";
-
-      return NextResponse.json({
-        reply: `The AI service is temporarily over capacity. ${waitMsg}`,
-      });
-    }
-
     return NextResponse.json({
       reply: "I hit a temporary issue while thinking. Try asking again in a moment.",
+      fallback: true,
     });
   }
 }

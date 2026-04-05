@@ -79,10 +79,26 @@ const features: { icon: LucideIcon; title: string; body: string }[] = [
 ];
 
 const steps = [
-  ["01", "Track your night", "Log bedtime, wake time, mood, and wearable data with almost no friction."],
-  ["02", "Understand the pattern", "See the signals behind your score, from timing and efficiency to deep sleep."],
-  ["03", "Get a personal plan", "Receive tailored coaching prompts instead of generic wellness advice."],
-  ["04", "Build momentum", "Turn better nights into a visible streak that compounds into better days."],
+  [
+    "01",
+    "Track your night",
+    "Log bedtime, wake time, mood, and wearable data with almost no friction.",
+  ],
+  [
+    "02",
+    "Understand the pattern",
+    "See the signals behind your score, from timing and efficiency to deep sleep.",
+  ],
+  [
+    "03",
+    "Get a personal plan",
+    "Receive tailored coaching prompts instead of generic wellness advice.",
+  ],
+  [
+    "04",
+    "Build momentum",
+    "Turn better nights into a visible streak that compounds into better days.",
+  ],
 ] as const;
 
 const quotes = [
@@ -132,7 +148,8 @@ const rise = {
   }),
 };
 
-const shell = "rounded-[30px] border border-white/10 bg-white/5 backdrop-blur-2xl";
+const shell =
+  "rounded-[30px] border border-white/10 bg-white/5 backdrop-blur-2xl";
 const eyebrow =
   "inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-[#9BC5FF]";
 
@@ -160,22 +177,22 @@ export default function Home() {
             initial="hidden"
             animate="show"
             custom={0.05}
-            className="flex max-w-2xl flex-col justify-center gap-8"
+            className="flex  max-w-2xl flex-col justify-center gap-8"
           >
-            <div className={eyebrow}>
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-[#9BC5FF] w-fit">
               <Stars className="h-4 w-4 text-[#00E5C2]" />
               AI-Powered Sleep Coaching Platform
             </div>
 
             <div className="space-y-6">
-              <h1 className="text-5xl font-semibold leading-[0.95] tracking-[-0.04em] sm:text-6xl lg:text-7xl">
+              <h1 className="text-5xl flex flex-col font-semibold leading-[0.95] tracking-[-0.04em] sm:text-6xl lg:text-7xl">
                 Sleep Better.
-                <br />
-                Live Better.
+                <span className="mt-4">Live Better.</span>
               </h1>
               <p className="max-w-xl text-base leading-8 text-[#F5F0E8]/72 sm:text-lg">
-                AI sleep coaching that understands you. Track. Understand. Improve.
-                Every night, with a calm ritual that turns data into confidence.
+                AI sleep coaching that understands you. Track. Understand.
+                Improve. Every night, with a calm ritual that turns data into
+                confidence.
               </p>
             </div>
 
@@ -203,8 +220,12 @@ export default function Home() {
                 ["14-day", "Streaks become visible and motivating fast"],
               ].map(([value, label]) => (
                 <div key={value}>
-                  <p className="text-3xl font-semibold tracking-[-0.03em]">{value}</p>
-                  <p className="mt-1 text-sm leading-7 text-[#F5F0E8]/64">{label}</p>
+                  <p className="text-3xl font-semibold tracking-[-0.03em]">
+                    {value}
+                  </p>
+                  <p className="mt-1 text-sm leading-7 text-[#F5F0E8]/64">
+                    {label}
+                  </p>
                 </div>
               ))}
             </div>
@@ -224,8 +245,12 @@ export default function Home() {
             >
               <div className="mb-5 flex items-center justify-between">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.24em] text-[#F5F0E8]/45">Tonight</p>
-                  <p className="mt-2 text-4xl font-semibold tracking-[-0.04em]">92</p>
+                  <p className="text-xs uppercase tracking-[0.24em] text-[#F5F0E8]/45">
+                    Tonight
+                  </p>
+                  <p className="mt-2 text-4xl font-semibold tracking-[-0.04em]">
+                    92
+                  </p>
                 </div>
                 <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[#00E5C2]/35 bg-[#00E5C2]/12 text-[#00E5C2] shadow-[0_0_24px_rgba(0,229,194,0.18)]">
                   <MoonStar className="h-7 w-7" />
@@ -254,24 +279,31 @@ export default function Home() {
                 </div>
                 <div>
                   <p className="text-sm font-medium">AI Coach</p>
-                  <p className="text-xs text-[#F5F0E8]/50">Suggested for tonight</p>
+                  <p className="text-xs text-[#F5F0E8]/50">
+                    Suggested for tonight
+                  </p>
                 </div>
               </div>
               <p className="text-sm leading-7 text-[#F5F0E8]/72">
-                “Your deep sleep rose 18% when screens ended before 10:30 PM. Want a 12-minute wind-down tonight?”
+                “Your deep sleep rose 18% when screens ended before 10:30 PM.
+                Want a 12-minute wind-down tonight?”
               </p>
             </motion.div>
 
             <motion.div
               animate={{ y: [0, -10, 0], rotate: [0, 0.8, 0] }}
               transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-              className="relative w-full max-w-md rounded-[40px] border border-white/12 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),rgba(255,255,255,0.05))] p-4 shadow-[0_40px_120px_rgba(0,0,0,0.45)] backdrop-blur-2xl"
+              className="relative w-full  rounded-[40px] border border-white/12 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),rgba(255,255,255,0.05))] p-4 shadow-[0_40px_120px_rgba(0,0,0,0.45)] backdrop-blur-2xl"
             >
               <div className="rounded-[32px] border border-white/8 bg-[linear-gradient(180deg,rgba(12,19,36,0.96),rgba(9,14,28,0.92))] p-6">
                 <div className="mb-6 flex items-center justify-between">
                   <div>
-                    <p className="text-xs uppercase tracking-[0.24em] text-[#F5F0E8]/45">Sleep Dashboard</p>
-                    <p className="mt-2 text-2xl font-semibold tracking-[-0.03em]">Last night</p>
+                    <p className="text-xs uppercase tracking-[0.24em] text-[#F5F0E8]/45">
+                      Sleep Dashboard
+                    </p>
+                    <p className="mt-2 text-2xl font-semibold tracking-[-0.03em]">
+                      Last night
+                    </p>
                   </div>
                   <div className="rounded-full border border-[#00E5C2]/25 bg-[#00E5C2]/10 px-3 py-1 text-xs font-medium text-[#00E5C2]">
                     Synced 6:42 AM
@@ -279,11 +311,15 @@ export default function Home() {
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-[220px_1fr]">
-                  <div className="rounded-[28px] border border-white/10 bg-white/5 p-5">
+                  <div className="rounded-[28px]  border border-white/10 bg-white/5 p-5">
                     <div className="mx-auto flex h-40 w-40 items-center justify-center rounded-full border border-white/10 bg-[radial-gradient(circle,_rgba(0,229,194,0.16),_transparent_58%)]">
                       <div className="flex h-28 w-28 flex-col items-center justify-center rounded-full border border-[#00E5C2]/35 bg-[#091224]/80 text-center shadow-[0_0_30px_rgba(0,229,194,0.16)]">
-                        <span className="text-xs uppercase tracking-[0.18em] text-[#F5F0E8]/48">Score</span>
-                        <span className="mt-1 text-4xl font-semibold tracking-[-0.04em] text-[#00E5C2]">92</span>
+                        <span className="text-xs uppercase tracking-[0.18em] text-[#F5F0E8]/48">
+                          Score
+                        </span>
+                        <span className="mt-1 text-4xl font-semibold tracking-[-0.04em] text-[#00E5C2]">
+                          92
+                        </span>
                       </div>
                     </div>
                     <div className="mt-5 space-y-3">
@@ -291,8 +327,17 @@ export default function Home() {
                         ["Duration", "8h 14m"],
                         ["Efficiency", "95%"],
                         ["Deep Sleep", "2h 08m"],
+                        ["REM Sleep", "1h 46m"],
+                        ["Light Sleep", "4h 20m"],
+                        ["Awake Time", "18m"],
+                        ["Bedtime", "10:47 PM"],
+["Wake Time", "7:01 AM"],
+
                       ].map(([label, value]) => (
-                        <div key={label} className="flex items-center justify-between rounded-2xl bg-[#F5F0E8]/[0.04] px-3 py-2 text-sm">
+                        <div
+                          key={label}
+                          className="flex items-center justify-between rounded-2xl bg-[#F5F0E8]/[0.04] px-3 py-2 text-sm"
+                        >
                           <span className="text-[#F5F0E8]/62">{label}</span>
                           <span className="font-medium">{value}</span>
                         </div>
@@ -304,8 +349,12 @@ export default function Home() {
                     <div className="rounded-[28px] border border-white/10 bg-white/5 p-5">
                       <div className="mb-4 flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium">7-night recovery trend</p>
-                          <p className="text-xs text-[#F5F0E8]/48">A steadier bedtime is lifting your baseline</p>
+                          <p className="text-sm font-medium">
+                            7-night recovery trend
+                          </p>
+                          <p className="text-xs text-[#F5F0E8]/48">
+                            A steadier bedtime is lifting your baseline
+                          </p>
                         </div>
                         <div className="rounded-full bg-[#00E5C2]/12 px-3 py-1 text-xs font-medium text-[#00E5C2]">
                           +18%
@@ -313,13 +362,19 @@ export default function Home() {
                       </div>
                       <div className="flex h-28 items-end gap-3">
                         {[40, 56, 52, 68, 70, 82, 92].map((value, index) => (
-                          <div key={value} className="flex flex-1 flex-col items-center gap-3">
+                          <div
+                            key={value}
+                            className="flex flex-1 flex-col items-center gap-3"
+                          >
                             <div className="flex h-24 w-full items-end rounded-full bg-white/[0.03] p-1">
                               <motion.div
                                 initial={{ height: 0 }}
                                 whileInView={{ height: `${value}%` }}
                                 viewport={{ once: true }}
-                                transition={{ duration: 0.8, delay: index * 0.08 }}
+                                transition={{
+                                  duration: 0.8,
+                                  delay: index * 0.08,
+                                }}
                                 className="w-full rounded-full bg-[linear-gradient(180deg,rgba(0,229,194,0.95),rgba(76,43,140,0.8))]"
                               />
                             </div>
@@ -331,15 +386,30 @@ export default function Home() {
                       </div>
                     </div>
 
-                    <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="grid gap-4 sm:grid-cols-1">
                       {[
-                        ["Next ritual", "12 min breathing", "Lower your resting alertness before bed."],
-                        ["Coach note", "Screens off by 10:30", "Repeating this pattern is likely to improve REM tonight."],
+                        [
+                          "Next ritual",
+                          "12 min breathing",
+                          "Lower your resting alertness before bed.",
+                        ],
+                        [
+                          "Coach note",
+                          "Screens off by 10:30",
+                          "Repeating this pattern is likely to improve REM tonight.",
+                        ],
                       ].map(([eyebrowText, title, body]) => (
-                        <div key={title} className="rounded-[24px] border border-white/10 bg-[#0E1730]/92 p-4">
-                          <p className="text-xs uppercase tracking-[0.18em] text-[#F5F0E8]/42">{eyebrowText}</p>
+                        <div
+                          key={title}
+                          className="rounded-[24px] border border-white/10 bg-[#0E1730]/92 p-4"
+                        >
+                          <p className="text-xs uppercase tracking-[0.18em] text-[#F5F0E8]/42">
+                            {eyebrowText}
+                          </p>
                           <p className="mt-3 text-lg font-medium">{title}</p>
-                          <p className="mt-2 text-sm leading-7 text-[#F5F0E8]/58">{body}</p>
+                          <p className="mt-2 text-sm leading-7 text-[#F5F0E8]/58">
+                            {body}
+                          </p>
                         </div>
                       ))}
                     </div>
@@ -358,7 +428,10 @@ export default function Home() {
               "Designed for calm nightly rituals",
               "AI guidance with human tone",
             ].map((item) => (
-              <div key={item} className="flex items-center gap-3 text-sm text-[#F5F0E8]/70">
+              <div
+                key={item}
+                className="flex items-center gap-3 text-sm text-[#F5F0E8]/70"
+              >
                 <CheckCircle2 className="h-4 w-4 shrink-0 text-[#00E5C2]" />
                 <span>{item}</span>
               </div>
@@ -376,11 +449,14 @@ export default function Home() {
             className="max-w-2xl space-y-4"
           >
             <div className={eyebrow}>Benefits</div>
-            <h2 className="text-4xl font-semibold tracking-[-0.03em] sm:text-5xl">
-              A sleep platform designed to feel restorative before you even read the data.
+            <h2 className="text-4xl flex flex-col gap-3 font-semibold tracking-[-0.03em] sm:text-5xl">
+              A sleep platform designed to{" "}
+              <span>feel restorative before you</span>{" "}
+              <span>even read the data.</span>
             </h2>
             <p className="text-base leading-8 text-[#F5F0E8]/66 sm:text-lg">
-              Every surface is built to help you feel calm, informed, and ready to act, not buried under charts you have to decode yourself.
+              Every surface is built to help you feel calm, informed, and ready
+              to act, not buried under charts you have to decode yourself.
             </p>
           </motion.div>
 
@@ -398,14 +474,21 @@ export default function Home() {
                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[#00E5C2]/20 bg-[#00E5C2]/10 text-[#00E5C2] transition-transform duration-300 group-hover:scale-105">
                   <Icon className="h-6 w-6" />
                 </div>
-                <h3 className="mt-6 text-2xl font-semibold tracking-[-0.02em]">{title}</h3>
-                <p className="mt-4 text-sm leading-8 text-[#F5F0E8]/66">{body}</p>
+                <h3 className="mt-6 text-2xl font-semibold tracking-[-0.02em]">
+                  {title}
+                </h3>
+                <p className="mt-4 text-sm leading-8 text-[#F5F0E8]/66">
+                  {body}
+                </p>
               </motion.article>
             ))}
           </div>
         </section>
 
-        <section id="dashboard-preview" className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+        <section
+          id="dashboard-preview"
+          className="mx-auto max-w-7xl px-6 py-24 lg:px-8"
+        >
           <div className="grid items-start gap-10 lg:grid-cols-[0.78fr_1.22fr]">
             <motion.div
               variants={rise}
@@ -416,11 +499,13 @@ export default function Home() {
               className="space-y-6"
             >
               <div className={eyebrow}>Live Dashboard Preview</div>
-              <h2 className="text-4xl font-semibold tracking-[-0.03em] sm:text-5xl">
-                Your entire sleep story, translated into one beautiful morning view.
+              <h2 className="text-4xl  flex flex-col gap-3 font-semibold tracking-[-0.03em] sm:text-5xl">
+                Your entire sleep story, <span>translated into </span>{" "}
+                <span>one beautiful view.</span>
               </h2>
               <p className="text-base leading-8 text-[#F5F0E8]/66 sm:text-lg">
-                A premium dashboard with score rings, streak momentum, and AI context that tells you what mattered and what to repeat.
+                A premium dashboard with score rings, streak momentum, and AI
+                context that tells you what mattered and what to repeat.
               </p>
               <div className="space-y-3 text-sm leading-7 text-[#F5F0E8]/68">
                 {[
@@ -463,8 +548,12 @@ export default function Home() {
                       <div className="flex items-center justify-center">
                         <div className="relative flex h-44 w-44 items-center justify-center rounded-full border border-white/10 bg-[conic-gradient(from_180deg_at_50%_50%,rgba(0,229,194,0.12)_0deg,rgba(0,229,194,0.95)_212deg,rgba(76,43,140,0.62)_300deg,rgba(255,255,255,0.06)_360deg)]">
                           <div className="flex h-32 w-32 flex-col items-center justify-center rounded-full bg-[#0A1428] shadow-[0_0_30px_rgba(0,229,194,0.12)]">
-                            <span className="text-xs uppercase tracking-[0.18em] text-[#F5F0E8]/46">Sleep score</span>
-                            <span className="mt-2 text-5xl font-semibold tracking-[-0.04em]">92</span>
+                            <span className="text-xs uppercase tracking-[0.18em] text-[#F5F0E8]/46">
+                              Sleep score
+                            </span>
+                            <span className="mt-2 text-5xl font-semibold tracking-[-0.04em]">
+                              92
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -474,10 +563,17 @@ export default function Home() {
                           ["Efficiency", "95%", "Steady"],
                           ["Deep sleep", "2h 08m", "Improved"],
                         ].map(([label, value, tag]) => (
-                          <div key={label} className="flex items-center justify-between rounded-[22px] border border-white/8 bg-[#0D1630]/88 px-4 py-3">
+                          <div
+                            key={label}
+                            className="flex items-center justify-between rounded-[22px] border border-white/8 bg-[#0D1630]/88 px-4 py-3"
+                          >
                             <div>
-                              <p className="text-sm text-[#F5F0E8]/58">{label}</p>
-                              <p className="mt-1 text-lg font-medium">{value}</p>
+                              <p className="text-sm text-[#F5F0E8]/58">
+                                {label}
+                              </p>
+                              <p className="mt-1 text-lg font-medium">
+                                {value}
+                              </p>
                             </div>
                             <span className="rounded-full bg-[#00E5C2]/12 px-3 py-1 text-xs font-medium text-[#00E5C2]">
                               {tag}
@@ -492,7 +588,9 @@ export default function Home() {
                     <div className="mb-5 flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium">Trend overview</p>
-                        <p className="text-xs text-[#F5F0E8]/48">Recovery has become more stable across the last month</p>
+                        <p className="text-xs text-[#F5F0E8]/48">
+                          Recovery has become more stable across the last month
+                        </p>
                       </div>
                       <LineChart className="h-5 w-5 text-[#F5F0E8]/42" />
                     </div>
@@ -504,7 +602,10 @@ export default function Home() {
                               initial={{ height: 0 }}
                               whileInView={{ height: `${value}%` }}
                               viewport={{ once: true }}
-                              transition={{ duration: 0.85, delay: index * 0.08 }}
+                              transition={{
+                                duration: 0.85,
+                                delay: index * 0.08,
+                              }}
                               className="w-full rounded-full bg-[linear-gradient(180deg,rgba(0,229,194,0.92),rgba(76,43,140,0.82))]"
                             />
                           </div>
@@ -518,37 +619,51 @@ export default function Home() {
                 </div>
 
                 <div className="space-y-6">
-                  <div className={`${shell} bg-[linear-gradient(180deg,rgba(16,28,53,0.92),rgba(8,16,30,0.92))] p-6`}>
+                  <div
+                    className={`${shell} bg-[linear-gradient(180deg,rgba(16,28,53,0.92),rgba(8,16,30,0.92))] p-6`}
+                  >
                     <div className="flex items-center gap-3">
                       <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#00E5C2]/12 text-[#00E5C2]">
                         <Bot className="h-6 w-6" />
                       </div>
                       <div>
                         <p className="text-sm font-medium">AI Insight</p>
-                        <p className="text-xs text-[#F5F0E8]/46">Generated from your recent pattern</p>
+                        <p className="text-xs text-[#F5F0E8]/46">
+                          Generated from your recent pattern
+                        </p>
                       </div>
                     </div>
                     <p className="mt-5 text-lg leading-8 text-[#F5F0E8]/78">
-                      Last night your deep sleep improved 18%. The strongest signal: screens ended earlier and your bedtime stayed within a 20-minute window.
+                      Last night your deep sleep improved 18%. The strongest
+                      signal: screens ended earlier and your bedtime stayed
+                      within a 20-minute window.
                     </p>
                     <div className="mt-5 rounded-[22px] border border-[#00E5C2]/14 bg-[#00E5C2]/8 p-4 text-sm leading-7 text-[#C6FFF5]">
-                      Suggested tonight: repeat the same timing and use a short breathing routine at 10:15 PM.
+                      Suggested tonight: repeat the same timing and use a short
+                      breathing routine at 10:15 PM.
                     </div>
                   </div>
 
                   <div className={`${shell} p-6`}>
-                    <p className="text-sm font-medium">Tonight&apos;s routine</p>
+                    <p className="text-sm font-medium">
+                      Tonight&apos;s routine
+                    </p>
                     <div className="mt-5 space-y-4">
                       {[
                         "Log bedtime in one tap",
                         "Start 12-minute breath session",
                         "Review coach note before lights out",
                       ].map((item) => (
-                        <div key={item} className="flex items-center gap-3 rounded-[20px] bg-white/[0.04] px-4 py-3">
+                        <div
+                          key={item}
+                          className="flex items-center gap-3 rounded-[20px] bg-white/[0.04] px-4 py-3"
+                        >
                           <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#00E5C2]/12 text-[#00E5C2]">
                             <CheckCircle2 className="h-4 w-4" />
                           </span>
-                          <span className="text-sm text-[#F5F0E8]/72">{item}</span>
+                          <span className="text-sm text-[#F5F0E8]/72">
+                            {item}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -558,9 +673,12 @@ export default function Home() {
                     <p className="text-sm font-medium">Current streak</p>
                     <div className="mt-4 flex items-end justify-between gap-4">
                       <div>
-                        <p className="text-4xl font-semibold tracking-[-0.03em]">14 nights</p>
+                        <p className="text-4xl font-semibold tracking-[-0.03em]">
+                          14 nights
+                        </p>
                         <p className="mt-2 text-sm leading-7 text-[#F5F0E8]/58">
-                          You&apos;re on fire. Consistency is becoming your superpower.
+                          You&apos;re on fire. Consistency is becoming your
+                          superpower.
                         </p>
                       </div>
                       <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#00E5C2]/12 text-[#00E5C2] shadow-[0_0_30px_rgba(0,229,194,0.16)]">
@@ -589,7 +707,9 @@ export default function Home() {
                 Premium product details that turn data into trust.
               </h2>
               <p className="text-base leading-8 text-[#F5F0E8]/66 sm:text-lg">
-                This is wellness software designed with restraint: fewer distractions, better context, and tiny interactions that make the product feel alive.
+                This is wellness software designed with restraint: fewer
+                distractions, better context, and tiny interactions that make
+                the product feel alive.
               </p>
             </motion.div>
 
@@ -607,8 +727,12 @@ export default function Home() {
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#00E5C2]/10 text-[#00E5C2]">
                     <Icon className="h-5 w-5" />
                   </div>
-                  <h3 className="mt-5 text-xl font-semibold tracking-[-0.02em]">{title}</h3>
-                  <p className="mt-3 text-sm leading-8 text-[#F5F0E8]/62">{body}</p>
+                  <h3 className="mt-5 text-xl font-semibold tracking-[-0.02em]">
+                    {title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-8 text-[#F5F0E8]/62">
+                    {body}
+                  </p>
                 </motion.article>
               ))}
             </div>
@@ -629,7 +753,8 @@ export default function Home() {
               Four calm steps from bedtime to better days.
             </h2>
             <p className="text-base leading-8 text-[#F5F0E8]/66 sm:text-lg">
-              A moon-phase inspired timeline that mirrors how SleepSync builds clarity and momentum night after night.
+              A moon-phase inspired timeline that mirrors how SleepSync builds
+              clarity and momentum night after night.
             </p>
           </motion.div>
 
@@ -651,9 +776,15 @@ export default function Home() {
                   </div>
                   <MoonStar className="h-5 w-5 text-[#F5F0E8]/36" />
                 </div>
-                <p className="mt-6 text-xs uppercase tracking-[0.24em] text-[#9BC5FF]">Moon phase {step}</p>
-                <h3 className="mt-3 text-2xl font-semibold tracking-[-0.02em]">{title}</h3>
-                <p className="mt-4 text-sm leading-8 text-[#F5F0E8]/62">{body}</p>
+                <p className="mt-6 text-xs uppercase tracking-[0.24em] text-[#9BC5FF]">
+                  Moon phase {step}
+                </p>
+                <h3 className="mt-3 text-2xl font-semibold tracking-[-0.02em]">
+                  {title}
+                </h3>
+                <p className="mt-4 text-sm leading-8 text-[#F5F0E8]/62">
+                  {body}
+                </p>
               </motion.article>
             ))}
           </div>
@@ -674,7 +805,9 @@ export default function Home() {
                 Consistency becomes visible, elegant, and deeply motivating.
               </h2>
               <p className="text-base leading-8 text-[#F5F0E8]/66 sm:text-lg">
-                SleepSync turns routine into momentum with a streak interface that feels premium, not gamified. Celebrate real effort with a flame that earns its glow.
+                SleepSync turns routine into momentum with a streak interface
+                that feels premium, not gamified. Celebrate real effort with a
+                flame that earns its glow.
               </p>
               <div className="flex flex-col gap-4 sm:flex-row">
                 <Link
@@ -705,15 +838,21 @@ export default function Home() {
                 <div className={`${shell} p-6`}>
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-[#F5F0E8]/58">Current streak</p>
-                      <p className="mt-2 text-5xl font-semibold tracking-[-0.04em]">14</p>
+                      <p className="text-sm text-[#F5F0E8]/58">
+                        Current streak
+                      </p>
+                      <p className="mt-2 text-5xl font-semibold tracking-[-0.04em]">
+                        14
+                      </p>
                     </div>
                     <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#00E5C2]/12 text-[#00E5C2] shadow-[0_0_30px_rgba(0,229,194,0.18)]">
                       <Flame className="h-8 w-8 animate-[breathe_4s_ease-in-out_infinite]" />
                     </div>
                   </div>
                   <p className="mt-5 text-sm leading-8 text-[#F5F0E8]/66">
-                    You&apos;re on fire. Fourteen nights of consistency is lifting your recovery baseline and making better sleep feel repeatable.
+                    You&apos;re on fire. Fourteen nights of consistency is
+                    lifting your recovery baseline and making better sleep feel
+                    repeatable.
                   </p>
                   <div className="mt-6 rounded-[24px] bg-[#0D1630]/90 p-4">
                     <div className="flex items-center justify-between text-xs uppercase tracking-[0.18em] text-[#F5F0E8]/38">
@@ -729,7 +868,9 @@ export default function Home() {
                 <div className={`${shell} p-6`}>
                   <div className="mb-5 flex items-center justify-between">
                     <p className="text-sm font-medium">Consistency heatmap</p>
-                    <span className="text-xs text-[#F5F0E8]/42">Last 8 weeks</span>
+                    <span className="text-xs text-[#F5F0E8]/42">
+                      Last 8 weeks
+                    </span>
                   </div>
                   <div className="grid grid-cols-8 gap-2">
                     {[0, 1, 2, 3, 4, 5, 6, 7].map((column) => (
@@ -747,7 +888,12 @@ export default function Home() {
                                     ? "bg-[#00BDA4]"
                                     : "bg-[#00E5C2]";
 
-                          return <div key={row} className={`h-7 rounded-lg ${color}`} />;
+                          return (
+                            <div
+                              key={row}
+                              className={`h-7 rounded-lg ${color}`}
+                            />
+                          );
                         })}
                       </div>
                     ))}
@@ -768,14 +914,18 @@ export default function Home() {
               custom={0}
               className={`${shell} bg-[#111B32]/80 p-6`}
             >
-              <div className={`${shell} bg-[linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.03))] p-6`}>
+              <div
+                className={`${shell} bg-[linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.03))] p-6`}
+              >
                 <div className="flex items-center gap-4">
                   <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#00E5C2]/12 text-[#00E5C2] shadow-[0_0_24px_rgba(0,229,194,0.18)]">
                     <Bot className="h-7 w-7" />
                   </div>
                   <div>
                     <p className="text-lg font-semibold">Sleep Coach</p>
-                    <p className="text-sm text-[#F5F0E8]/48">Empathetic, contextual, and ready every morning</p>
+                    <p className="text-sm text-[#F5F0E8]/48">
+                      Empathetic, contextual, and ready every morning
+                    </p>
                   </div>
                 </div>
 
@@ -784,7 +934,9 @@ export default function Home() {
                     I noticed my REM felt low. What should I change tonight?
                   </div>
                   <div className="max-w-xl rounded-[24px] border border-white/10 bg-[#0D1630]/90 px-5 py-4 text-sm leading-7 text-[#F5F0E8]/72">
-                    Your bedtime drifted later for two nights, which often cuts into REM. Want a 20-minute wind-down that helps you reset without feeling strict?
+                    Your bedtime drifted later for two nights, which often cuts
+                    into REM. Want a 20-minute wind-down that helps you reset
+                    without feeling strict?
                   </div>
                   <div className="ml-auto max-w-sm rounded-[24px] border border-[#00E5C2]/14 bg-[#00E5C2]/8 px-5 py-4 text-sm leading-7 text-[#D5FFF8]">
                     Yes. Keep it realistic for work travel.
@@ -792,7 +944,12 @@ export default function Home() {
                 </div>
 
                 <div className="mt-6 flex flex-wrap gap-3">
-                  {["Travel reset", "Wind-down plan", "Explain my score", "Breathing cue"].map((item) => (
+                  {[
+                    "Travel reset",
+                    "Wind-down plan",
+                    "Explain my score",
+                    "Breathing cue",
+                  ].map((item) => (
                     <button
                       key={item}
                       type="button"
@@ -818,7 +975,9 @@ export default function Home() {
                 An AI coach that sounds reassuring, not robotic.
               </h2>
               <p className="text-base leading-8 text-[#F5F0E8]/66 sm:text-lg">
-                Ask about last night, request a wind-down routine, or get a short explanation of what changed. The tone stays warm, precise, and useful.
+                Ask about last night, request a wind-down routine, or get a
+                short explanation of what changed. The tone stays warm, precise,
+                and useful.
               </p>
               <div className="space-y-3 text-sm leading-7 text-[#F5F0E8]/66">
                 {[
@@ -854,7 +1013,8 @@ export default function Home() {
           >
             <div className={eyebrow}>Testimonials</div>
             <h2 className="text-4xl font-semibold tracking-[-0.03em] sm:text-5xl">
-              Trusted by people who want better nights without noisy wellness fluff.
+              Trusted by people who want better nights without noisy wellness
+              fluff.
             </h2>
           </motion.div>
 
@@ -869,7 +1029,9 @@ export default function Home() {
                 custom={0.08 + index * 0.08}
                 className={`${shell} p-7`}
               >
-                <p className="text-lg leading-8 text-[#F5F0E8]/78">&ldquo;{quote}&rdquo;</p>
+                <p className="text-lg leading-8 text-[#F5F0E8]/78">
+                  &ldquo;{quote}&rdquo;
+                </p>
                 <div className="mt-8 flex items-center gap-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[linear-gradient(135deg,#1E1B4B,#4C2B8C)] text-sm font-semibold">
                     {name
@@ -903,7 +1065,8 @@ export default function Home() {
                 Your first AI insight is one night away.
               </h2>
               <p className="mt-6 max-w-2xl text-base leading-8 text-[#F5F0E8]/76 sm:text-lg">
-                Build a calmer bedtime ritual, see your progress, and let SleepSync turn your nights into your superpower.
+                Build a calmer bedtime ritual, see your progress, and let
+                SleepSync turn your nights into your superpower.
               </p>
               <div className="mt-8 flex flex-col gap-4 sm:flex-row">
                 <Link

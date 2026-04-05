@@ -15,6 +15,11 @@ import {
   X,
 } from "lucide-react";
 
+const STORAGE_KEY = "sleep-conversations";
+const ACTIVE_CONVERSATION_KEY = "sleep-active-conversation";
+const MAX_CONVERSATIONS = 12;
+const MAX_MESSAGES_PER_CONVERSATION = 40;
+
 interface Message {
   role: "user" | "assistant";
   content: string;
@@ -34,6 +39,15 @@ interface Conversation {
   updatedAt: number;
 }
 
+function pruneConversations(conversations: Conversation[]): Conversation[] {
+  return conversations
+    .slice(0, MAX_CONVERSATIONS)
+    .map((conversation) => ({
+      ...conversation,
+      messages: conversation.messages.slice(-MAX_MESSAGES_PER_CONVERSATION),
+    }));
+}
+
 const suggestedPrompts = [
   "I noticed my REM was low last night. What should I try tonight?",
   "Give me a realistic wind-down routine for work travel.",
@@ -47,26 +61,45 @@ export default function AiChatSection() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [hasHydrated, setHasHydrated] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem("sleep-conversations");
-    if (!saved) return;
-
     try {
-      const parsed = JSON.parse(saved);
-      setConversations(parsed);
-      if (parsed.length > 0) {
-        setCurrentConvoId((prev) => prev ?? parsed[0].id);
+      const saved = localStorage.getItem(STORAGE_KEY);
+      const savedActiveConversationId = localStorage.getItem(ACTIVE_CONVERSATION_KEY);
+
+      if (saved) {
+        const parsed = pruneConversations(JSON.parse(saved) as Conversation[]);
+        setConversations(parsed);
+        if (parsed.length > 0) {
+          const hasSavedActiveConversation = parsed.some(
+            (conversation) => conversation.id === savedActiveConversationId
+          );
+          setCurrentConvoId(
+            hasSavedActiveConversation ? savedActiveConversationId : parsed[0].id
+          );
+        }
       }
     } catch (error) {
       console.error("Failed to load conversations:", error);
+    } finally {
+      setHasHydrated(true);
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("sleep-conversations", JSON.stringify(conversations));
-  }, [conversations]);
+    if (!hasHydrated) return;
+
+    const nextConversations = pruneConversations(conversations);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(nextConversations));
+
+    if (currentConvoId) {
+      localStorage.setItem(ACTIVE_CONVERSATION_KEY, currentConvoId);
+    } else {
+      localStorage.removeItem(ACTIVE_CONVERSATION_KEY);
+    }
+  }, [conversations, currentConvoId, hasHydrated]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -86,7 +119,7 @@ export default function AiChatSection() {
       updatedAt: Date.now(),
     };
 
-    setConversations((prev) => [newConversation, ...prev]);
+    setConversations((prev) => pruneConversations([newConversation, ...prev]));
     setCurrentConvoId(newConversation.id);
     if (window.innerWidth < 768) setSidebarOpen(false);
   };
@@ -110,7 +143,15 @@ export default function AiChatSection() {
   };
 
   const sendMessage = async () => {
-    if (!input.trim()) return;
+    const trimmedInput = input.trim();
+    if (!trimmedInput) return;
+
+    const researchRequested = trimmedInput.toLowerCase().startsWith("/research ");
+    const outgoingContent = researchRequested
+      ? trimmedInput.replace(/^\/research\s+/i, "").trim()
+      : trimmedInput;
+
+    if (!outgoingContent) return;
 
     let convoId = currentConvoId;
     if (!convoId) {
@@ -121,14 +162,14 @@ export default function AiChatSection() {
         createdAt: Date.now(),
         updatedAt: Date.now(),
       };
-      setConversations((prev) => [newConversation, ...prev]);
+      setConversations((prev) => pruneConversations([newConversation, ...prev]));
       setCurrentConvoId(newConversation.id);
       convoId = newConversation.id;
     }
 
     const userMessage: Message = {
       role: "user",
-      content: input,
+      content: outgoingContent,
       timestamp: Date.now(),
     };
 
@@ -136,21 +177,37 @@ export default function AiChatSection() {
       conversations.find((conversation) => conversation.id === convoId)?.messages || [];
     const nextMessages = [...existingMessages, userMessage];
 
-    setConversations((prev) =>
-      prev.map((conversation) =>
-        conversation.id === convoId
-          ? {
-              ...conversation,
-              messages: nextMessages,
-              title:
-                conversation.messages.length === 0
-                  ? updateConversationTitle(nextMessages)
-                  : conversation.title,
-              updatedAt: Date.now(),
-            }
-          : conversation
-      )
-    );
+    setConversations((prev) => {
+      const existingConversation = prev.find((conversation) => conversation.id === convoId);
+
+      if (!existingConversation) {
+        const createdConversation: Conversation = {
+          id: convoId,
+          title: updateConversationTitle(nextMessages),
+          messages: nextMessages,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        };
+
+        return pruneConversations([createdConversation, ...prev]);
+      }
+
+      return pruneConversations(
+        prev.map((conversation) =>
+          conversation.id === convoId
+            ? {
+                ...conversation,
+                messages: nextMessages,
+                title:
+                  conversation.messages.length === 0
+                    ? updateConversationTitle(nextMessages)
+                    : conversation.title,
+                updatedAt: Date.now(),
+              }
+            : conversation
+        )
+      );
+    });
 
     setInput("");
     setLoading(true);
@@ -158,6 +215,7 @@ export default function AiChatSection() {
     try {
       const res = await axios.post("/api/aiChat", {
         messages: nextMessages,
+        mode: researchRequested ? "research" : "standard",
       });
 
       const assistantMessage: Message = {
@@ -168,14 +226,16 @@ export default function AiChatSection() {
       };
 
       setConversations((prev) =>
-        prev.map((conversation) =>
-          conversation.id === convoId
-            ? {
-                ...conversation,
-                messages: [...conversation.messages, assistantMessage],
-                updatedAt: Date.now(),
-              }
-            : conversation
+        pruneConversations(
+          prev.map((conversation) =>
+            conversation.id === convoId
+              ? {
+                  ...conversation,
+                  messages: [...conversation.messages, assistantMessage],
+                  updatedAt: Date.now(),
+                }
+              : conversation
+          )
         )
       );
     } catch (error) {
@@ -188,14 +248,16 @@ export default function AiChatSection() {
       };
 
       setConversations((prev) =>
-        prev.map((conversation) =>
-          conversation.id === convoId
-            ? {
-                ...conversation,
-                messages: [...conversation.messages, assistantMessage],
-                updatedAt: Date.now(),
-              }
-            : conversation
+        pruneConversations(
+          prev.map((conversation) =>
+            conversation.id === convoId
+              ? {
+                  ...conversation,
+                  messages: [...conversation.messages, assistantMessage],
+                  updatedAt: Date.now(),
+                }
+              : conversation
+          )
         )
       );
     } finally {
@@ -332,11 +394,16 @@ export default function AiChatSection() {
               </div>
             </div>
 
-            {currentConversation && (
-              <div className="hidden rounded-full border border-[var(--app-line)] bg-white/5 px-3 py-1.5 text-xs text-[var(--app-text-muted)] sm:block">
-                {currentConversation.messages.length} messages
+            <div className="hidden items-center gap-2 sm:flex">
+              <div className="rounded-full border border-[var(--app-line)] bg-white/5 px-3 py-1.5 text-xs text-[var(--app-text-muted)]">
+                Standard mode for faster replies
               </div>
-            )}
+              {currentConversation && (
+                <div className="rounded-full border border-[var(--app-line)] bg-white/5 px-3 py-1.5 text-xs text-[var(--app-text-muted)]">
+                  {currentConversation.messages.length} messages
+                </div>
+              )}
+            </div>
           </header>
 
           <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-6">
@@ -475,7 +542,7 @@ export default function AiChatSection() {
                 </button>
               </div>
               <p className="mt-3 text-center text-xs text-[var(--app-text-muted)]">
-                Press Enter to send. Voice notes can layer on top later without changing the current flow.
+                Press Enter to send. Standard mode is on for reliability while sourced research mode stays optional.
               </p>
             </div>
           </div>

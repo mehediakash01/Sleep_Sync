@@ -19,6 +19,10 @@ model User {
   name                String
   email               String               @unique
   password            String
+  timezone            String               @default("UTC")
+  nightlyTarget       Float                @default(7.5)
+  bedtimeTarget       String               @default("22:45")
+  streakGoal          Int                  @default(14)
   createdAt           DateTime             @default(now())
   sleepLogs           SleepLog[]
   notifications       Notification[]

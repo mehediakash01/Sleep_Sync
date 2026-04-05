@@ -79,6 +79,8 @@ export const authOptions: AuthOptions = {
           });
           if (dbUser) {
             session.user.id = dbUser.id.toString();
+            session.user.name = dbUser.name;
+            session.user.email = dbUser.email;
           }
         } catch (error) {
           console.error("[session callback] DB error:", error);

@@ -22,6 +22,79 @@ interface CreateNotificationParams {
   emailHtml?: string;
 }
 
+interface BedtimeReminderCandidate {
+  userId: number;
+  userEmail: string;
+  userName: string;
+  timezone: string;
+  bedtimeHour: number;
+  bedtimeMinute: number;
+}
+
+interface ReminderSweepResult {
+  checked: number;
+  sent: number;
+}
+
+const REMINDER_WINDOW_MINUTES = 15;
+
+function getTimezoneParts(date: Date, timeZone: string) {
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  });
+
+  const formatted = formatter.formatToParts(date);
+  const lookup = Object.fromEntries(
+    formatted
+      .filter((part) => part.type !== "literal")
+      .map((part) => [part.type, part.value])
+  );
+
+  return {
+    year: lookup.year,
+    month: lookup.month,
+    day: lookup.day,
+    hour: Number(lookup.hour ?? "0"),
+    minute: Number(lookup.minute ?? "0"),
+  };
+}
+
+function getLocalDateKey(date: Date, timeZone: string): string {
+  const parts = getTimezoneParts(date, timeZone);
+  return `${parts.year}-${parts.month}-${parts.day}`;
+}
+
+function shouldSendReminderNow(
+  date: Date,
+  timeZone: string,
+  bedtimeHour: number,
+  bedtimeMinute: number
+): boolean {
+  const parts = getTimezoneParts(date, timeZone);
+  const currentMinutes = parts.hour * 60 + parts.minute;
+  const bedtimeMinutes = bedtimeHour * 60 + bedtimeMinute;
+
+  return Math.abs(currentMinutes - bedtimeMinutes) <= REMINDER_WINDOW_MINUTES;
+}
+
+async function hasBedtimeReminderToday(
+  userId: number,
+  timeZone: string,
+  recentNotifications: Array<{ createdAt: Date }>
+): Promise<boolean> {
+  const todayKey = getLocalDateKey(new Date(), timeZone);
+
+  return recentNotifications.some(
+    (notification) => getLocalDateKey(notification.createdAt, timeZone) === todayKey
+  );
+}
+
 export async function createNotification({
   userId,
   userEmail,
@@ -171,3 +244,101 @@ export async function computeStreak(userId: number): Promise<number> {
 }
 
 export const STREAK_MILESTONES = [3, 7, 14, 30, 60, 100];
+
+export async function runBedtimeReminderSweep(
+  now: Date = new Date()
+): Promise<ReminderSweepResult> {
+  const settings = await prisma.notificationSetting.findMany({
+    where: {
+      bedtimeReminder: true,
+      bedtimeHour: { not: null },
+      bedtimeMinute: { not: null },
+    },
+    select: {
+      userId: true,
+      bedtimeHour: true,
+      bedtimeMinute: true,
+      user: {
+        select: {
+          email: true,
+          name: true,
+          timezone: true,
+          bedtimeTarget: true,
+        },
+      },
+    },
+  });
+
+  const candidates: BedtimeReminderCandidate[] = settings.map((setting) => {
+    const fallbackBedtime = setting.user.bedtimeTarget.split(":").map(Number);
+    const fallbackHour = Number.isFinite(fallbackBedtime[0]) ? fallbackBedtime[0] : 22;
+    const fallbackMinute = Number.isFinite(fallbackBedtime[1]) ? fallbackBedtime[1] : 30;
+
+    return {
+      userId: setting.userId,
+      userEmail: setting.user.email,
+      userName: setting.user.name,
+      timezone: setting.user.timezone || "UTC",
+      bedtimeHour: setting.bedtimeHour ?? fallbackHour,
+      bedtimeMinute: setting.bedtimeMinute ?? fallbackMinute,
+    };
+  });
+
+  const recentNotifications = await prisma.notification.findMany({
+    where: {
+      type: "BEDTIME_REMINDER",
+      userId: { in: candidates.map((candidate) => candidate.userId) },
+      createdAt: {
+        gte: new Date(now.getTime() - 48 * 60 * 60 * 1000),
+      },
+    },
+    select: {
+      userId: true,
+      createdAt: true,
+    },
+  });
+
+  const notificationsByUser = new Map<number, Array<{ createdAt: Date }>>();
+  for (const notification of recentNotifications) {
+    const userNotifications = notificationsByUser.get(notification.userId) ?? [];
+    userNotifications.push({ createdAt: notification.createdAt });
+    notificationsByUser.set(notification.userId, userNotifications);
+  }
+
+  let sent = 0;
+
+  for (const candidate of candidates) {
+    if (
+      !shouldSendReminderNow(
+        now,
+        candidate.timezone,
+        candidate.bedtimeHour,
+        candidate.bedtimeMinute
+      )
+    ) {
+      continue;
+    }
+
+    const alreadySent = await hasBedtimeReminderToday(
+      candidate.userId,
+      candidate.timezone,
+      notificationsByUser.get(candidate.userId) ?? []
+    );
+
+    if (alreadySent) {
+      continue;
+    }
+
+    await notifyBedtimeReminder(
+      candidate.userId,
+      candidate.userEmail,
+      candidate.userName
+    );
+    sent += 1;
+  }
+
+  return {
+    checked: candidates.length,
+    sent,
+  };
+}
