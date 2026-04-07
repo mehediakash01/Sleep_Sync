@@ -199,7 +199,7 @@ export default function Home() {
             <div className="flex flex-col gap-4 sm:flex-row">
               <Link
                 href="/register"
-                className="group inline-flex items-center justify-center gap-2 rounded-full bg-[#00E5C2] px-7 py-4 text-sm font-semibold text-[#062019] shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_12px_40px_rgba(0,229,194,0.25)] transition-all duration-300 hover:scale-[1.03] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.5),0_16px_56px_rgba(0,229,194,0.34)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#00E5C2]"
+                className="group inline-flex items-center justify-center gap-2 rounded-full bg-[#00E5C2] px-7 py-4 text-sm font-semibold text-[#062019] shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_12px_40px_rgba(0,229,194,0.25)] transition-all duration-300 hover:scale-[1.03] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.5),0_16px_56px_rgba(0,229,194,0.34)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00E5C2] focus-visible:ring-offset-4 focus-visible:ring-offset-[#77938b]"
               >
                 Start Free
                 <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
