@@ -4,7 +4,6 @@ import axios from "axios";
 import Link from "next/link";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { motion } from "framer-motion";
 import {
   ArrowRight,
   BarChart3,
@@ -89,12 +88,7 @@ export default function RegisterPage() {
       </div>
 
       <div className="relative mx-auto grid max-w-6xl items-center gap-8 lg:grid-cols-[0.95fr_1.05fr]">
-        <motion.section
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="premium-panel-strong rounded-[36px] p-8 lg:p-10"
-        >
+        <section className="premium-panel-strong animate-[riseIn_0.7s_ease-out] rounded-[36px] p-8 lg:p-10">
           <div className="inline-flex items-center gap-2 rounded-full border border-[var(--app-line)] bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-[#9BC5FF]">
             <MoonStar className="h-4 w-4 text-[var(--app-accent-strong)]" />
             Night one begins here
@@ -148,14 +142,9 @@ export default function RegisterPage() {
               </div>
             </div>
           </div>
-        </motion.section>
+        </section>
 
-        <motion.section
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.08 }}
-          className="premium-panel-strong rounded-[36px] p-8 lg:p-10"
-        >
+        <section className="premium-panel-strong animate-[riseIn_0.82s_ease-out] rounded-[36px] p-8 lg:p-10">
           <div className="mb-8">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#9BC5FF]">Create account</p>
             <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em]">Your first AI insight awaits.</h2>
@@ -283,8 +272,9 @@ export default function RegisterPage() {
               Sign in
             </Link>
           </p>
-        </motion.section>
+        </section>
       </div>
+
     </main>
   );
 }

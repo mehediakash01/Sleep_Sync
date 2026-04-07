@@ -1,12 +1,11 @@
-import React from 'react'
+import { RouteLoading } from "@/Components/fallbacks/RouteLoading";
 
-export  default function Loading () {
+export default function Loading() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-         
-        </div>
-      </div>
-  )
+    <RouteLoading
+      badge="Loading Dashboard"
+      title="Bringing your sleep data into focus."
+      description="Charts, streaks, and recovery insights are loading so the dashboard feels ready the moment it appears."
+    />
+  );
 }

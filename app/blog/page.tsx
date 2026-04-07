@@ -202,7 +202,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           </div>
 
           <div className="relative flex min-h-[520px] items-center justify-center lg:min-h-[680px]">
-            <div className="absolute left-0 top-16 hidden w-56 rounded-[28px] border border-white/12 bg-[#111B31]/80 p-5 backdrop-blur-2xl lg:block">
+            <div className="absolute left-0 top-16 z-50 hidden w-56 rounded-[28px] border border-white/12 bg-[#111B31]/80 p-5 backdrop-blur-2xl ">
               <div className="mb-5 flex items-center justify-between">
                 <div>
                   <p className="text-xs uppercase tracking-[0.24em] text-[#F5F0E8]/45">
@@ -226,7 +226,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
               </div>
             </div>
 
-            <div className="absolute bottom-10 right-2 hidden w-64 rounded-[30px] border border-white/10 bg-[#121B32]/82 p-5 backdrop-blur-2xl lg:block">
+            <div className="absolute z-50 -bottom-16 -right-4 hidden w-64 rounded-[30px] border border-white/10 bg-[#121B32]/82 p-5 backdrop-blur-2xl ">
               <div className="mb-4 flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#00E5C2]/14 text-[#00E5C2]">
                   <MoonStar className="h-5 w-5" />
@@ -551,19 +551,6 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         )}
       </div>
 
-      <style jsx global>{`
-        @keyframes stardust {
-          0%,
-          100% {
-            opacity: 0.25;
-            transform: scale(0.85);
-          }
-          50% {
-            opacity: 1;
-            transform: scale(1.35);
-          }
-        }
-      `}</style>
     </main>
   );
 }

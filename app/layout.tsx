@@ -1,22 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
 
 import { Toaster } from "react-hot-toast";
 import { Providers } from "@/Providers";
 import { LayoutWrapper } from "@/Components/LayoutWrapper";
-import { SpeedInsights } from "@vercel/speed-insights/next"
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 // Design system typography fonts
 const inter = Inter({
@@ -48,12 +37,12 @@ export default function RootLayout({
         <meta name="color-scheme" content="light dark" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${manrope.variable} antialiased overflow-x-hidden`}
+        className={`${inter.variable} ${manrope.variable} antialiased overflow-x-hidden`}
       >
         <Providers>
           <LayoutWrapper>{children}</LayoutWrapper>
           <Toaster position="top-center" reverseOrder={false} />
-          <SpeedInsights/>
+          <SpeedInsights />
         </Providers>
       </body>
     </html>

@@ -42,7 +42,7 @@ const storyMoments = [
 
 const team = [
   {
-    name: "Mehedi Akash",
+    name: "Mehedi Hasan Akash",
     role: "Founder & Lead Developer",
     initials: "MA",
   },
@@ -52,7 +52,7 @@ const team = [
     initials: "SL",
   },
   {
-    name: "James Park",
+    name: "Jin Park",
     role: "UX Designer",
     initials: "JP",
   },

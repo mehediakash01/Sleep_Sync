@@ -4,7 +4,6 @@ import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
 import { Menu, MoonStar, SunMedium, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "@/Providers";
@@ -12,7 +11,7 @@ import { useTheme } from "@/Providers";
 const navItems = [
   { href: "/Streak", label: "Streaks" },
   { href: "/AiCoach", label: "Coach" },
-  { href: "/blogs", label: "Blog" },
+  { href: "/blog", label: "Blog" },
   { href: "/about", label: "About" },
 ];
 
@@ -54,6 +53,9 @@ export const Navbar = () => {
 
   const shell =
     "border border-[var(--app-line)] bg-[var(--app-surface)] backdrop-blur-2xl shadow-[var(--app-shadow)]";
+  const visibleNavItems = session?.user
+    ? [{ href: "/dashboard", label: "Dashboard" }, ...navItems]
+    : navItems;
 
   return (
     <>
@@ -81,7 +83,7 @@ export const Navbar = () => {
           </div>
 
           <div className="hidden items-center gap-1 lg:flex">
-            {navItems.map((item) => {
+            {visibleNavItems.map((item) => {
               const isActive = pathname === item.href;
 
               return (
@@ -132,63 +134,54 @@ export const Navbar = () => {
                     {session.user.name || "Your account"}
                   </span>
                 </button>
-
-                <AnimatePresence>
-                  {profileOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -12, scale: 0.96 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -12, scale: 0.96 }}
-                      transition={{ duration: 0.18 }}
-                      className="absolute right-4 top-[4.75rem] w-72 rounded-[28px] border border-[var(--app-line)] bg-[var(--app-surface-strong)] p-4 text-[var(--app-text)] shadow-[var(--app-shadow)] backdrop-blur-2xl sm:right-6 lg:right-8"
-                    >
-                      <div className="flex items-center gap-3 rounded-[22px] bg-white/5 p-3">
-                        <Image
-                          src={session.user.image || avatarFallback}
-                          alt="User avatar"
-                          className="h-12 w-12 rounded-2xl object-cover"
-                          width={48}
-                          height={48}
-                          referrerPolicy="no-referrer"
-                        />
-                        <div className="min-w-0">
-                          <p className="truncate font-medium">{session.user.name || "User"}</p>
-                          <p className="truncate text-sm text-[var(--app-text-muted)]">{session.user.email}</p>
-                        </div>
+                {profileOpen && (
+                  <div className="fixed right-4 top-[4.75rem] z-50 w-72 rounded-[28px] border border-[var(--app-line)] bg-[var(--app-surface-strong)] p-4 text-[var(--app-text)] shadow-[var(--app-shadow)] backdrop-blur-2xl sm:right-6 lg:right-8">
+                    <div className="flex items-center gap-3 rounded-[22px] bg-white/5 p-3">
+                      <Image
+                        src={session.user.image || avatarFallback}
+                        alt="User avatar"
+                        className="h-12 w-12 rounded-2xl object-cover"
+                        width={48}
+                        height={48}
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="min-w-0">
+                        <p className="truncate font-medium">{session.user.name || "User"}</p>
+                        <p className="truncate text-sm text-[var(--app-text-muted)]">{session.user.email}</p>
                       </div>
+                    </div>
 
-                      <div className="mt-3 grid gap-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setProfileOpen(false);
-                            router.push("/dashboard");
-                          }}
-                          className="rounded-[18px] px-4 py-3 text-left text-sm text-[var(--app-text-muted)] transition-colors duration-300 hover:bg-white/6 hover:text-[var(--app-text)]"
-                        >
-                          Go to dashboard
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setProfileOpen(false);
-                            router.push("/settings");
-                          }}
-                          className="rounded-[18px] px-4 py-3 text-left text-sm text-[var(--app-text-muted)] transition-colors duration-300 hover:bg-white/6 hover:text-[var(--app-text)]"
-                        >
-                          Settings
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleLogout}
-                          className="rounded-[18px] px-4 py-3 text-left text-sm text-[#F97F9A] transition-colors duration-300 hover:bg-[#F97F9A]/10"
-                        >
-                          Logout
-                        </button>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                    <div className="mt-3 grid gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setProfileOpen(false);
+                          router.push("/dashboard");
+                        }}
+                        className="rounded-[18px] px-4 py-3 text-left text-sm text-[var(--app-text-muted)] transition-colors duration-300 hover:bg-white/6 hover:text-[var(--app-text)]"
+                      >
+                        Go to dashboard
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setProfileOpen(false);
+                          router.push("/settings");
+                        }}
+                        className="rounded-[18px] px-4 py-3 text-left text-sm text-[var(--app-text-muted)] transition-colors duration-300 hover:bg-white/6 hover:text-[var(--app-text)]"
+                      >
+                        Settings
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="rounded-[18px] px-4 py-3 text-left text-sm text-[#F97F9A] transition-colors duration-300 hover:bg-[#F97F9A]/10"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                )}
               </>
             ) : (
               <>
@@ -210,26 +203,16 @@ export const Navbar = () => {
         </div>
       </nav>
 
-      <AnimatePresence>
-        {menuOpen && (
-          <>
-            <motion.button
-              type="button"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setMenuOpen(false)}
-              className="fixed inset-0 z-40 bg-[#020617]/60 backdrop-blur-sm lg:hidden"
-              aria-label="Close navigation overlay"
-            />
+      {menuOpen && (
+        <>
+          <button
+            type="button"
+            onClick={() => setMenuOpen(false)}
+            className="fixed inset-0 z-40 bg-[#020617]/60 backdrop-blur-sm lg:hidden"
+            aria-label="Close navigation overlay"
+          />
 
-            <motion.aside
-              initial={{ x: "-100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
-              transition={{ type: "spring", stiffness: 220, damping: 28 }}
-              className="fixed inset-y-0 left-0 z-50 flex w-[86vw] max-w-sm flex-col border-r border-[var(--app-line)] bg-[var(--app-surface-strong)] p-5 text-[var(--app-text)] backdrop-blur-2xl lg:hidden"
-            >
+          <aside className="fixed inset-y-0 left-0 z-50 flex w-[86vw] max-w-sm flex-col border-r border-[var(--app-line)] bg-[var(--app-surface-strong)] p-5 text-[var(--app-text)] backdrop-blur-2xl lg:hidden">
               <div className="flex items-center justify-between">
                 <Link href="/" onClick={() => setMenuOpen(false)} className="flex items-center gap-3">
                   <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--app-gradient-start),var(--app-gradient-end))] text-[var(--app-accent-strong)]">
@@ -251,7 +234,7 @@ export const Navbar = () => {
               </div>
 
               <div className="mt-8 grid gap-2">
-                {navItems.map((item) => {
+                {visibleNavItems.map((item) => {
                   const isActive = pathname === item.href;
 
                   return (
@@ -319,10 +302,10 @@ export const Navbar = () => {
                   </>
                 )}
               </div>
-            </motion.aside>
-          </>
-        )}
-      </AnimatePresence>
+          </aside>
+        </>
+      )}
+
     </>
   );
 };

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, MoonStar, Twitter, Youtube, Facebook } from "lucide-react";
+import { ArrowRight, Facebook, MoonStar, Twitter, Youtube } from "lucide-react";
 
 const linkGroups = {
   Product: [
@@ -8,7 +8,7 @@ const linkGroups = {
     { label: "AI Coach", href: "/AiCoach" },
   ],
   Explore: [
-    { label: "Blog", href: "/blogs" },
+    { label: "Blog", href: "/blog" },
     { label: "About", href: "/about" },
     { label: "Register", href: "/register" },
   ],
@@ -38,8 +38,12 @@ export const Footer = () => {
                 <MoonStar className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-sm font-semibold tracking-[0.24em] text-[#9BC5FF]">SLEEPSYNC</p>
-                <p className="text-sm text-[var(--app-text-muted)]">AI sleep coaching platform</p>
+                <p className="text-sm font-semibold tracking-[0.24em] text-[#9BC5FF]">
+                  SLEEPSYNC
+                </p>
+                <p className="text-sm text-[var(--app-text-muted)]">
+                  AI sleep coaching platform
+                </p>
               </div>
             </div>
 
@@ -47,8 +51,8 @@ export const Footer = () => {
               Calm technology for better nights and clearer mornings.
             </h2>
             <p className="max-w-xl text-sm leading-8 text-[var(--app-text-muted)]">
-              Track sleep, build momentum, and get personal coaching in an interface
-              designed to feel restorative, not overwhelming.
+              Track sleep, build momentum, and get personal coaching in an
+              interface designed to feel restorative, not overwhelming.
             </p>
 
             <div className="flex flex-col gap-3 sm:flex-row">
@@ -71,7 +75,9 @@ export const Footer = () => {
           <div className="grid gap-8 sm:grid-cols-3">
             {Object.entries(linkGroups).map(([title, links]) => (
               <div key={title}>
-                <h3 className="text-xs font-semibold uppercase tracking-[0.24em] text-[#9BC5FF]">{title}</h3>
+                <h3 className="text-xs font-semibold uppercase tracking-[0.24em] text-[#9BC5FF]">
+                  {title}
+                </h3>
                 <div className="mt-4 grid gap-3">
                   {links.map((link) => (
                     <Link
@@ -89,7 +95,7 @@ export const Footer = () => {
         </div>
 
         <div className="mt-8 flex flex-col gap-5 border-t border-[var(--app-line)] pt-6 text-sm text-[var(--app-text-muted)] sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} SleepSync. Designed for calmer nights.</p>
+          <p>{`\u00A9 ${new Date().getFullYear()} SleepSync. Designed for calmer nights.`}</p>
           <div className="flex items-center gap-3">
             {socials.map(({ label, href, icon: Icon }) => (
               <a
