@@ -27,6 +27,13 @@ export async function authorizeCrawlAccess(
   const cronSecret = process.env.CRAWL_CRON_SECRET ?? process.env.CRON_SECRET;
   const providedCronSecret = request.headers.get("x-cron-secret");
   const authHeader = request.headers.get("authorization") ?? "";
+  const url = new URL(request.url);
+  const querySecret =
+    url.searchParams.get("cron_secret")?.trim() ||
+    url.searchParams.get("secret")?.trim() ||
+    url.searchParams.get("token")?.trim() ||
+    url.searchParams.get("key")?.trim() ||
+    "";
   const bearerSecret = authHeader.startsWith("Bearer ")
     ? authHeader.slice("Bearer ".length).trim()
     : "";
@@ -34,7 +41,8 @@ export async function authorizeCrawlAccess(
   if (
     cronSecret &&
     ((providedCronSecret && providedCronSecret === cronSecret) ||
-      (bearerSecret && bearerSecret === cronSecret))
+      (bearerSecret && bearerSecret === cronSecret) ||
+      (querySecret && querySecret === cronSecret))
   ) {
     return { ok: true, via: "cron" };
   }

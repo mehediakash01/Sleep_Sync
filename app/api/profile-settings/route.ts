@@ -24,6 +24,15 @@ function clampNumber(value: unknown, min: number, max: number, fallback: number)
   return Math.min(max, Math.max(min, numeric));
 }
 
+function parseBedtimeTarget(value: string): { hour: number; minute: number } {
+  const [hour, minute] = value.split(":").map(Number);
+
+  return {
+    hour: Number.isFinite(hour) ? hour : 22,
+    minute: Number.isFinite(minute) ? minute : 30,
+  };
+}
+
 async function getAuthenticatedUser() {
   const session = await getServerSession(authOptions);
 
@@ -82,24 +91,50 @@ export async function PUT(req: Request) {
       ? body.bedtimeTarget
       : user.bedtimeTarget;
   const nextStreakGoal = Math.round(clampNumber(body.streakGoal, 3, 120, user.streakGoal));
+  const previousBedtime = parseBedtimeTarget(user.bedtimeTarget);
+  const nextBedtime = parseBedtimeTarget(nextBedtimeTarget);
 
-  const updatedUser = await prisma.user.update({
-    where: { id: user.id },
-    data: {
-      name: nextName,
-      timezone: nextTimezone,
-      nightlyTarget: nextNightlyTarget,
-      bedtimeTarget: nextBedtimeTarget,
-      streakGoal: nextStreakGoal,
-    },
-    select: {
-      name: true,
-      email: true,
-      timezone: true,
-      nightlyTarget: true,
-      bedtimeTarget: true,
-      streakGoal: true,
-    },
+  const updatedUser = await prisma.$transaction(async (tx) => {
+    const savedUser = await tx.user.update({
+      where: { id: user.id },
+      data: {
+        name: nextName,
+        timezone: nextTimezone,
+        nightlyTarget: nextNightlyTarget,
+        bedtimeTarget: nextBedtimeTarget,
+        streakGoal: nextStreakGoal,
+      },
+      select: {
+        name: true,
+        email: true,
+        timezone: true,
+        nightlyTarget: true,
+        bedtimeTarget: true,
+        streakGoal: true,
+      },
+    });
+
+    if (nextBedtimeTarget !== user.bedtimeTarget) {
+      await tx.notificationSetting.updateMany({
+        where: {
+          userId: user.id,
+          OR: [
+            { bedtimeHour: null },
+            { bedtimeMinute: null },
+            {
+              bedtimeHour: previousBedtime.hour,
+              bedtimeMinute: previousBedtime.minute,
+            },
+          ],
+        },
+        data: {
+          bedtimeHour: nextBedtime.hour,
+          bedtimeMinute: nextBedtime.minute,
+        },
+      });
+    }
+
+    return savedUser;
   });
 
   return NextResponse.json(updatedUser);

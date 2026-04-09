@@ -37,6 +37,8 @@ interface ReminderSweepResult {
 }
 
 const REMINDER_WINDOW_MINUTES = 15;
+const REMINDER_LEAD_MINUTES = 15;
+const REMINDER_FOLLOWUP_MINUTES = 60;
 
 function getTimezoneParts(date: Date, timeZone: string) {
   const formatter = new Intl.DateTimeFormat("en-US", {
@@ -70,29 +72,118 @@ function getLocalDateKey(date: Date, timeZone: string): string {
   return `${parts.year}-${parts.month}-${parts.day}`;
 }
 
-function shouldSendReminderNow(
+function getCircularMinuteDelta(currentMinutes: number, targetMinutes: number): number {
+  let delta = currentMinutes - targetMinutes;
+
+  if (delta < -720) {
+    delta += 1440;
+  } else if (delta > 720) {
+    delta -= 1440;
+  }
+
+  return delta;
+}
+
+function getReminderOccurrenceKey(
   date: Date,
   timeZone: string,
   bedtimeHour: number,
   bedtimeMinute: number
-): boolean {
+): string | null {
   const parts = getTimezoneParts(date, timeZone);
   const currentMinutes = parts.hour * 60 + parts.minute;
   const bedtimeMinutes = bedtimeHour * 60 + bedtimeMinute;
+  const delta = getCircularMinuteDelta(currentMinutes, bedtimeMinutes);
 
-  return Math.abs(currentMinutes - bedtimeMinutes) <= REMINDER_WINDOW_MINUTES;
+  if (delta < -REMINDER_LEAD_MINUTES || delta > REMINDER_FOLLOWUP_MINUTES) {
+    return null;
+  }
+
+  if (delta >= 0) {
+    if (currentMinutes < bedtimeMinutes) {
+      return getLocalDateKey(
+        new Date(date.getTime() - 24 * 60 * 60 * 1000),
+        timeZone
+      );
+    }
+
+    return getLocalDateKey(date, timeZone);
+  }
+
+  if (currentMinutes > bedtimeMinutes) {
+    return getLocalDateKey(
+      new Date(date.getTime() + 24 * 60 * 60 * 1000),
+      timeZone
+    );
+  }
+
+  return getLocalDateKey(date, timeZone);
 }
 
-async function hasBedtimeReminderToday(
-  userId: number,
+function getReminderSlot(
+  date: Date,
   timeZone: string,
-  recentNotifications: Array<{ createdAt: Date }>
-): Promise<boolean> {
-  const todayKey = getLocalDateKey(new Date(), timeZone);
+  bedtimeHour: number,
+  bedtimeMinute: number
+): number | null {
+  const parts = getTimezoneParts(date, timeZone);
+  const currentMinutes = parts.hour * 60 + parts.minute;
+  const bedtimeMinutes = bedtimeHour * 60 + bedtimeMinute;
+  const delta = getCircularMinuteDelta(currentMinutes, bedtimeMinutes);
 
-  return recentNotifications.some(
-    (notification) => getLocalDateKey(notification.createdAt, timeZone) === todayKey
+  if (delta < -REMINDER_LEAD_MINUTES || delta > REMINDER_FOLLOWUP_MINUTES) {
+    return null;
+  }
+
+  return Math.floor((delta + REMINDER_LEAD_MINUTES) / REMINDER_WINDOW_MINUTES);
+}
+
+function hasReminderForCurrentSlot(
+  reminderDate: Date,
+  timeZone: string,
+  bedtimeHour: number,
+  bedtimeMinute: number,
+  recentNotifications: Array<{ createdAt: Date }>
+): boolean {
+  const occurrenceKey = getReminderOccurrenceKey(
+    reminderDate,
+    timeZone,
+    bedtimeHour,
+    bedtimeMinute
   );
+  const slot = getReminderSlot(reminderDate, timeZone, bedtimeHour, bedtimeMinute);
+
+  if (!occurrenceKey || slot === null) {
+    return false;
+  }
+
+  return recentNotifications.some((notification) => {
+    const notificationOccurrenceKey = getReminderOccurrenceKey(
+      notification.createdAt,
+      timeZone,
+      bedtimeHour,
+      bedtimeMinute
+    );
+    const notificationSlot = getReminderSlot(
+      notification.createdAt,
+      timeZone,
+      bedtimeHour,
+      bedtimeMinute
+    );
+
+    return (
+      notificationOccurrenceKey === occurrenceKey && notificationSlot === slot
+    );
+  });
+}
+
+function parseBedtimeTarget(value: string): { hour: number; minute: number } {
+  const [hour, minute] = value.split(":").map(Number);
+
+  return {
+    hour: Number.isFinite(hour) ? hour : 22,
+    minute: Number.isFinite(minute) ? minute : 30,
+  };
 }
 
 export async function createNotification({
@@ -251,8 +342,6 @@ export async function runBedtimeReminderSweep(
   const settings = await prisma.notificationSetting.findMany({
     where: {
       bedtimeReminder: true,
-      bedtimeHour: { not: null },
-      bedtimeMinute: { not: null },
     },
     select: {
       userId: true,
@@ -270,17 +359,15 @@ export async function runBedtimeReminderSweep(
   });
 
   const candidates: BedtimeReminderCandidate[] = settings.map((setting) => {
-    const fallbackBedtime = setting.user.bedtimeTarget.split(":").map(Number);
-    const fallbackHour = Number.isFinite(fallbackBedtime[0]) ? fallbackBedtime[0] : 22;
-    const fallbackMinute = Number.isFinite(fallbackBedtime[1]) ? fallbackBedtime[1] : 30;
+    const fallbackBedtime = parseBedtimeTarget(setting.user.bedtimeTarget);
 
     return {
       userId: setting.userId,
       userEmail: setting.user.email,
       userName: setting.user.name,
       timezone: setting.user.timezone || "UTC",
-      bedtimeHour: setting.bedtimeHour ?? fallbackHour,
-      bedtimeMinute: setting.bedtimeMinute ?? fallbackMinute,
+      bedtimeHour: setting.bedtimeHour ?? fallbackBedtime.hour,
+      bedtimeMinute: setting.bedtimeMinute ?? fallbackBedtime.minute,
     };
   });
 
@@ -308,20 +395,22 @@ export async function runBedtimeReminderSweep(
   let sent = 0;
 
   for (const candidate of candidates) {
-    if (
-      !shouldSendReminderNow(
-        now,
-        candidate.timezone,
-        candidate.bedtimeHour,
-        candidate.bedtimeMinute
-      )
-    ) {
+    const reminderKey = getReminderOccurrenceKey(
+      now,
+      candidate.timezone,
+      candidate.bedtimeHour,
+      candidate.bedtimeMinute
+    );
+
+    if (!reminderKey) {
       continue;
     }
 
-    const alreadySent = await hasBedtimeReminderToday(
-      candidate.userId,
+    const alreadySent = hasReminderForCurrentSlot(
+      now,
       candidate.timezone,
+      candidate.bedtimeHour,
+      candidate.bedtimeMinute,
       notificationsByUser.get(candidate.userId) ?? []
     );
 
@@ -335,6 +424,10 @@ export async function runBedtimeReminderSweep(
       candidate.userName
     );
     sent += 1;
+
+    const userNotifications = notificationsByUser.get(candidate.userId) ?? [];
+    userNotifications.push({ createdAt: now });
+    notificationsByUser.set(candidate.userId, userNotifications);
   }
 
   return {

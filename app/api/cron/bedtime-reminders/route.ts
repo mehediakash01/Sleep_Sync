@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { authorizeCrawlAccess } from "@/lib/crawlAuth";
 import { runBedtimeReminderSweep } from "@/lib/notifications";
 
-export async function GET(request: NextRequest) {
+async function handleBedtimeReminderCron(request: NextRequest) {
   const auth = await authorizeCrawlAccess(request);
 
   if (!auth.ok) {
@@ -29,4 +29,12 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+export async function GET(request: NextRequest) {
+  return handleBedtimeReminderCron(request);
+}
+
+export async function POST(request: NextRequest) {
+  return handleBedtimeReminderCron(request);
 }

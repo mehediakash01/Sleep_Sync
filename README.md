@@ -35,7 +35,7 @@
 - Four notification types: `SLEEP_LOGGED`, `STREAK`, `POOR_SLEEP`, `BEDTIME_REMINDER`
 - Per-user notification settings: email on/off, bedtime reminder, poor sleep alerts, streak alerts
 - Email delivery via **Nodemailer + Gmail SMTP**
-- Bedtime reminder check endpoint (`/api/notifications/bedtime-check`)
+- Scheduled bedtime reminder sweep endpoint (`/api/cron/bedtime-reminders`)
 
 ### 📝 Blog & Community
 - Static blog articles with slug-based routing
@@ -185,7 +185,11 @@ CLOUDFLARE_API_TOKEN="your-cloudflare-api-token"
 # Crawl endpoint access control
 # Comma-separated admin emails allowed to call /api/crawl-knowledge and /api/crawl-status/[jobId]
 CRAWL_ADMIN_EMAILS="admin@example.com,owner@example.com"
-# Optional cron secret header for server-to-server jobs (send as x-cron-secret)
+# Optional cron secret for server-to-server jobs.
+# Supported auth inputs:
+# - Authorization: Bearer <secret>
+# - x-cron-secret: <secret>
+# - ?cron_secret=<secret> (handy for cron-job.org)
 CRAWL_CRON_SECRET="your-random-cron-secret"
 
 # Nodemailer (Gmail SMTP)
@@ -239,6 +243,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 | POST | `/api/crawl-knowledge` | Start Cloudflare crawl job and return `jobId` |
 | GET | `/api/crawl-status/[jobId]` | Get crawl status/results (`wait=true` to poll, `store=true` to persist into DB) |
 | POST / GET | `/api/crawl/weekly` | Trigger incremental weekly crawl jobs for trusted sources |
+| POST / GET | `/api/cron/bedtime-reminders` | Run the 15-minute bedtime reminder sweep |
 | POST | `/api/crawl/poll` | Poll a crawl job until complete and persist pages into DB |
 | GET / POST | `/api/comments?blogId=` | Get or post blog comments |
 | POST / DELETE | `/api/likes` | Like or unlike a blog post |
@@ -272,7 +277,7 @@ The easiest way to deploy is [Vercel](https://vercel.com):
 3. Add all environment variables from your `.env` file in the Vercel dashboard
 4. Click **Deploy**
 
-### Vercel Cron Example
+### Scheduler Examples
 
 `vercel.json` can schedule weekly crawl every Monday at 03:00 UTC:
 
@@ -287,7 +292,19 @@ The easiest way to deploy is [Vercel](https://vercel.com):
 }
 ```
 
-Set `CRON_SECRET` (or `CRAWL_CRON_SECRET`) in Vercel env. The crawl auth accepts `Authorization: Bearer <secret>` and `x-cron-secret`.
+Set `CRON_SECRET` (or `CRAWL_CRON_SECRET`) in Vercel env. The crawl auth accepts `Authorization: Bearer <secret>`, `x-cron-secret`, and `?cron_secret=<secret>`.
+
+For `cron-job.org`, the easiest setup is:
+
+```text
+Every 15 minutes:
+https://your-domain.com/api/cron/bedtime-reminders?cron_secret=YOUR_SECRET
+
+Weekly:
+https://your-domain.com/api/crawl/weekly?cron_secret=YOUR_SECRET
+```
+
+Keep the same `CRAWL_CRON_SECRET` value in your deployment environment and in the cron job URL.
 
 > Make sure your MySQL database is publicly accessible. Recommended managed providers: **PlanetScale**, **Railway**, **Aiven**, or **TiDB Cloud**.
 
