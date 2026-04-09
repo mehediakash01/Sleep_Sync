@@ -52,9 +52,9 @@ const team = [
     initials: "SL",
   },
   {
-    name: "Jin Park",
+    name: "Mehedi Hasan Akash",
     role: "UX Designer",
-    initials: "JP",
+    initials: "MA",
   },
 ] as const;
 
